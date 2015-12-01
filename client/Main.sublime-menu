@@ -1,0 +1,33 @@
+[
+    {
+        "caption": "COMP 4030",
+        "id": "LiveCoding",
+        "children": [
+            {
+                "caption": "Set server address",
+                "id": "SetServerAddress",
+                "command": "set_server_address"
+            },
+            {
+                "caption": "Set username",
+                "id": "SetUsername",
+                "command": "set_username"
+            },
+            {
+                "caption": "Share this file",
+                "id": "Share",
+                "command": "share"
+            },
+            {
+                "caption": "Get one",
+                "id": "Get",
+                "command": "get"
+            },
+            {
+                "caption": "Brownie Point",
+                "id": "AwardPoint",
+                "command": "award_point"
+            }
+        ]
+    }
+]
