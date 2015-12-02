@@ -1,0 +1,23 @@
+[
+    {
+        "caption": "COMP 4030",
+        "id": "LiveCoding",
+        "children": [
+            {
+                "caption": "Share this file",
+                "id": "LcShare",
+                "command": "lc_share"
+            },
+            {
+                "caption": "Set server address",
+                "id": "LcSetServerAddress",
+                "command": "lc_set_server_address"
+            },
+            {
+                "caption": "Set username",
+                "id": "LcSetUsername",
+                "command": "lc_set_username"
+            }
+        ]
+    }
+]

@@ -1,0 +1,28 @@
+[
+    {
+        "caption": "COMP 4030I",
+        "id": "LiveCodingInstructor",
+        "children": [
+            {
+                "caption": "Get",
+                "id": "LciGet",
+                "command": "lci_get"
+            },
+            {
+                "caption": "Brownie point",
+                "id": "LciAwardPoint",
+                "command": "lci_award_point"
+            },
+            {
+                "caption": "Set server address",
+                "id": "LciSetServerAddress",
+                "command": "lci_set_server_address"
+            },
+            {
+                "caption": "Set passcode",
+                "id": "LciSetPasscodeAddress",
+                "command": "lci_set_passcode"
+            }
+        ]
+    }
+]
