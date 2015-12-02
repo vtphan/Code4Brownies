@@ -5,7 +5,8 @@ import os
 import json
 
 LC_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "LiveCodingInfo")
-REMOTE_SHARE_HANDLER = "share"
+LC_SHARE_PATH = "share"
+LC_POINTS_PATH = "points"
 
 def lc_set_attr(attr):
 	def foo(value):
@@ -41,12 +42,16 @@ def lc_get_attr():
 
 class LcSetServerAddressCommand(sublime_plugin.WindowCommand):
 	def run(self):
-		sublime.active_window().show_input_panel('Server address: ', '', lc_set_attr('Address'), None, None)
+		info = lc_get_attr()
+		addr = '' if info is None else info['Address']
+		sublime.active_window().show_input_panel('Server address: ', addr, lc_set_attr('Address'), None, None)
 
 
 class LcSetUsernameCommand(sublime_plugin.WindowCommand):
 	def run(self):
-		sublime.active_window().show_input_panel('Username: ', '', lc_set_attr('Username'), None, None)
+		info = lc_get_attr()
+		user = '' if info is None else info['Username']
+		sublime.active_window().show_input_panel('Username: ', user, lc_set_attr('Username'), None, None)
 
 
 class LcShareCommand(sublime_plugin.TextCommand):
@@ -54,18 +59,34 @@ class LcShareCommand(sublime_plugin.TextCommand):
 		info = lc_get_attr()
 		if info is None:
 			return
-		url = urllib.parse.urljoin(info['Address'], REMOTE_SHARE_HANDLER)
+		url = urllib.parse.urljoin(info['Address'], LC_SHARE_PATH)
 		content = self.view.substr(sublime.Region(0, self.view.size()))
 		values = {'login':os.getlogin(), 'username':info['Username'],  'body':content}
-		data = urllib.parse.urlencode(values)
-		data = data.encode('ascii')
+		data = urllib.parse.urlencode(values).encode('ascii')
 		req = urllib.request.Request(url, data)
 		try:
 			with urllib.request.urlopen(req) as response:
-				the_page = response.read()
-				print(the_page)
+				res = response.read().decode(encoding="utf-8")
+				print(res)
 				sublime.message_dialog("Got it!")
 		except urllib.error.URLError:
 			sublime.message_dialog("URL Error: reset server address.")
+
+
+class LcShowPoints(sublime_plugin.WindowCommand):
+	def run(self):
+		info = lc_get_attr()
+		if info is None:
+			return
+		url = urllib.parse.urljoin(info['Address'], LC_POINTS_PATH)
+		values = {'login':os.getlogin(), 'username':info['Username']}
+		data = urllib.parse.urlencode(values).encode('ascii')
+		req = urllib.request.Request(url, data)
+		try:
+			with urllib.request.urlopen(req) as response:
+				sublime.message_dialog(response.read().decode(encoding="utf-8"))
+		except urllib.error.URLError:
+			sublime.message_dialog("URL Error: reset server address.")
+
 
 
