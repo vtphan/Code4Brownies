@@ -46,17 +46,20 @@ func (E *EntryList) Add(user, body string) {
 	E.m.Unlock()
 }
 
-func (E *EntryList) Deque() *Entry {
-	if len(E.list) == 0 {
+func (E *EntryList) Remove(i int) *Entry {
+	if i < 0 || len(E.list) == 0 || i > len(E.list) {
 		return &Entry{}
 	} else {
 		E.m.Lock()
-		CurEntry = E.list[0]
-		E.list = E.list[1:]
-		CurEntry.N = len(E.list)
+		entry := E.list[i]
+		E.list = append(E.list[:i], E.list[i+1:]...)
 		E.m.Unlock()
-		return CurEntry
+		return entry
 	}
+}
+
+func (E *EntryList) Get(i int) *Entry {
+	return E.list[i]
 }
 
 func (E *EntryList) Show() {
@@ -120,25 +123,8 @@ func pointsHandler(w http.ResponseWriter, r *http.Request) {
 func shareHandler(w http.ResponseWriter, r *http.Request) {
 	_, user, body := r.FormValue("login"), r.FormValue("username"), r.FormValue("body")
 	Entries.Add(user, body)
-	fmt.Println("+", user, ":", Entries.Len(), "entries in queue.")
+	fmt.Println(user, "submitted.")
 	fmt.Fprintf(w, "Got it!")
-}
-
-// Instructor retrieves code, one by one, by invoking server_address/deque
-func dequeHandler(w http.ResponseWriter, r *http.Request) {
-	if r.FormValue("passcode") != PASSCODE {
-		w.WriteHeader(http.StatusUnauthorized)
-	} else {
-		entry := Entries.Deque()
-		js, err := json.Marshal(entry)
-		if err != nil {
-			fmt.Println(err.Error())
-		} else {
-			fmt.Println("-", entry.User, ":", Entries.Len(), "entries left.")
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(js)
-		}
-	}
 }
 
 // give one brownie point to the user that is just recently dequed
@@ -146,12 +132,42 @@ func brownieHandler(w http.ResponseWriter, r *http.Request) {
 	if r.FormValue("passcode") != PASSCODE {
 		w.WriteHeader(http.StatusUnauthorized)
 	} else {
-		if CurEntry != nil {
-			Users.OnePoint(CurEntry.User)
-			Users.Show()
-			fmt.Fprintf(w, CurEntry.User)
+		Users.OnePoint(r.FormValue("user"))
+		Users.Show()
+		fmt.Fprintf(w, "Point awarded to "+r.FormValue("user"))
+	}
+}
+
+func entriesHandler(w http.ResponseWriter, r *http.Request) {
+	if r.FormValue("passcode") != PASSCODE {
+		w.WriteHeader(http.StatusUnauthorized)
+	} else {
+		js, err := json.Marshal(Entries.list)
+		if err != nil {
+			fmt.Println(err.Error())
 		} else {
-			fmt.Fprintf(w, "")
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(js)
+		}
+	}
+}
+
+// Instructor retrieves code, one by one, by invoking server_address/deque
+func request_entryHandler(w http.ResponseWriter, r *http.Request) {
+	if r.FormValue("passcode") != PASSCODE {
+		w.WriteHeader(http.StatusUnauthorized)
+	} else {
+		e, err := strconv.Atoi(r.FormValue("entry"))
+		if err != nil {
+			fmt.Println(err.Error)
+		} else {
+			js, err := json.Marshal(Entries.Remove(e))
+			if err != nil {
+				fmt.Println(err.Error())
+			} else {
+				w.Header().Set("Content-Type", "application/json")
+				w.Write(js)
+			}
 		}
 	}
 }
@@ -161,7 +177,6 @@ func brownieHandler(w http.ResponseWriter, r *http.Request) {
 //-----------------------------------------------------------------
 
 var PASSCODE string
-var CurEntry *Entry
 var Entries = NewEntryList()
 var Users = NewUsers()
 
@@ -202,9 +217,10 @@ func main() {
 
 	// Register handlers and start serving app
 	http.HandleFunc("/share", shareHandler)
-	http.HandleFunc("/deque", dequeHandler)
-	http.HandleFunc("/brownie", brownieHandler)
 	http.HandleFunc("/points", pointsHandler)
+	http.HandleFunc("/brownie", brownieHandler)
+	http.HandleFunc("/entries", entriesHandler)
+	http.HandleFunc("/request_entry", request_entryHandler)
 	err = http.ListenAndServe("0.0.0.0:"+PORT, nil)
 	if err != nil {
 		panic(err.Error() + "\n")
