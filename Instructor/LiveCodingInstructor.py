@@ -1,8 +1,13 @@
+#
+# Live Coding (instructor module)
+# Author: Vinhthuy Phan, 2015
+#
 import sublime, sublime_plugin
 import urllib.parse
 import urllib.request
 import os
 import json
+
 
 LCI_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "LiveCodingInstructorInfo")
 LCI_BROWNIE_PATH = "brownie"
@@ -82,7 +87,7 @@ class LciGetCommand(sublime_plugin.TextCommand):
 		info = lci_get_attr()
 		if info is None:
 			return
-		
+
 		url = urllib.parse.urljoin(info['Address'], LCI_ENTRIES_PATH)
 		data = urllib.parse.urlencode({'passcode':info['Passcode']}).encode('ascii')
 		response = LciRequest(url,data)
@@ -107,4 +112,5 @@ class LciAwardPointCommand(sublime_plugin.WindowCommand):
 			data = urllib.parse.urlencode({'passcode':info['Passcode'], 'user':CURRENT_USER}).encode('ascii')
 			response = LciRequest(url,data)
 			print(response)
+
 
