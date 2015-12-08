@@ -10,10 +10,11 @@ import json
 
 
 LCI_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "LiveCodingInstructorInfo")
-LCI_BROWNIE_PATH = "brownie"
-LCI_ENTRIES_PATH = "entries"
-LCI_REQUEST_ENTRY_PATH = "request_entry"
+LCI_BROWNIE_PATH = "give_point"
+LCI_ENTRIES_PATH = "posts"
+LCI_REQUEST_ENTRY_PATH = "get_post"
 CURRENT_USER = None
+TIMEOUT = 5
 
 def lci_set_attr(attr):
 	def foo(value):
@@ -61,7 +62,7 @@ class LciSetPasscodeCommand(sublime_plugin.WindowCommand):
 def LciRequest(url, data):
 	req = urllib.request.Request(url, data)
 	try:
-		with urllib.request.urlopen(req) as response:
+		with urllib.request.urlopen(req, None, TIMEOUT) as response:
 			return response.read().decode(encoding="utf-8")
 	except urllib.error.HTTPError:
 		sublime.message_dialog("HTTP error: possibly due to incorrect passcode.")
@@ -76,7 +77,7 @@ class LciGetCommand(sublime_plugin.TextCommand):
 			if selected < 0:
 				return
 			url = urllib.parse.urljoin(info['Address'], LCI_REQUEST_ENTRY_PATH)
-			data = urllib.parse.urlencode({'passcode':info['Passcode'], 'entry':selected}).encode('ascii')
+			data = urllib.parse.urlencode({'passcode':info['Passcode'], 'post':selected}).encode('ascii')
 			response = LciRequest(url,data)
 			json_obj = json.loads(response)
 			self.view.replace(edit, sublime.Region(0, self.view.size()), json_obj['Body'])
@@ -92,11 +93,11 @@ class LciGetCommand(sublime_plugin.TextCommand):
 		data = urllib.parse.urlencode({'passcode':info['Passcode']}).encode('ascii')
 		response = LciRequest(url,data)
 		json_obj = json.loads(response)
-		users = [ entry['User'] for entry in json_obj ]
+		users = [ entry['Uid'] for entry in json_obj ]
 		if users:
 			self.view.show_popup_menu(users, self.request_entry(info, users, edit))
 		else:
-			sublime.message_dialog("No entry.")
+			sublime.status_message("Queue is empty.")
 
 
 class LciAwardPointCommand(sublime_plugin.WindowCommand):
@@ -109,7 +110,7 @@ class LciAwardPointCommand(sublime_plugin.WindowCommand):
 			return
 		if sublime.ok_cancel_dialog("Award 1 point to "+CURRENT_USER+"?"):
 			url = urllib.parse.urljoin(info['Address'], LCI_BROWNIE_PATH)
-			data = urllib.parse.urlencode({'passcode':info['Passcode'], 'user':CURRENT_USER}).encode('ascii')
+			data = urllib.parse.urlencode({'passcode':info['Passcode'], 'uid':CURRENT_USER}).encode('ascii')
 			response = LciRequest(url,data)
 			print(response)
 

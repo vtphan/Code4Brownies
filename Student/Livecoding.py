@@ -9,8 +9,9 @@ import os
 import json
 
 LC_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "LiveCodingInfo")
-LC_SHARE_PATH = "share"
-LC_POINTS_PATH = "points"
+LC_SUBMIT_POST_PATH = "submit_post"
+LC_MY_POINTS_PATH = "my_points"
+TIMEOUT = 5
 
 def lc_set_attr(attr):
 	def foo(value):
@@ -63,19 +64,19 @@ class LcShareCommand(sublime_plugin.TextCommand):
 		info = lc_get_attr()
 		if info is None:
 			return
-		url = urllib.parse.urljoin(info['Address'], LC_SHARE_PATH)
+		url = urllib.parse.urljoin(info['Address'], LC_SUBMIT_POST_PATH)
 		content = self.view.substr(sublime.Region(0, self.view.size()))
-		values = {'login':os.getlogin(), 'username':info['Username'],  'body':content}
+		values = {'login':os.getlogin(), 'uid':info['Username'],  'body':content}
 		data = urllib.parse.urlencode(values).encode('ascii')
 		req = urllib.request.Request(url, data)
 		try:
-			with urllib.request.urlopen(req) as response:
+			with urllib.request.urlopen(req, None, TIMEOUT) as response:
 				res = response.read().decode(encoding="utf-8")
 				if res == "1":
 					sublime.message_dialog("Entry submitted succesfully.")
 				else:
 					sublime.message_dialog("Invalid submission by a non-existent user.")
-				print(res, type(res))
+				# print(res, type(res))
 		except urllib.error.URLError:
 			sublime.message_dialog("URL Error: reset server address.")
 
@@ -85,12 +86,12 @@ class LcShowPoints(sublime_plugin.WindowCommand):
 		info = lc_get_attr()
 		if info is None:
 			return
-		url = urllib.parse.urljoin(info['Address'], LC_POINTS_PATH)
+		url = urllib.parse.urljoin(info['Address'], LC_MY_POINTS_PATH)
 		values = {'login':os.getlogin(), 'username':info['Username']}
 		data = urllib.parse.urlencode(values).encode('ascii')
 		req = urllib.request.Request(url, data)
 		try:
-			with urllib.request.urlopen(req) as response:
+			with urllib.request.urlopen(req, None, TIMEOUT) as response:
 				sublime.message_dialog(response.read().decode(encoding="utf-8"))
 		except urllib.error.URLError:
 			sublime.message_dialog("URL Error: reset server address.")
