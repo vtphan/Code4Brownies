@@ -11,12 +11,17 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"runtime"
 	"strconv"
 	"sync"
 	"syscall"
 	"time"
+	"flag"
+	"encoding/csv"
+	"log"
+	"io"
+	// "path/filepath"
+	// "strings"
 )
 
 var PORT = "4030"
@@ -126,9 +131,14 @@ func pointsHandler(w http.ResponseWriter, r *http.Request) {
 // Clients share their codes by POSTing to server_address/share
 func shareHandler(w http.ResponseWriter, r *http.Request) {
 	_, user, body := r.FormValue("login"), r.FormValue("username"), r.FormValue("body")
-	Entries.Add(user, body)
-	fmt.Println(user, "submitted.")
-	fmt.Fprintf(w, "Got it!")
+	if _, ok := ExistingUsers.Points[user]; ok {
+		Entries.Add(user, body)
+		fmt.Println(user, "submitted.")
+		fmt.Fprintf(w, "1")
+	} else {
+		fmt.Println(user, "non existent.")
+		fmt.Fprintf(w, "0")
+	}
 }
 
 // give one brownie point to the user that is just recently dequed
@@ -177,24 +187,7 @@ func request_entryHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //-----------------------------------------------------------------
-// MAIN
-//-----------------------------------------------------------------
-
-var PASSCODE string
-var Entries = NewEntryList()
-var Users = NewUsers()
-
-func main() {
-	// Get passcode
-	_, gofile := filepath.Split(os.Args[0])
-	if len(os.Args) != 2 {
-		fmt.Println("Usage: go run " + gofile + " passcode")
-		os.Exit(1)
-	}
-	PASSCODE = os.Args[1]
-	runtime.GOMAXPROCS(runtime.NumCPU())
-
-	// Prepare for cleanup
+func prepareCleanup(userFile string) {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	signal.Notify(c, syscall.SIGTERM)
@@ -203,10 +196,32 @@ func main() {
 		t := time.Now()
 		fmt.Println("\n" + t.Format("Mon Jan 2 15:04:05 MST 2006") + "\nTOTAL POINTS")
 		Users.Show()
+		fmt.Println("\nUpdating",userFile,"\n")
+		for user, point := range(Users.Points) {
+			ExistingUsers.Points[user] += point
+		}
+	   outFile, err := os.Create(userFile)
+	   if err != nil {
+	   	panic(err)
+	   }
+	   defer outFile.Close()
+		w := csv.NewWriter(outFile)
+		for user, point := range(ExistingUsers.Points) {
+			record := []string{user,strconv.Itoa(point)}
+			if err := w.Write(record); err != nil {
+				log.Fatalln("error writing record to csv:", err)
+			}
+		}
+		w.Flush()
+		if err := w.Error(); err != nil {
+			panic(err)
+		}
 		os.Exit(1)
 	}()
+}
 
-	// Figure IP address
+//-----------------------------------------------------------------
+func informIPAddress() {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
 		panic(err.Error() + "\n")
@@ -218,6 +233,53 @@ func main() {
 			}
 		}
 	}
+}
+
+//-----------------------------------------------------------------
+func loadExistingRecord(filename string) {
+	userFile, err := os.Open(filename)
+	defer userFile.Close()
+
+	var points int
+   if err != nil {
+   	log.Fatal(err)
+   }
+	r := csv.NewReader(userFile)
+	for {
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		points, err = strconv.Atoi(record[1])
+		ExistingUsers.Points[record[0]] = points
+	}
+	for k, v := range(ExistingUsers.Points) {
+		fmt.Println(k,v)
+	}
+}
+
+//-----------------------------------------------------------------
+// MAIN
+//-----------------------------------------------------------------
+
+var PASSCODE string
+var Entries = NewEntryList()
+var Users = NewUsers()
+var ExistingUsers = NewUsers()
+
+func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	var userFilename string
+	flag.StringVar(&PASSCODE, "passcode", "password", "passcode to be used by the instructor to connect to the server.")
+	flag.StringVar(&userFilename, "users", "", "csv-formatted filename containing usernames,real names.")
+	flag.Parse()
+
+	loadExistingRecord(userFilename)
+	prepareCleanup(userFilename)
+	informIPAddress()
 
 	// Register handlers and start serving app
 	http.HandleFunc("/share", shareHandler)
@@ -225,7 +287,7 @@ func main() {
 	http.HandleFunc("/brownie", brownieHandler)
 	http.HandleFunc("/entries", entriesHandler)
 	http.HandleFunc("/request_entry", request_entryHandler)
-	err = http.ListenAndServe("0.0.0.0:"+PORT, nil)
+	err := http.ListenAndServe("0.0.0.0:"+PORT, nil)
 	if err != nil {
 		panic(err.Error() + "\n")
 	}

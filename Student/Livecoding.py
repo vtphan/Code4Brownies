@@ -1,3 +1,7 @@
+#
+# Live Coding (student module)
+# Author: Vinhthuy Phan, 2015
+#
 import sublime, sublime_plugin
 import urllib.parse
 import urllib.request
@@ -67,8 +71,11 @@ class LcShareCommand(sublime_plugin.TextCommand):
 		try:
 			with urllib.request.urlopen(req) as response:
 				res = response.read().decode(encoding="utf-8")
-				print(res)
-				sublime.message_dialog("Got it!")
+				if res == "1":
+					sublime.message_dialog("Entry submitted succesfully.")
+				else:
+					sublime.message_dialog("Invalid submission by a non-existent user.")
+				print(res, type(res))
 		except urllib.error.URLError:
 			sublime.message_dialog("URL Error: reset server address.")
 
