@@ -291,7 +291,7 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	var userFilename string
 	flag.StringVar(&PASSCODE, "passcode", "password", "passcode to be used by the instructor to connect to the server.")
-	flag.StringVar(&userFilename, "users", "", "csv-formatted filename containing usernames,real names.")
+	flag.StringVar(&userFilename, "db", "", "csv file with 3 fields: uid,name,points.")
 	flag.Parse()
 
 	loadRecords(userFilename)
