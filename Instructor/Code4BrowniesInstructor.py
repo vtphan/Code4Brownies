@@ -6,6 +6,7 @@ import urllib.parse
 import urllib.request
 import os
 import json
+import socket
 
 FILE_EXTENSION = ".py"
 
@@ -71,7 +72,7 @@ def c4biRequest(url, data):
 	except urllib.error.HTTPError:
 		sublime.message_dialog("HTTP error: possibly due to incorrect passcode.")
 	except urllib.error.URLError:
-		sublime.message_dialog("URL error: reset server address.")
+		sublime.message_dialog("Server not running or incorrect server address.")
 
 
 class c4biGetCommand(sublime_plugin.TextCommand):
@@ -81,7 +82,7 @@ class c4biGetCommand(sublime_plugin.TextCommand):
 				return
 			url = urllib.parse.urljoin(info['Address'], c4bi_REQUEST_ENTRY_PATH)
 			data = urllib.parse.urlencode({'passcode':info['Passcode'], 'post':selected}).encode('ascii')
-			response = LciRequest(url,data)
+			response = c4biRequest(url,data)
 			json_obj = json.loads(response)
 			userFile = os.path.join(POSTS_DIR, users[selected] + FILE_EXTENSION)
 			with open(userFile, 'w') as fp:
@@ -97,7 +98,7 @@ class c4biGetCommand(sublime_plugin.TextCommand):
 
 		url = urllib.parse.urljoin(info['Address'], c4bi_ENTRIES_PATH)
 		data = urllib.parse.urlencode({'passcode':info['Passcode']}).encode('ascii')
-		response = LciRequest(url,data)
+		response = c4biRequest(url,data)
 		json_obj = json.loads(response)
 		users = [ entry['Uid'] for entry in json_obj ]
 		if users:
@@ -121,3 +122,8 @@ class c4biAwardPointCommand(sublime_plugin.TextCommand):
 			print(response)
 
 
+class c4biAboutCommand(sublime_plugin.WindowCommand):
+	def run(self):
+		addr = socket.gethostbyname(socket.gethostname()) + ":4030"
+		sublime.message_dialog("Server address: %s\n\nCopyright (2015) by Vinhthuy Phan" %
+			addr)

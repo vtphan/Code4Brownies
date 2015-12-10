@@ -55,6 +55,15 @@ class c4bSetUsernameCommand(sublime_plugin.WindowCommand):
 		sublime.active_window().show_input_panel('Username: ', '', c4b_set_attr('Username'), None, None)
 
 
+def c4bRequest(url, data):
+	req = urllib.request.Request(url, data)
+	try:
+		with urllib.request.urlopen(req, None, TIMEOUT) as response:
+			return response.read().decode(encoding="utf-8")
+	except urllib.error.URLError:
+		sublime.message_dialog("Server not running or incorrect server address.")
+
+
 class c4bShareCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		info = c4b_get_attr()
@@ -64,17 +73,11 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 		content = self.view.substr(sublime.Region(0, self.view.size()))
 		values = {'login':os.getlogin(), 'uid':info['Username'],  'body':content}
 		data = urllib.parse.urlencode(values).encode('ascii')
-		req = urllib.request.Request(url, data)
-		try:
-			with urllib.request.urlopen(req, None, TIMEOUT) as response:
-				res = response.read().decode(encoding="utf-8")
-				if res == "1":
-					sublime.message_dialog("Entry submitted succesfully.")
-				else:
-					sublime.message_dialog("Invalid submission by a non-existent user.")
-				# print(res, type(res))
-		except urllib.error.URLError:
-			sublime.message_dialog("URL Error: reset server address.")
+		response = c4bRequest(url,data)
+		if response == "1":
+			sublime.message_dialog("Entry submitted succesfully.")
+		else:
+			sublime.message_dialog("Invalid submission by a non-existent user.")
 
 
 class c4bShowPoints(sublime_plugin.WindowCommand):
@@ -85,12 +88,8 @@ class c4bShowPoints(sublime_plugin.WindowCommand):
 		url = urllib.parse.urljoin(info['Address'], c4b_MY_POINTS_PATH)
 		values = {'login':os.getlogin(), 'username':info['Username']}
 		data = urllib.parse.urlencode(values).encode('ascii')
-		req = urllib.request.Request(url, data)
-		try:
-			with urllib.request.urlopen(req, None, TIMEOUT) as response:
-				sublime.message_dialog(response.read().decode(encoding="utf-8"))
-		except urllib.error.URLError:
-			sublime.message_dialog("URL Error: reset server address.")
+		response = c4bRequest(url,data)
+		sublime.message_dialog(response)
 
 
 
