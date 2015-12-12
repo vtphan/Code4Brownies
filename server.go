@@ -19,6 +19,7 @@ import (
 	"sync"
 	"syscall"
 	"time"
+	"errors"
 )
 
 var PORT = "4030"
@@ -101,41 +102,6 @@ type User struct {
 }
 
 //-----------------------------------------------------------------
-// load records in csv file into global AllUsers
-//-----------------------------------------------------------------
-func loadRecords(csvFile string) {
-	if csvFile == "" {
-		flag.PrintDefaults()
-		log.Fatal("Must give file containg user records.")
-	}
-	userFile, err := os.Open(csvFile)
-	defer userFile.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	reader := csv.NewReader(userFile)
-	var points int
-
-	for {
-		record, err := reader.Read()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			log.Fatal(err)
-		}
-		points, err = strconv.Atoi(record[2])
-		user := &User{record[1], points}
-		AllUsers[record[0]] = user
-	}
-
-	for k, v := range AllUsers {
-		fmt.Println(k, v)
-	}
-}
-
-//-----------------------------------------------------------------
 // HTTP HANDLERS
 //-----------------------------------------------------------------
 
@@ -145,7 +111,7 @@ func my_pointsHandler(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		points = 0
 	}
-	fmt.Fprintf(w, user+" has "+strconv.Itoa(points)+" points.")
+	fmt.Fprintf(w, user+" has "+strconv.Itoa(points)+" brownies.")
 }
 
 //-----------------------------------------------------------------
@@ -164,12 +130,19 @@ func submit_postHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //-----------------------------------------------------------------
+
+func verifyPasscode(w http.ResponseWriter, r *http.Request) error {
+	if r.FormValue("passcode") != PASSCODE {
+		w.WriteHeader(http.StatusUnauthorized)
+		return errors.New("Unauthorized access")
+	}
+	return nil
+}
+//-----------------------------------------------------------------
 // give one brownie point to a user
 //-----------------------------------------------------------------
 func give_pointHandler(w http.ResponseWriter, r *http.Request) {
-	if r.FormValue("passcode") != PASSCODE {
-		w.WriteHeader(http.StatusUnauthorized)
-	} else {
+	if verifyPasscode(w, r) == nil {
 		Points.addOne(r.FormValue("uid"))
 		fmt.Println("+1", r.FormValue("uid"))
 		fmt.Fprintf(w, "Point awarded to "+r.FormValue("uid"))
@@ -180,9 +153,7 @@ func give_pointHandler(w http.ResponseWriter, r *http.Request) {
 // return all current posts
 //-----------------------------------------------------------------
 func postsHandler(w http.ResponseWriter, r *http.Request) {
-	if r.FormValue("passcode") != PASSCODE {
-		w.WriteHeader(http.StatusUnauthorized)
-	} else {
+	if verifyPasscode(w, r) == nil {
 		js, err := json.Marshal(Posts.queue)
 		if err != nil {
 			fmt.Println(err.Error())
@@ -197,9 +168,7 @@ func postsHandler(w http.ResponseWriter, r *http.Request) {
 // Instructor retrieves code
 //-----------------------------------------------------------------
 func get_postHandler(w http.ResponseWriter, r *http.Request) {
-	if r.FormValue("passcode") != PASSCODE {
-		w.WriteHeader(http.StatusUnauthorized)
-	} else {
+	if verifyPasscode(w, r) == nil {
 		e, err := strconv.Atoi(r.FormValue("post"))
 		if err != nil {
 			fmt.Println(err.Error)
@@ -258,6 +227,53 @@ func prepareCleanup(userFile string) {
 }
 
 //-----------------------------------------------------------------
+// load records in csv file into global AllUsers
+//-----------------------------------------------------------------
+func loadRecords(csvFile string) {
+	if csvFile == "" {
+		flag.PrintDefaults()
+		log.Fatal("Must give file containg user records.")
+	}
+	userFile, err := os.Open(csvFile)
+	defer userFile.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create backup file
+	backupFile, err := os.Create(csvFile + ".bak")
+	if err != nil {
+		panic(err)
+	}
+	defer backupFile.Close()
+
+	// Read into global AllUsers record
+	reader := csv.NewReader(userFile)
+	writer := csv.NewWriter(backupFile)
+	var points int
+	for {
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		points, err = strconv.Atoi(record[2])
+		user := &User{record[1], points}
+		AllUsers[record[0]] = user
+		if err := writer.Write(record); err != nil {
+			log.Fatalln("error backing up record to csv:", err)
+		}
+	}
+	writer.Flush()
+	if err := writer.Error(); err != nil {
+		panic(err)
+	}
+	fmt.Println("Duplicated db to", csvFile+".bak")
+}
+
+//-----------------------------------------------------------------
 func informIPAddress() {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
@@ -297,7 +313,6 @@ func main() {
 	prepareCleanup(userFilename)
 	informIPAddress()
 
-	// Register handlers and start serving app
 	http.HandleFunc("/submit_post", submit_postHandler)
 	http.HandleFunc("/my_points", my_pointsHandler)
 	http.HandleFunc("/give_point", give_pointHandler)

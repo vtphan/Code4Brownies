@@ -73,7 +73,7 @@ def c4biRequest(url, data):
 		sublime.message_dialog("HTTP error: possibly due to incorrect passcode.")
 	except urllib.error.URLError:
 		sublime.message_dialog("Server not running or incorrect server address.")
-
+	return None
 
 class c4biGetCommand(sublime_plugin.TextCommand):
 	def request_entry(self, info, users, edit):
@@ -99,6 +99,8 @@ class c4biGetCommand(sublime_plugin.TextCommand):
 		url = urllib.parse.urljoin(info['Address'], c4bi_ENTRIES_PATH)
 		data = urllib.parse.urlencode({'passcode':info['Passcode']}).encode('ascii')
 		response = c4biRequest(url,data)
+		if response is None:
+			return
 		json_obj = json.loads(response)
 		users = [ entry['Uid'] for entry in json_obj ]
 		if users:
@@ -125,5 +127,5 @@ class c4biAwardPointCommand(sublime_plugin.TextCommand):
 class c4biAboutCommand(sublime_plugin.WindowCommand):
 	def run(self):
 		addr = socket.gethostbyname(socket.gethostname()) + ":4030"
-		sublime.message_dialog("Server address: %s\n\nCopyright (2015) by Vinhthuy Phan" %
+		sublime.message_dialog("Code4Brownies\nServer address: %s\n\nCopyright © 2015 Vinhthuy Phan." %
 			addr)

@@ -1,0 +1,28 @@
+[
+    {
+        "caption": "Brownies",
+        "id": "Code4Brownies",
+        "children": [
+            {
+                "caption": "Share this file",
+                "id": "c4bShare",
+                "command": "c4b_share"
+            },
+            {
+                "caption": "My brownies",
+                "id": "c4bShowPoints",
+                "command": "c4b_show_points"
+            },
+            {
+                "caption": "Set server address",
+                "id": "c4bSetServerAddress",
+                "command": "c4b_set_server_address"
+            },
+            {
+                "caption": "Set username",
+                "id": "c4bSetUsername",
+                "command": "c4b_set_username"
+            }
+        ]
+    }
+]

@@ -62,7 +62,7 @@ def c4bRequest(url, data):
 			return response.read().decode(encoding="utf-8")
 	except urllib.error.URLError:
 		sublime.message_dialog("Server not running or incorrect server address.")
-
+	return None
 
 class c4bShareCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
@@ -76,7 +76,7 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 		response = c4bRequest(url,data)
 		if response == "1":
 			sublime.message_dialog("Entry submitted succesfully.")
-		else:
+		elif response == "0":
 			sublime.message_dialog("Invalid submission by a non-existent user.")
 
 

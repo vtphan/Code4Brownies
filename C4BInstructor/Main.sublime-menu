@@ -1,0 +1,33 @@
+[
+    {
+        "caption": "Instructor",
+        "id": "C4Bi",
+        "children": [
+            {
+                "caption": "Get",
+                "id": "c4biGet",
+                "command": "c4bi_get"
+            },
+            {
+                "caption": "Give a brownie",
+                "id": "c4biAwardPoint",
+                "command": "c4bi_award_point"
+            },
+            {
+                "caption": "Set server address",
+                "id": "c4biSetServerAddress",
+                "command": "c4bi_set_server_address"
+            },
+            {
+                "caption": "Set passcode",
+                "id": "c4biSetPasscodeAddress",
+                "command": "c4bi_set_passcode"
+            },
+            {
+                "caption": "About",
+                "id": "c4biAbout",
+                "command": "c4bi_about"
+            }
+        ]
+    }
+]
