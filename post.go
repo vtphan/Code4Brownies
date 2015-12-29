@@ -18,6 +18,8 @@ type PostQueue struct {
 	sem   sync.Mutex
 }
 
+var Posts = PostQueue{}                         // posts of currently active users
+
 func (P *PostQueue) Add(uid, body string) {
 	P.sem.Lock()
 	P.queue = append(P.queue, &Post{uid, body})

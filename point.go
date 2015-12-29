@@ -12,6 +12,8 @@ type Point struct {
 	sem  sync.Mutex
 }
 
+var Points = &Point{data: make(map[string]int)} // points of currently active users
+
 func (P *Point) addOne(usr string) {
 	P.sem.Lock()
 	_, ok := P.data[usr]
