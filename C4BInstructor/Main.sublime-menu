@@ -14,6 +14,22 @@
                 "command": "c4bi_award_point"
             },
             {
+                "caption": "Registration",
+                "id": "c4biRegistration",
+                "children" : [
+                    {
+                        "caption": "Registered users",
+                        "id": "c4biRegisteredUsers",
+                        "command": "c4bi_registered_users"
+                    },
+                    {
+                        "caption": "Approve",
+                        "id": "c4biApproveRegistration",
+                        "command": "c4bi_approve_registration"
+                    },
+                ]
+            },
+            {
                 "caption": "Set server address",
                 "id": "c4biSetServerAddress",
                 "command": "c4bi_set_server_address"
