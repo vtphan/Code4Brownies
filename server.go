@@ -16,7 +16,6 @@ import (
 	"os/signal"
 	"runtime"
 	"strconv"
-	"sync"
 	"syscall"
 	"time"
 	"errors"
@@ -24,73 +23,7 @@ import (
 
 var PORT = "4030"
 
-//-----------------------------------------------------------------
-// POSTS
-//-----------------------------------------------------------------
 
-type Post struct {
-	Uid  string
-	Body string
-}
-
-type PostQueue struct {
-	queue []*Post
-	sem   sync.Mutex
-}
-
-func (P *PostQueue) Add(uid, body string) {
-	P.sem.Lock()
-	P.queue = append(P.queue, &Post{uid, body})
-	P.sem.Unlock()
-}
-
-func (P *PostQueue) Remove(i int) *Post {
-	if i < 0 || len(P.queue) == 0 || i > len(P.queue) {
-		return &Post{}
-	} else {
-		P.sem.Lock()
-		post := P.queue[i]
-		P.queue = append(P.queue[:i], P.queue[i+1:]...)
-		P.sem.Unlock()
-		return post
-	}
-}
-
-func (P *PostQueue) Get(i int) *Post {
-	P.sem.Lock()
-	defer P.sem.Unlock()
-	return P.queue[i]
-}
-
-//-----------------------------------------------------------------
-// POINTS
-//-----------------------------------------------------------------
-
-type Point struct {
-	data map[string]int // maps uids to brownie points
-	sem  sync.Mutex
-}
-
-func (P *Point) addOne(usr string) {
-	P.sem.Lock()
-	_, ok := P.data[usr]
-	if !ok {
-		P.data[usr] = 0
-	}
-	P.data[usr] += 1
-	P.sem.Unlock()
-}
-
-func (P *Point) get(usr string) int {
-	P.sem.Lock()
-	defer P.sem.Unlock()
-
-	_, ok := P.data[usr]
-	if !ok {
-		P.data[usr] = 0
-	}
-	return P.data[usr]
-}
 
 //-----------------------------------------------------------------
 // USERS
@@ -288,13 +221,6 @@ func informIPAddress() {
 	}
 }
 
-//-----------------------------------------------------------------
-// GLOBALS
-//-----------------------------------------------------------------
-
-var Posts = PostQueue{}                         // posts of currently active users
-var Points = &Point{data: make(map[string]int)} // points of currently active users
-var AllUsers = make(map[string]*User)           // maps uids to users
 
 //-----------------------------------------------------------------
 // MAIN
