@@ -101,7 +101,7 @@ func registered_usersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //-----------------------------------------------------------------
-// return points of currently active users
+// return points of currently awarded users
 //-----------------------------------------------------------------
 func pointsHandler(w http.ResponseWriter, r *http.Request) {
 	if verifyPasscode(w, r) == nil {
