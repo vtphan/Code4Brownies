@@ -45,6 +45,7 @@ func main() {
 	http.HandleFunc("/approve", approveHandler)
 	http.HandleFunc("/submit_post", submit_postHandler)
 	http.HandleFunc("/my_points", my_pointsHandler)
+	http.HandleFunc("/points", pointsHandler)
 	http.HandleFunc("/give_point", give_pointHandler)
 	http.HandleFunc("/posts", postsHandler)
 	http.HandleFunc("/get_post", get_postHandler)

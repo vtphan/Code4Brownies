@@ -99,6 +99,22 @@ func registered_usersHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+//-----------------------------------------------------------------
+// return points of currently active users
+//-----------------------------------------------------------------
+func pointsHandler(w http.ResponseWriter, r *http.Request) {
+	if verifyPasscode(w, r) == nil {
+		js, err := json.Marshal(Points.data)
+		if err != nil {
+			fmt.Println(err.Error())
+		} else {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(js)
+		}
+	}
+}
+
 //-----------------------------------------------------------------
 // give one brownie point to a user
 //-----------------------------------------------------------------

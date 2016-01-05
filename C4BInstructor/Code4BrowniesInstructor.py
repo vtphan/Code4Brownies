@@ -13,6 +13,7 @@ FILE_EXTENSION = ".py"
 c4bi_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
 c4bi_BROWNIE_PATH = "give_point"
 c4bi_ENTRIES_PATH = "posts"
+c4bi_POINTS_PATH = "points"
 c4bi_REQUEST_ENTRY_PATH = "get_post"
 c4bi_REGISTERED_USERS_PATH = "registered_users"
 c4bi_APPROVE_PATH = "approve"
@@ -95,6 +96,21 @@ class c4biRegisteredUsersCommand(sublime_plugin.TextCommand):
 		new_view.insert(edit, 0, "\n".join(users))
 
 
+class c4biPointsCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		info = c4bi_get_attr()
+		if info is None:
+			return
+
+		url = urllib.parse.urljoin(info['Address'], c4bi_POINTS_PATH)
+		data = urllib.parse.urlencode({'passcode':info['Passcode']}).encode('ascii')
+		response = c4biRequest(url,data)
+		json_obj = json.loads(response)
+		new_view = self.view.window().new_file()
+		users = [ "%s,%s" % (k,v) for k,v in json_obj.items() ]
+		new_view.insert(edit, 0, "\n".join(users))
+
+
 class c4biApproveRegistrationCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		info = c4bi_get_attr()
@@ -114,7 +130,8 @@ class c4biApproveRegistrationCommand(sublime_plugin.TextCommand):
 		approved = json.dumps(approved)		
 		data = urllib.parse.urlencode({'passcode':info['Passcode'], 'approved':approved}).encode('ascii')
 		response = c4biRequest(url,data)
-		print(response)
+		sublime.message_dialog("Done.")
+
 
 
 class c4biGetCommand(sublime_plugin.TextCommand):
@@ -144,11 +161,14 @@ class c4biGetCommand(sublime_plugin.TextCommand):
 		if response is None:
 			return
 		json_obj = json.loads(response)
-		users = [ entry['Uid'] for entry in json_obj ]
-		if users:
-			self.view.show_popup_menu(users, self.request_entry(info, users, edit))
-		else:
+		if json_obj is None:
 			sublime.status_message("Queue is empty.")
+		else:
+			users = [ entry['Uid'] for entry in json_obj ]
+			if users:
+				self.view.show_popup_menu(users, self.request_entry(info, users, edit))
+			else:
+				sublime.status_message("Queue is empty.")
 
 
 class c4biAwardPointCommand(sublime_plugin.TextCommand):
