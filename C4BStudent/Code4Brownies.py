@@ -35,28 +35,20 @@ def c4b_get_attr():
 		with open(c4b_FILE, 'r') as f:
 			json_obj = json.loads(f.read())
 	except:
-		sublime.message_dialog("Please set server address and username.")
+		sublime.message_dialog("Please set server address first.")
 		return None
 	if 'Address' not in json_obj:
 		sublime.message_dialog("Please set server address.")
 		return None
-	if 'Username' not in json_obj:
-		sublime.message_dialog("Please set username.")
+	if 'Uid' not in json_obj or 'Username' not in json_obj: 
+		sublime.message_dialog("Please register: uid,username.")
 		return None
-	# if not json_obj['Address'].startswith('http'):
-	# 	json_obj['Address'] = 'http://' + json_obj['Address']
 	return json_obj
 
 
 class c4bSetServerAddressCommand(sublime_plugin.WindowCommand):
 	def run(self):
 		sublime.active_window().show_input_panel('Server address: ', '', c4b_set_attr('Address'), None, None)
-
-
-class c4bSetUsernameCommand(sublime_plugin.WindowCommand):
-	def run(self):
-		sublime.active_window().show_input_panel('Username: ', '', c4b_set_attr('Username'), None, None)
-
 
 
 def c4bRequest(url, data):
@@ -76,7 +68,8 @@ def c4b_register(value):
 			json_obj = json.loads(f.read())
 	except:
 		json_obj = json.loads('{}')
-	json_obj["Username"] = uid
+	json_obj["Uid"] = uid
+	json_obj["Username"] = name
 	with open(c4b_FILE, 'w') as f:
 		f.write(json.dumps(json_obj))
 
@@ -93,7 +86,20 @@ def c4b_register(value):
 
 class c4bRegisterCommand(sublime_plugin.WindowCommand):
 	def run(self):
-		sublime.active_window().show_input_panel('Username: ', '', c4b_register, None, None)
+		try:
+			with open(c4b_FILE, 'r') as f:
+				json_obj = json.loads(f.read())
+		except:
+			sublime.message_dialog("Please set server address first.")
+			return None
+		if 'Address' not in json_obj:
+			sublime.message_dialog("Please set server address.")
+			return None
+		if 'Uid' in json_obj and 'Username' in json_obj:
+			reg = json_obj['Uid'] + ',' + json_obj['Username']
+		else:
+			reg = "uid,username"
+		sublime.active_window().show_input_panel('Registration: ', reg, c4b_register, None, None)
 
 
 class c4bShareCommand(sublime_plugin.TextCommand):
@@ -103,7 +109,7 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 			return
 		url = urllib.parse.urljoin(info['Address'], c4b_SUBMIT_POST_PATH)
 		content = self.view.substr(sublime.Region(0, self.view.size()))
-		values = {'login':os.getlogin(), 'uid':info['Username'],  'body':content}
+		values = {'login':os.getlogin(), 'uid':info['Uid'],  'body':content}
 		data = urllib.parse.urlencode(values).encode('ascii')
 		response = c4bRequest(url,data)
 		if response == "1":
@@ -118,7 +124,7 @@ class c4bShowPoints(sublime_plugin.WindowCommand):
 		if info is None:
 			return
 		url = urllib.parse.urljoin(info['Address'], c4b_MY_POINTS_PATH)
-		values = {'login':os.getlogin(), 'username':info['Username']}
+		values = {'login':os.getlogin(), 'uid':info['Uid']}
 		data = urllib.parse.urlencode(values).encode('ascii')
 		response = c4bRequest(url,data)
 		sublime.message_dialog(response)

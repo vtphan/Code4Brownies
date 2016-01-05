@@ -19,11 +19,6 @@
                 "command": "c4b_set_server_address"
             },
             {
-                "caption": "Set username",
-                "id": "c4bSetUsername",
-                "command": "c4b_set_username"
-            },
-            {
                 "caption": "Register",
                 "id": "c4bRegister",
                 "command": "c4b_register"
