@@ -19,6 +19,22 @@
                 "command": "c4bi_points"
             },
             {
+                "caption": "Track code",
+                "id": "c4biTrackCode",
+                "children" : [
+                    {
+                        "caption": "Track",
+                        "id": "c4biTrackCode",
+                        "command": "c4bi_track_code"
+                    },
+                    {
+                        "caption": "Untrack",
+                        "id": "c4biUntrackCode",
+                        "command": "c4bi_untrack_code"
+                    }
+                ]
+            },
+            {
                 "caption": "Set information",
                 "id": "c4biSetInfo",
                 "command": "c4bi_set_info"
