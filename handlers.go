@@ -103,3 +103,16 @@ func get_postHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+//-----------------------------------------------------------------
+// Instructor checks to see if queue is not empty
+//-----------------------------------------------------------------
+func check_postHandler(w http.ResponseWriter, r *http.Request) {
+	if verifyPasscode(w, r) == nil {
+		if len(Posts.queue) > 0 {
+			fmt.Fprintf(w, "yes")
+		} else {
+			fmt.Fprintf(w, "no")
+		}
+	}
+}

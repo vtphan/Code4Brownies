@@ -24,6 +24,9 @@ def c4b_get_attr():
 	if 'Server' not in json_obj or 'Name' not in json_obj:
 		sublime.message_dialog("Please set information completely.")
 		return None
+	if not json_obj['Server'].startswith("http://"):
+		sublime.message_dialog("Server must starts with http://\nReset information.")
+		return None
 	return json_obj
 
 
@@ -45,6 +48,7 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 		content = self.view.substr(sublime.Region(0, self.view.size()))
 		values = {'login':os.getlogin(), 'uid':info['Name'],  'body':content}
 		data = urllib.parse.urlencode(values).encode('ascii')
+		print(">", url)
 		response = c4bRequest(url,data)
 		sublime.message_dialog(response)
 

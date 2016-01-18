@@ -45,6 +45,7 @@ func main() {
 	http.HandleFunc("/give_point", give_pointHandler)
 	http.HandleFunc("/posts", postsHandler)
 	http.HandleFunc("/get_post", get_postHandler)
+	http.HandleFunc("/check_post", check_postHandler)
 	err := http.ListenAndServe("0.0.0.0:"+PORT, nil)
 	if err != nil {
 		panic(err.Error() + "\n")

@@ -15,6 +15,7 @@ c4bi_BROWNIE_PATH = "give_point"
 c4bi_ENTRIES_PATH = "posts"
 c4bi_POINTS_PATH = "points"
 c4bi_REQUEST_ENTRY_PATH = "get_post"
+c4bi_CHECK_PATH = "check_post"
 TIMEOUT = 10
 ACTIVE_USERS = {}
 
@@ -23,6 +24,21 @@ try:
 	os.mkdir(POSTS_DIR)
 except:
 	pass
+
+
+def c4bi_check_for_posts():
+	info = c4bi_get_attr()
+	if info is None:
+		return
+	url = urllib.parse.urljoin(info['Server'], c4bi_CHECK_PATH)
+	data = urllib.parse.urlencode({'passcode':info['Passcode']}).encode('ascii')
+	response = c4biRequest(url,data)
+	print(response)
+	if response == 'yes':
+		os.system('afplay /System/Library/Sounds/Glass.aiff')
+		sublime.set_timeout_async(c4bi_check_for_posts, 30000)
+
+sublime.set_timeout_async(c4bi_check_for_posts, 30000)
 
 
 def c4bi_get_attr():
@@ -34,6 +50,9 @@ def c4bi_get_attr():
 		return None
 	if 'Server' not in json_obj or 'Passcode' not in json_obj:
 		sublime.message_dialog("Please set information completely.")
+		return None
+	if not json_obj['Server'].startswith("http://"):
+		sublime.message_dialog("Server must starts with http://\nReset information.")
 		return None
 	return json_obj
 
