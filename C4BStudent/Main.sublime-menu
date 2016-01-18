@@ -14,14 +14,9 @@
                 "command": "c4b_show_points"
             },
             {
-                "caption": "Set server address",
-                "id": "c4bSetServerAddress",
-                "command": "c4b_set_server_address"
-            },
-            {
-                "caption": "Register",
-                "id": "c4bRegister",
-                "command": "c4b_register"
+                "caption": "Set information",
+                "id": "c4bSetInfo",
+                "command": "c4b_set_info"
             }
         ]
     }

@@ -3,6 +3,7 @@ package main
 import (
 	"sync"
 )
+
 //-----------------------------------------------------------------
 // POINTS
 //-----------------------------------------------------------------
@@ -16,11 +17,14 @@ var Points = &Point{data: make(map[string]int)} // points of currently active us
 
 func (P *Point) addOne(uid string) {
 	P.sem.Lock()
-	_, ok := P.data[uid]
-	if !ok {
+	if _, ok := P.data[uid]; !ok {
 		P.data[uid] = 0
 	}
 	P.data[uid] += 1
+
+	if _, ok := AllUsers[uid]; !ok {
+		AllUsers[uid] = &User{0}
+	}
 	AllUsers[uid].points += 1
 	P.sem.Unlock()
 }

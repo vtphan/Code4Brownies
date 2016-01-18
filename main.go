@@ -14,7 +14,6 @@ import (
 var PORT = "4030"
 var PASSCODE string
 
-
 //-----------------------------------------------------------------
 func informIPAddress() {
 	addrs, err := net.InterfaceAddrs()
@@ -40,9 +39,6 @@ func main() {
 	prepareCleanup()
 	informIPAddress()
 
-	http.HandleFunc("/register", registerHandler)
-	http.HandleFunc("/registered_users", registered_usersHandler)
-	http.HandleFunc("/approve", approveHandler)
 	http.HandleFunc("/submit_post", submit_postHandler)
 	http.HandleFunc("/my_points", my_pointsHandler)
 	http.HandleFunc("/points", pointsHandler)

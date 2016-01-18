@@ -1,15 +1,15 @@
-package main 
+package main
 
 import (
 	"encoding/csv"
+	"fmt"
 	"io"
 	"log"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
-	"fmt"
-	"strconv"
 )
 
 //-----------------------------------------------------------------
@@ -17,12 +17,11 @@ import (
 //-----------------------------------------------------------------
 
 type User struct {
-	name   string
 	points int
 }
 
 var USER_DB = "C4B_DB.csv"
-var AllUsers = make(map[string]*User)           // maps uids to users
+var AllUsers = make(map[string]*User) // maps uids to users
 var RegisteredUsers = make(map[string]string)
 
 //-----------------------------------------------------------------
@@ -45,7 +44,7 @@ func prepareCleanup() {
 		fmt.Println("Writing data to", USER_DB)
 		w := csv.NewWriter(outFile)
 		for uid, user := range AllUsers {
-			record := []string{uid, user.name, strconv.Itoa(user.points)}
+			record := []string{uid, strconv.Itoa(user.points)}
 			if err := w.Write(record); err != nil {
 				log.Fatalln("error writing record to csv:", err)
 			}
@@ -74,10 +73,9 @@ func loadRecords() {
 		userFile, err = os.Open(USER_DB)
 		if err != nil {
 			log.Fatal(err)
-		}		
+		}
 	}
 	defer userFile.Close()
-
 
 	// Create backup file
 	backupFile, err := os.Create(USER_DB + ".bak")
@@ -98,8 +96,8 @@ func loadRecords() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		points, err = strconv.Atoi(record[2])
-		user := &User{record[1], points}
+		points, err = strconv.Atoi(record[1])
+		user := &User{points}
 		AllUsers[record[0]] = user
 		if err := writer.Write(record); err != nil {
 			log.Fatalln("error backing up record to csv:", err)
