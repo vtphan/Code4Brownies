@@ -33,6 +33,7 @@ func informIPAddress() {
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	flag.StringVar(&PASSCODE, "passcode", "password", "passcode to be used by the instructor to connect to the server.")
+	flag.StringVar(&USER_DB, "db", USER_DB, "user database in csv format, which consists of UID,POINTS.")
 	flag.Parse()
 
 	loadRecords()
@@ -45,7 +46,6 @@ func main() {
 	http.HandleFunc("/give_point", give_pointHandler)
 	http.HandleFunc("/posts", postsHandler)
 	http.HandleFunc("/get_post", get_postHandler)
-	http.HandleFunc("/check_post", check_postHandler)
 	err := http.ListenAndServe("0.0.0.0:"+PORT, nil)
 	if err != nil {
 		panic(err.Error() + "\n")

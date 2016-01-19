@@ -2,6 +2,8 @@ package main
 
 import (
 	"sync"
+	"os/exec"
+	"fmt"
 )
 
 //-----------------------------------------------------------------
@@ -23,6 +25,12 @@ var Posts = PostQueue{}                         // posts of currently active use
 func (P *PostQueue) Add(uid, body string) {
 	P.sem.Lock()
 	P.queue = append(P.queue, &Post{uid, body})
+	if len(P.queue) == 1 {
+		_, err := exec.Command("afplay", "/System/Library/Sounds/Glass.aiff").Output()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
 	P.sem.Unlock()
 }
 

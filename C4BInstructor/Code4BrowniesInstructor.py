@@ -15,7 +15,6 @@ c4bi_BROWNIE_PATH = "give_point"
 c4bi_ENTRIES_PATH = "posts"
 c4bi_POINTS_PATH = "points"
 c4bi_REQUEST_ENTRY_PATH = "get_post"
-c4bi_CHECK_PATH = "check_post"
 TIMEOUT = 10
 TRACKING = False
 TRACKING_INTERVAL = 30000
@@ -26,24 +25,6 @@ try:
 	os.mkdir(POSTS_DIR)
 except:
 	pass
-
-
-def c4bi_check_for_posts():
-	print("Tracking", TRACKING)
-	if TRACKING:
-		info = c4bi_get_attr()
-		if info is None:
-			return
-		url = urllib.parse.urljoin(info['Server'], c4bi_CHECK_PATH)
-		data = urllib.parse.urlencode({'passcode':info['Passcode']}).encode('ascii')
-		response = c4biRequest(url,data)
-		print(response)
-		if response == 'yes':
-			os.system('afplay /System/Library/Sounds/Glass.aiff')
-	sublime.set_timeout_async(c4bi_check_for_posts, TRACKING_INTERVAL)
-
-sublime.set_timeout_async(c4bi_check_for_posts, TRACKING_INTERVAL)
-
 def c4bi_get_attr():
 	try:
 		with open(c4bi_FILE, 'r') as f:
@@ -70,16 +51,6 @@ def c4biRequest(url, data):
 	except urllib.error.URLError:
 		sublime.message_dialog("Server not running or incorrect server address.")
 	return None
-
-class c4biTrackCode(sublime_plugin.WindowCommand):
-	def run(self):
-		global TRACKING
-		TRACKING = True
-
-class c4biUntrackCode(sublime_plugin.WindowCommand):
-	def run(self):
-		global TRACKING
-		TRACKING = False
 
 class c4biPointsCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
