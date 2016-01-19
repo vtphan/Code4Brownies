@@ -20,7 +20,7 @@ type User struct {
 	points int
 }
 
-var USER_DB = "C4B_DB.csv"
+var USER_DB string
 var AllUsers = make(map[string]*User) // maps uids to users
 var RegisteredUsers = make(map[string]string)
 

@@ -9,6 +9,8 @@ import (
 	"net"
 	"net/http"
 	"runtime"
+	"os"
+	"path/filepath"
 )
 
 var PORT = "4030"
@@ -32,6 +34,8 @@ func informIPAddress() {
 //-----------------------------------------------------------------
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
+	os.Mkdir("db", 0777)
+ 	USER_DB = filepath.Join(".", "db", "C4B_DB.csv")
 	flag.StringVar(&PASSCODE, "passcode", "password", "passcode to be used by the instructor to connect to the server.")
 	flag.StringVar(&USER_DB, "db", USER_DB, "user database in csv format, which consists of UID,POINTS.")
 	flag.Parse()
