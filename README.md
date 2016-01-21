@@ -1,7 +1,7 @@
 Code4Brownies
 Author: Vinhthuy Phan, 2015
 
-== Installation Sublime Text plugin
+###Installation Sublime Text plugin
 
 In Sublime Text 3, go to View -> Show Console
 
