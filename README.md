@@ -3,7 +3,7 @@ Author: Vinhthuy Phan, 2015
 
 ## Installation of the Student's plug-in
 
-To install the Student's plugin, try the quick installation method first.  If that does not quick, try the manual installation method.
+To install the Student's plugin, try the quick installation method first.  If that does not work, try the manual installation method.
 
 ### Quick Installation of Student's plug-in
 
@@ -20,5 +20,5 @@ import os; package_path = os.path.join(sublime.packages_path(), "C4BStudent"); o
 
 - Download [C4BStudent.zip](https://github.com/vtphan/Code4Brownies/raw/master/C4BStudent.zip).
 - Unzip the file into a directory called C4BStudent.
-- Place this directory into the Sublime Text 3 Packages folder.  To open this Packages folder, 
+- Place this directory into the Sublime Text 3 Packages folder.  To open this Packages folder,
 in Sublime Text, click on Preferences / Browse Packages.
