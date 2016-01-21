@@ -1,7 +1,15 @@
 Code4Brownies
 Author: Vinhthuy Phan, 2015
 
-###Installation Sublime Text plugin
+### Manual installation
+
+- Download [C4BStudent.zip](https://github.com/vtphan/Code4Brownies/raw/master/C4BStudent.zip).
+- Unzip the file into a directory called C4BStudent.
+- Place this directory into the Sublime Text 3 Packages folder.  To open this Packages folder, 
+in Sublime Text, click on Preferences / Browse Packages.
+
+
+### Quick Installation (may not always work)
 
 In Sublime Text 3, go to View -> Show Console
 
