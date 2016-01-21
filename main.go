@@ -25,7 +25,7 @@ func informIPAddress() {
 	for _, a := range addrs {
 		if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
 			if ipnet.IP.To4() != nil {
-				fmt.Println("Server address " + ipnet.IP.String() + ":" + PORT)
+				fmt.Println("Server address http://" + ipnet.IP.String() + ":" + PORT)
 			}
 		}
 	}
