@@ -1,9 +1,11 @@
 Code4Brownies
 Author: Vinhthuy Phan, 2015
 
-Try the quick installation method first.  If that does not quick, try the manual installation method.
+## Installation of the Student's plug-in
 
-### Quick Installation
+To install the Student's plugin, try the quick installation method first.  If that does not quick, try the manual installation method.
+
+### Quick Installation of Student's plug-in
 
 In Sublime Text 3, go to View -> Show Console
 
@@ -14,7 +16,7 @@ import os; package_path = os.path.join(sublime.packages_path(), "C4BStudent"); o
 ```
 
 
-### Manual installation
+### Manual installation of Student's plug-in
 
 - Download [C4BStudent.zip](https://github.com/vtphan/Code4Brownies/raw/master/C4BStudent.zip).
 - Unzip the file into a directory called C4BStudent.
