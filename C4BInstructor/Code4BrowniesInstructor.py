@@ -16,8 +16,6 @@ c4bi_ENTRIES_PATH = "posts"
 c4bi_POINTS_PATH = "points"
 c4bi_REQUEST_ENTRY_PATH = "get_post"
 TIMEOUT = 10
-TRACKING = False
-TRACKING_INTERVAL = 30000
 ACTIVE_USERS = {}
 
 POSTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Posts")

@@ -22,7 +22,7 @@ func verifyPasscode(w http.ResponseWriter, r *http.Request) error {
 // users query to know their current points
 //-----------------------------------------------------------------
 func my_pointsHandler(w http.ResponseWriter, r *http.Request) {
-	_, user := r.FormValue("login"), r.FormValue("uid")
+	user := r.FormValue("uid")
 	if _, ok := AllUsers[user]; !ok {
 		AllUsers[user] = &User{0}
 	}
@@ -34,7 +34,7 @@ func my_pointsHandler(w http.ResponseWriter, r *http.Request) {
 // users submit their codes
 //-----------------------------------------------------------------
 func submit_postHandler(w http.ResponseWriter, r *http.Request) {
-	_, user, body := r.FormValue("login"), r.FormValue("uid"), r.FormValue("body")
+	user, body := r.FormValue("uid"), r.FormValue("body")
 	if _, ok := AllUsers[user]; !ok {
 		AllUsers[user] = &User{0}
 	}
