@@ -32,10 +32,10 @@ in Sublime Text, click on Preferences / Browse Packages.
 # Installation of Instructor's server and plug-in
 
 - Download the server: [Windows 64bit](https://github.com/vtphan/Code4Brownies/raw/master/downloads/c4b_windows_amd64) or [Mac 64bit](https://github.com/vtphan/Code4Brownies/raw/master/downloads/c4b_darwin_amd64).
-Run the server in the terminal (OSX) or Powershell (Windows) like this:
+Create a directory called "db" to store student records (in CSV format).  Run the server in the terminal (OSX) or Powershell (Windows) like this:
 
 ```
-    ./c4b -db your_db.csv -passcode your_passcode
+    ./c4b -db db/your_db.csv -passcode your_passcode
 ````
 
 - Quick install of Sublime Text 3 plug in: open Console and execute the following code:
