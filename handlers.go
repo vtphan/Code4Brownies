@@ -23,11 +23,13 @@ func verifyPasscode(w http.ResponseWriter, r *http.Request) error {
 //-----------------------------------------------------------------
 func my_pointsHandler(w http.ResponseWriter, r *http.Request) {
 	user := r.FormValue("uid")
-	if _, ok := AllUsers[user]; !ok {
+	record, ok := AllUsers[user]
+	if !ok {
 		AllUsers[user] = &User{0}
 	}
-	points := Points.get(user)
-	fmt.Fprintf(w, user+" has "+strconv.Itoa(points)+" brownies.")
+	cur_points := Points.get(user)
+	mesg := fmt.Sprintf("Points for %s\nCurrent points: %d\nTotal points: %d\n", user, cur_points, record.points)
+	fmt.Fprintf(w, mesg)
 }
 
 //-----------------------------------------------------------------
