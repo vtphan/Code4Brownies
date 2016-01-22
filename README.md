@@ -10,7 +10,7 @@ paste and run this code:
 import os; package_path = os.path.join(sublime.packages_path(), "C4BStudent"); os.mkdir(package_path) if not os.path.isdir(package_path) else print("dir exists"); c4b_py = os.path.join(package_path, "Code4Brownies.py") ; c4b_menu = os.path.join(package_path, "Main.sublime-menu"); import urllib.request; urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/C4BStudent/Code4Brownies.py", c4b_py); urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/C4BStudent/Main.sublime-menu", c4b_menu)
 ```
 
-If this gives an error (e.g. "os not found"), then save [Code4Brownies.py](https://raw.githubusercontent.com/vtphan/Code4Brownies/master/C4BStudent/Code4Brownies.py) and [Main.sublime-menu](https://raw.githubusercontent.com/vtphan/Code4Brownies/master/C4BStudent/Main.sublime-menu) into the Packages/C4BStudent directory.
+If this gives an error (e.g. "os not found"), then save [Code4Brownies.py](https://raw.githubusercontent.com/vtphan/Code4Brownies/master/C4BStudent/Code4Brownies.py) and [Main.sublime-menu](https://raw.githubusercontent.com/vtphan/Code4Brownies/master/C4BStudent/Main.sublime-menu) into your Packages/C4BStudent directory.  They will replace the old files.
 
 
 ## Installation of the Student's plug-in
