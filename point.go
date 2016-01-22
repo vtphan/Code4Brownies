@@ -1,3 +1,6 @@
+//
+// Author: Vinhthuy Phan, 2015
+//
 package main
 
 import (
