@@ -15,20 +15,13 @@ If this gives an error (e.g. "os not found"), then save [Code4Brownies.py](https
 
 # Installation of the Student's plug-in
 
-To install the Student's plugin, try the quick installation method first.  If that does not work, try the manual installation method.
-
-### Quick Installation of Student's plug-in
-
-In Sublime Text 3, go to View -> Show Console
-
-Copy this code to the console and hit enter:
+First, try the Quick Installation of Student's plug-in: in Sublime Text 3, go to View -> Show Console.  Then, copy this code to the console and hit enter:
 
 ```
 import os; package_path = os.path.join(sublime.packages_path(), "C4BStudent"); os.mkdir(package_path) if not os.path.isdir(package_path) else print("dir exists"); c4b_py = os.path.join(package_path, "Code4Brownies.py") ; c4b_menu = os.path.join(package_path, "Main.sublime-menu"); import urllib.request; urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/C4BStudent/Code4Brownies.py", c4b_py); urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/C4BStudent/Main.sublime-menu", c4b_menu)
 ```
 
-
-### Manual installation of Student's plug-in
+If that does not work, try the manual method:
 
 - Download [C4BStudent.zip](https://github.com/vtphan/Code4Brownies/raw/master/downloads/C4BStudent.zip).
 - Unzip the file into a directory called C4BStudent.
@@ -40,7 +33,7 @@ in Sublime Text, click on Preferences / Browse Packages.
 
 - Download the server: [Windows 64bit](https://github.com/vtphan/Code4Brownies/raw/master/downloads/c4b_windows_amd64) or [Mac 64bit](https://github.com/vtphan/Code4Brownies/raw/master/downloads/c4b_darwin_amd64).
 
-- Quick install of Sublime Text 3 plug in: (a) open Console and execute the following code:
+- Quick install of Sublime Text 3 plug in: open Console and execute the following code:
 
 ```
 import os; package_path = os.path.join(sublime.packages_path(), "C4BInstructor"); os.mkdir(package_path) if not os.path.isdir(package_path) else print("dir exists"); c4b_py = os.path.join(package_path, "Code4BrowniesInstructor.py") ; c4b_menu = os.path.join(package_path, "Main.sublime-menu"); import urllib.request; urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/C4BInstructor/Code4BrowniesInstructor.py", c4b_py); urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/C4BInstructor/Main.sublime-menu", c4b_menu)
