@@ -1,5 +1,5 @@
-Code4Brownies
-Author: Vinhthuy Phan, 2015
+This package includes a Sublime-Text 3 plugin, which allows students share their codes with an instructor
+in real time.
 
 ## Update of the Student's plug-in
 
@@ -36,3 +36,5 @@ import os; package_path = os.path.join(sublime.packages_path(), "C4BStudent"); o
 in Sublime Text, click on Preferences / Browse Packages.
 
 
+
+Copyright Vinhthuy Phan, 2015
