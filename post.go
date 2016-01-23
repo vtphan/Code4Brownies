@@ -49,6 +49,13 @@ func (P *PostQueue) Remove(i int) *Post {
 	}
 }
 
+func (P *PostQueue) Clear() {
+	P.sem.Lock()
+	P.queue = nil
+	P.sem.Unlock()
+}
+
+
 func (P *PostQueue) Get(i int) *Post {
 	P.sem.Lock()
 	defer P.sem.Unlock()

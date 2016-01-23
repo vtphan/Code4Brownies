@@ -77,7 +77,7 @@ func give_pointHandler(w http.ResponseWriter, r *http.Request) {
 //-----------------------------------------------------------------
 // return all current posts
 //-----------------------------------------------------------------
-func postsHandler(w http.ResponseWriter, r *http.Request) {
+func peekHandler(w http.ResponseWriter, r *http.Request) {
 	if verifyPasscode(w, r) == nil {
 		js, err := json.Marshal(Posts.queue)
 		if err != nil {
@@ -105,6 +105,22 @@ func get_postHandler(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
 				w.Write(js)
 			}
+		}
+	}
+}
+
+//-----------------------------------------------------------------
+// Instructor retrieves all codes
+//-----------------------------------------------------------------
+func get_postsHandler(w http.ResponseWriter, r *http.Request) {
+	if verifyPasscode(w, r) == nil {
+		js, err := json.Marshal(Posts.queue)
+		if err != nil {
+			fmt.Println(err.Error())
+		} else {
+			Posts.Clear()
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(js)
 		}
 	}
 }

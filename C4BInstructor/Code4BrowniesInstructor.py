@@ -12,9 +12,10 @@ FILE_EXTENSION = ".py"
 
 c4bi_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
 c4bi_BROWNIE_PATH = "give_point"
-c4bi_ENTRIES_PATH = "posts"
+c4bi_PEEK_PATH = "peek"
 c4bi_POINTS_PATH = "points"
 c4bi_REQUEST_ENTRY_PATH = "get_post"
+c4bi_REQUEST_ENTRIES_PATH = "get_posts"
 TIMEOUT = 10
 ACTIVE_USERS = {}
 
@@ -66,6 +67,25 @@ class c4biPointsCommand(sublime_plugin.TextCommand):
 			new_view.insert(edit, 0, "\n".join(users))
 
 
+class c4biGetAllCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		info = c4bi_get_attr()
+		if info is None:
+			return
+
+		url = urllib.parse.urljoin(info['Server'], c4bi_REQUEST_ENTRIES_PATH)
+		data = urllib.parse.urlencode({'passcode':info['Passcode']}).encode('ascii')
+		response = c4biRequest(url,data)
+		if response is not None:
+			entries = json.loads(response)
+			for entry in entries:
+				userFile = os.path.join(POSTS_DIR, entry['Uid'] + FILE_EXTENSION)
+				with open(userFile, 'w') as fp:
+					fp.write(entry['Body'])
+				new_view = self.view.window().open_file(userFile)
+				ACTIVE_USERS[new_view.id()] = entry['Uid']
+
+
 class c4biGetCommand(sublime_plugin.TextCommand):
 	def request_entry(self, info, users, edit):
 		def foo(selected):
@@ -87,7 +107,7 @@ class c4biGetCommand(sublime_plugin.TextCommand):
 		if info is None:
 			return
 
-		url = urllib.parse.urljoin(info['Server'], c4bi_ENTRIES_PATH)
+		url = urllib.parse.urljoin(info['Server'], c4bi_PEEK_PATH)
 		data = urllib.parse.urlencode({'passcode':info['Passcode']}).encode('ascii')
 		response = c4biRequest(url,data)
 		if response is not None:

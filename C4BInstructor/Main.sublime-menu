@@ -4,9 +4,14 @@
         "id": "C4Bi",
         "children": [
             {
-                "caption": "Get code",
+                "caption": "Peek",
                 "id": "c4biGet",
                 "command": "c4bi_get"
+            },
+            {
+                "caption": "Get All",
+                "id": "c4biGetAll",
+                "command": "c4bi_get_all"
             },
             {
                 "caption": "Give a brownie",
