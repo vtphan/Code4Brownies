@@ -78,12 +78,15 @@ class c4biGetAllCommand(sublime_plugin.TextCommand):
 		response = c4biRequest(url,data)
 		if response is not None:
 			entries = json.loads(response)
-			for entry in entries:
-				userFile = os.path.join(POSTS_DIR, entry['Uid'] + FILE_EXTENSION)
-				with open(userFile, 'w') as fp:
-					fp.write(entry['Body'])
-				new_view = self.view.window().open_file(userFile)
-				ACTIVE_USERS[new_view.id()] = entry['Uid']
+			if entries:
+				for entry in entries:
+					userFile = os.path.join(POSTS_DIR, entry['Uid'] + FILE_EXTENSION)
+					with open(userFile, 'w') as fp:
+						fp.write(entry['Body'])
+					new_view = self.view.window().open_file(userFile)
+					ACTIVE_USERS[new_view.id()] = entry['Uid']
+			else:
+				sublime.status_message("Queue is empty.")
 
 
 class c4biGetCommand(sublime_plugin.TextCommand):
@@ -94,12 +97,13 @@ class c4biGetCommand(sublime_plugin.TextCommand):
 			url = urllib.parse.urljoin(info['Server'], c4bi_REQUEST_ENTRY_PATH)
 			data = urllib.parse.urlencode({'passcode':info['Passcode'], 'post':selected}).encode('ascii')
 			response = c4biRequest(url,data)
-			json_obj = json.loads(response)
-			userFile = os.path.join(POSTS_DIR, users[selected] + FILE_EXTENSION)
-			with open(userFile, 'w') as fp:
-				fp.write(json_obj['Body'])
-			new_view = self.view.window().open_file(userFile)
-			ACTIVE_USERS[new_view.id()] = users[selected]
+			if response is not None:
+				json_obj = json.loads(response)
+				userFile = os.path.join(POSTS_DIR, users[selected] + FILE_EXTENSION)
+				with open(userFile, 'w') as fp:
+					fp.write(json_obj['Body'])
+				new_view = self.view.window().open_file(userFile)
+				ACTIVE_USERS[new_view.id()] = users[selected]
 		return foo
 
 	def run(self, edit):
@@ -130,10 +134,12 @@ class c4biAwardPointCommand(sublime_plugin.TextCommand):
 		uid = ACTIVE_USERS.get(self.view.id())
 		if uid is None:
 			sublime.message_dialog("There is no user associated with this file.")
-		elif sublime.ok_cancel_dialog("Award 1 point to "+uid+"?"):
+		else:
 			url = urllib.parse.urljoin(info['Server'], c4bi_BROWNIE_PATH)
 			data = urllib.parse.urlencode({'passcode':info['Passcode'], 'uid':uid}).encode('ascii')
 			response = c4biRequest(url,data)
+			if response is not None:
+				sublime.status_message(response)
 
 
 class c4biAboutCommand(sublime_plugin.WindowCommand):
