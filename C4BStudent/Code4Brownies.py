@@ -46,7 +46,7 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 			return
 		url = urllib.parse.urljoin(info['Server'], c4b_SUBMIT_POST_PATH)
 		content = self.view.substr(sublime.Region(0, self.view.size()))
-		values = {'login':os.getlogin(), 'uid':info['Name'],  'body':content}
+		values = {'uid':info['Name'],  'body':content}
 		data = urllib.parse.urlencode(values).encode('ascii')
 		response = c4bRequest(url,data)
 		sublime.message_dialog(response)
@@ -58,7 +58,7 @@ class c4bShowPoints(sublime_plugin.WindowCommand):
 		if info is None:
 			return
 		url = urllib.parse.urljoin(info['Server'], c4b_MY_POINTS_PATH)
-		values = {'login':os.getlogin(), 'uid':info['Name']}
+		values = {'uid':info['Name']}
 		data = urllib.parse.urlencode(values).encode('ascii')
 		response = c4bRequest(url,data)
 		sublime.message_dialog(response)
