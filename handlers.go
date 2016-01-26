@@ -32,7 +32,7 @@ func my_pointsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	record := AllUsers[user]
 	cur_points := Points.get(user)
-	mesg := fmt.Sprintf("Points for %s\nCurrent points: %d\nTotal points: %d\n", user, cur_points, record.points)
+	mesg := fmt.Sprintf("Points for %s\nCurrent: %d\nTotal: %d\n", user, cur_points, record.points)
 	fmt.Fprintf(w, mesg)
 }
 
