@@ -8,7 +8,7 @@ import os
 import json
 import socket
 
-VERSION = 0.1
+VERSION = 0.10
 FILE_EXTENSION = ".py"
 
 c4bi_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")

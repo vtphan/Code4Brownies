@@ -2,7 +2,7 @@
 # Live Coding (student module)
 # Author: Vinhthuy Phan, 2015
 #
-VERSION = 0.1
+VERSION = 0.10
 
 import sublime, sublime_plugin
 import urllib.parse
