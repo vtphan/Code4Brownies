@@ -17,6 +17,11 @@
                 "caption": "Set information",
                 "id": "c4bSetInfo",
                 "command": "c4b_set_info"
+            },
+            {
+                "caption": "About",
+                "id": "c4bAbout",
+                "command": "c4b_about"
             }
         ]
     }

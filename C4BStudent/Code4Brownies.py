@@ -2,6 +2,8 @@
 # Live Coding (student module)
 # Author: Vinhthuy Phan, 2015
 #
+VERSION = 0.1
+
 import sublime, sublime_plugin
 import urllib.parse
 import urllib.request
@@ -81,4 +83,9 @@ class c4bSetInfo(sublime_plugin.WindowCommand):
 			f.write(json.dumps(info, indent=4))
 
 		sublime.active_window().open_file(c4b_FILE)
+
+
+class c4bAbout(sublime_plugin.WindowCommand):
+	def run(self):
+		sublime.message_dialog("Code4Brownies (v%s)\nCopyright 2015 Vinhthuy Phan" % VERSION)
 

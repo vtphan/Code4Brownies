@@ -8,6 +8,7 @@ import os
 import json
 import socket
 
+VERSION = 0.1
 FILE_EXTENSION = ".py"
 
 c4bi_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
@@ -145,8 +146,8 @@ class c4biAwardPointCommand(sublime_plugin.TextCommand):
 class c4biAboutCommand(sublime_plugin.WindowCommand):
 	def run(self):
 		addr = socket.gethostbyname(socket.gethostname()) + ":4030"
-		sublime.message_dialog("Code4Brownies\nServer address: %s\n\nCopyright © 2015 Vinhthuy Phan." %
-			addr)
+		sublime.message_dialog("Code4Brownies (v%s)\nServer address: %s\n\nCopyright © 2015 Vinhthuy Phan." %
+			(VERSION,addr))
 
 
 class c4biSetInfo(sublime_plugin.WindowCommand):
