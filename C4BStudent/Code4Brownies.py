@@ -50,6 +50,7 @@ class c4bReceivebroadcastCommand(sublime_plugin.TextCommand):
 			return
 		url = urllib.parse.urljoin(info['Server'], c4b_RECEIVE_BROADCAST_PATH)
 		response = c4bRequest(url, None)
+		print(">",response)
 		with open(c4b_WHITEBOARD, 'w') as f:
 			f.write(response)
 		new_view = self.view.window().open_file(c4b_WHITEBOARD)
