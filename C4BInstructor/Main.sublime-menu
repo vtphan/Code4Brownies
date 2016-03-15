@@ -19,6 +19,11 @@
                 "command": "c4bi_award_point"
             },
             {
+                "caption": "Broadcast",
+                "id": "c4biBroadcast",
+                "command": "c4bi_broadcast"
+            },
+            {
                 "caption": "Current Points",
                 "id": "c4biPoints",
                 "command": "c4bi_points"

@@ -11,6 +11,8 @@ import (
 	"strconv"
 )
 
+var Whiteboard string
+
 //-----------------------------------------------------------------
 
 func verifyPasscode(w http.ResponseWriter, r *http.Request) error {
@@ -61,6 +63,23 @@ func pointsHandler(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(js)
 		}
+	}
+}
+
+//-----------------------------------------------------------------
+// students receive broadcast
+//-----------------------------------------------------------------
+func receive_broadcastHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, Whiteboard)
+}
+
+//-----------------------------------------------------------------
+// instructor broadcast contents to students
+//-----------------------------------------------------------------
+func broadcastHandler(w http.ResponseWriter, r *http.Request) {
+	if verifyPasscode(w, r) == nil {
+		Whiteboard = r.FormValue("body")
+		fmt.Fprintf(w, "Content is saved to whiteboard.")
 	}
 }
 

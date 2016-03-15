@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"runtime"
 	"os"
 	"path/filepath"
+	"runtime"
 )
 
 var PORT = "4030"
@@ -35,7 +35,7 @@ func informIPAddress() {
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	os.Mkdir("db", 0777)
- 	USER_DB = filepath.Join(".", "db", "C4B_DB.csv")
+	USER_DB = filepath.Join(".", "db", "C4B_DB.csv")
 	flag.StringVar(&PASSCODE, "passcode", "password", "passcode to be used by the instructor to connect to the server.")
 	flag.StringVar(&USER_DB, "db", USER_DB, "user database in csv format, which consists of UID,POINTS.")
 	flag.Parse()
@@ -49,6 +49,7 @@ func main() {
 	http.HandleFunc("/points", pointsHandler)
 	http.HandleFunc("/give_point", give_pointHandler)
 	http.HandleFunc("/peek", peekHandler)
+	http.HandleFunc("/broadcast", broadcastHandler)
 	http.HandleFunc("/get_post", get_postHandler)
 	http.HandleFunc("/get_posts", get_postsHandler)
 	err := http.ListenAndServe("0.0.0.0:"+PORT, nil)

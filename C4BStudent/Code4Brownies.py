@@ -10,9 +10,11 @@ import urllib.request
 import os
 import json
 
+c4b_WHITEBOARD = os.path.join(os.path.dirname(os.path.realpath(__file__)), "whiteboard")
 c4b_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
 c4b_SUBMIT_POST_PATH = "submit_post"
 c4b_MY_POINTS_PATH = "my_points"
+c4b_RECEIVE_BROADCAST_PATH = "receive_broadcast"
 TIMEOUT = 10
 
 
@@ -39,6 +41,18 @@ def c4bRequest(url, data):
 			return response.read().decode(encoding="utf-8")
 	except urllib.error.URLError:
 		return "Server not running or incorrect server address."
+
+
+class c4bReceivebroadcastCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		info = c4b_get_attr()
+		if info is None:
+			return
+		url = urllib.parse.urljoin(info['Server'], c4b_RECEIVE_BROADCAST_PATH)
+		response = c4bRequest(url, None)
+		with open(c4b_WHITEBOARD, 'w') as f:
+			f.write(response)
+		new_view = self.view.window().open_file(c4b_WHITEBOARD)
 
 
 class c4bShareCommand(sublime_plugin.TextCommand):

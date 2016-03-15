@@ -12,6 +12,7 @@ VERSION = 0.10
 FILE_EXTENSION = ".py"
 
 c4bi_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
+c4bi_BROADCAST_PATH = "broadcast"
 c4bi_BROWNIE_PATH = "give_point"
 c4bi_PEEK_PATH = "peek"
 c4bi_POINTS_PATH = "points"
@@ -51,6 +52,20 @@ def c4biRequest(url, data):
 	except urllib.error.URLError:
 		sublime.message_dialog("Server not running or incorrect server address.")
 	return None
+
+
+class c4biBroadcastCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		info = c4bi_get_attr()
+		if info is None:
+			return
+
+		content = self.view.substr(sublime.Region(0, self.view.size()))
+		url = urllib.parse.urljoin(info['Server'], c4bi_BROADCAST_PATH)
+		data = urllib.parse.urlencode({'passcode':info['Passcode'], 'body':content}).encode('ascii')
+		response = c4biRequest(url,data)
+		print(response)
+
 
 class c4biPointsCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
