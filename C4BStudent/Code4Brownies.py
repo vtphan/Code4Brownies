@@ -10,7 +10,7 @@ import urllib.request
 import os
 import json
 
-c4b_WHITEBOARD = os.path.join(os.path.dirname(os.path.realpath(__file__)), "whiteboard")
+c4b_WHITEBOARD = os.path.join(os.path.dirname(os.path.realpath(__file__)), "whiteboard.py")
 c4b_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
 c4b_SUBMIT_POST_PATH = "submit_post"
 c4b_MY_POINTS_PATH = "my_points"
@@ -50,10 +50,11 @@ class c4bReceivebroadcastCommand(sublime_plugin.TextCommand):
 			return
 		url = urllib.parse.urljoin(info['Server'], c4b_RECEIVE_BROADCAST_PATH)
 		response = c4bRequest(url, None)
-		print(">",response)
-		with open(c4b_WHITEBOARD, 'w') as f:
-			f.write(response)
-		new_view = self.view.window().open_file(c4b_WHITEBOARD)
+		if response is not None:		
+			with open(c4b_WHITEBOARD, 'w') as f:
+				json_obj = json.loads(response)
+				f.write(json_obj['whiteboard'])
+			new_view = self.view.window().open_file(c4b_WHITEBOARD)
 
 
 class c4bShareCommand(sublime_plugin.TextCommand):

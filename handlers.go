@@ -70,7 +70,13 @@ func pointsHandler(w http.ResponseWriter, r *http.Request) {
 // students receive broadcast
 //-----------------------------------------------------------------
 func receive_broadcastHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, Whiteboard)
+	js, err := json.Marshal(map[string]string{"whiteboard": Whiteboard})
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
 }
 
 //-----------------------------------------------------------------
