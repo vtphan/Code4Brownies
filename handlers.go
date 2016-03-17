@@ -12,6 +12,7 @@ import (
 )
 
 var Whiteboard string
+var WhiteboardExt string
 
 //-----------------------------------------------------------------
 
@@ -70,7 +71,7 @@ func pointsHandler(w http.ResponseWriter, r *http.Request) {
 // students receive broadcast
 //-----------------------------------------------------------------
 func receive_broadcastHandler(w http.ResponseWriter, r *http.Request) {
-	js, err := json.Marshal(map[string]string{"whiteboard": Whiteboard})
+	js, err := json.Marshal(map[string]string{"whiteboard": Whiteboard, "ext": WhiteboardExt})
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
@@ -84,7 +85,8 @@ func receive_broadcastHandler(w http.ResponseWriter, r *http.Request) {
 //-----------------------------------------------------------------
 func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	if verifyPasscode(w, r) == nil {
-		Whiteboard = r.FormValue("body")
+		Whiteboard = r.FormValue("content")
+		WhiteboardExt = r.FormValue("ext")
 		fmt.Fprintf(w, "Content is saved to whiteboard.")
 	}
 }

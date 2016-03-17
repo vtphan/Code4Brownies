@@ -62,9 +62,15 @@ class c4biBroadcastCommand(sublime_plugin.TextCommand):
 
 		content = self.view.substr(sublime.Region(0, self.view.size()))
 		url = urllib.parse.urljoin(info['Server'], c4bi_BROADCAST_PATH)
-		data = urllib.parse.urlencode({'passcode':info['Passcode'], 'body':content}).encode('ascii')
-		response = c4biRequest(url,data)
-		print(response)
+		this_file_name = self.view.file_name()
+		if this_file_name is not None:
+			if '.' not in this_file_name:
+				ext = ''
+			else:
+				ext = this_file_name.split('.')[-1]
+			data = urllib.parse.urlencode({'passcode':info['Passcode'], 'content':content, 'ext':ext}).encode('ascii')
+			response = c4biRequest(url,data)
+			print(response)
 
 
 class c4biPointsCommand(sublime_plugin.TextCommand):
