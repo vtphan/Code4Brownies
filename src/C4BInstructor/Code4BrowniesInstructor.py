@@ -69,7 +69,8 @@ class c4biBroadcastCommand(sublime_plugin.TextCommand):
 				ext = this_file_name.split('.')[-1]
 			data = urllib.parse.urlencode({'passcode':info['Passcode'], 'content':content, 'ext':ext}).encode('ascii')
 			response = c4biRequest(url,data)
-			print(response)
+			if response is not None:
+				sublime.status_message(response)
 
 
 class c4biPointsCommand(sublime_plugin.TextCommand):
