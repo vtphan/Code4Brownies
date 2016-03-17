@@ -1,5 +1,5 @@
-Code4Brownies is a software that allows instructors and students share codes in real time during a lecture or study session.
-Traditionally, coding is a very lonely process.  Pair programming was found to be helpful.  Current computational thinking practices encourage communication and collaboration during the problem solving process.  This is why Code4Brownies was created.
+Code4Brownies is a very light-weight software that enables instructors and students share codes (using the [Sublime Text](https://www.sublimetext.com/3) editor) in instantaneously during a lecture or study session.
+Traditionally, coding is a very lonely process; it's hard to get instant feedbacks from others.  Pair programming was found to be helpful.  Current computational thinking practices encourage communication and collaboration during the problem solving process.  This is why Code4Brownies was created.
 
 ## Basic Workflow
 
