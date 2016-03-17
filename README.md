@@ -21,6 +21,20 @@ Traditionally, coding is a very lonely process; it's hard to get instant feedbac
 Click [HERE](INSTALL).
 
 
+## Running the software
+
+OS S: run the server in a terminal (OSX)
+```
+    ./c4b_darwin_amd64 -db db/brownies.csv -passcode your_passcode
+````
+
+Windows: run the server in a Powershell terminal
+```
+    ./c4b_windows_amd64 -db db/brownies.csv -passcode your_passcode
+````
+
+Open ST3 and starting coding!  There is a new menu on ST3 menu bar dedicated for instructors and students, respectively, to share codes.
+
 
 
 Copyright Vinhthuy Phan, 2015
