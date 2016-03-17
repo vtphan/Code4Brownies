@@ -1,6 +1,6 @@
 Code4Brownies is a software that allows instructors and students share codes in real time during a lecture or study session.
 
-The setting is basically as follows:
+The workflow is basically as follows:
 
 + Instructor and students install [Sublime Text 3](https://www.sublimetext.com/3).
 
@@ -21,6 +21,13 @@ The setting is basically as follows:
 + When instructor terminates the server, brownie points are saved to a local file.
 
 
-For instruction to install or update the software, click [HERE](INSTALL).
+## Installation / Update
+
+Click [HERE](INSTALL).
+
+## Rationale
+
+Traditionally, coding is a very lonely process.  Pair programming was found to be helpful.  Current computational thinking practices encourage communication and collaboration during the problem solving process.  This is why Code4Brownies was created.
+
 
 Copyright Vinhthuy Phan, 2015
