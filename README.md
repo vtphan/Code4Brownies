@@ -23,7 +23,7 @@ Click [HERE](INSTALL).
 
 ## Running the software
 
-OS S: run the server in a terminal (OSX)
+OS X: run the server in a terminal (OSX)
 ```
     ./c4b_darwin_amd64 -db db/brownies.csv -passcode your_passcode
 ````
