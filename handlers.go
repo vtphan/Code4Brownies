@@ -43,11 +43,11 @@ func my_pointsHandler(w http.ResponseWriter, r *http.Request) {
 // users submit their codes
 //-----------------------------------------------------------------
 func submit_postHandler(w http.ResponseWriter, r *http.Request) {
-	user, body := r.FormValue("uid"), r.FormValue("body")
+	user, body, ext := r.FormValue("uid"), r.FormValue("body"), r.FormValue("ext")
 	if _, ok := AllUsers[user]; !ok {
 		AllUsers[user] = &User{0}
 	}
-	Posts.Add(user, body)
+	Posts.Add(user, body, ext)
 	fmt.Println(user, "submitted.")
 	fmt.Fprintf(w, user+" submitted succesfully.")
 }

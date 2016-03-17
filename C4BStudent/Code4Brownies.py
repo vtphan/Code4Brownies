@@ -61,15 +61,21 @@ class c4bReceivebroadcastCommand(sublime_plugin.TextCommand):
 
 class c4bShareCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
-		info = c4b_get_attr()
-		if info is None:
-			return
-		url = urllib.parse.urljoin(info['Server'], c4b_SUBMIT_POST_PATH)
-		content = self.view.substr(sublime.Region(0, self.view.size()))
-		values = {'uid':info['Name'],  'body':content}
-		data = urllib.parse.urlencode(values).encode('ascii')
-		response = c4bRequest(url,data)
-		sublime.message_dialog(response)
+		this_file_name = self.view.file_name()
+		if this_file_name is not None:
+			if '.' not in this_file_name:
+				ext = ''
+			else:
+				ext = this_file_name.split('.')[-1]
+			info = c4b_get_attr()
+			if info is None:
+				return
+			url = urllib.parse.urljoin(info['Server'], c4b_SUBMIT_POST_PATH)
+			content = self.view.substr(sublime.Region(0, self.view.size()))
+			values = {'uid':info['Name'], 'body':content, 'ext':ext}
+			data = urllib.parse.urlencode(values).encode('ascii')
+			response = c4bRequest(url,data)
+			sublime.message_dialog(response)
 
 
 class c4bShowPoints(sublime_plugin.WindowCommand):

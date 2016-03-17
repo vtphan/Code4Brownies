@@ -16,6 +16,7 @@ import (
 type Post struct {
 	Uid  string
 	Body string
+	Ext string
 }
 
 type PostQueue struct {
@@ -25,9 +26,9 @@ type PostQueue struct {
 
 var Posts = PostQueue{}                         // posts of currently active users
 
-func (P *PostQueue) Add(uid, body string) {
+func (P *PostQueue) Add(uid, body, ext string) {
 	P.sem.Lock()
-	P.queue = append(P.queue, &Post{uid, body})
+	P.queue = append(P.queue, &Post{uid, body, ext})
 	if len(P.queue) == 1 {
 		_, err := exec.Command("afplay", "/System/Library/Sounds/Glass.aiff").Output()
 		if err != nil {

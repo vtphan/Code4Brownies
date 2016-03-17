@@ -9,7 +9,6 @@ import json
 import socket
 
 VERSION = 0.10
-FILE_EXTENSION = ".py"
 
 c4bi_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
 c4bi_BROADCAST_PATH = "broadcast"
@@ -102,7 +101,8 @@ class c4biGetAllCommand(sublime_plugin.TextCommand):
 			entries = json.loads(response)
 			if entries:
 				for entry in entries:
-					userFile = os.path.join(POSTS_DIR, entry['Uid'] + FILE_EXTENSION)
+					ext = '' if entry['Ext']=='' else '.'+entry['Ext']
+					userFile = os.path.join(POSTS_DIR, entry['Uid'] + ext)
 					with open(userFile, 'w') as fp:
 						fp.write(entry['Body'])
 					new_view = self.view.window().open_file(userFile)
