@@ -9,7 +9,7 @@ Traditionally, coding is a very lonely process.  Pair programming was found to b
 
 + To share codes in a current ST3 window, instructor can broadcast his code.  To get the instructor's broadcast content, a student selects "Whiteboard" on the ST3 menu.
 
-+ To share codes in a current ST3 window, a student selects "Share" on the ST3 menu.  Instructor can get codes from students by selecting "Get All".
++ To share codes in a current ST3 window, a student selects "Share" on the ST3 menu.  Instructor can get codes from students by selecting "Get All" on the ST3 menu.
 
 + Instructor can give a brownie point to a student based on his/her submission.
 
