@@ -28,15 +28,6 @@ import os; import shutil; package_path = os.path.join(sublime.packages_path(), "
 - [Mac 64bit](https://github.com/vtphan/Code4Brownies/raw/master/INSTALL/c4b_darwin_amd64).
 - Create a directory called "db" to store student records (in CSV format).
 
-To run the server in the terminal (OSX)
-```
-    ./c4b_darwin_amd64 -db db/brownies.csv -passcode your_passcode
-````
-
-To run the server in the terminal Powershell (Windows)
-```
-    ./c4b_windows_amd64 -db db/brownies.csv -passcode your_passcode
-````
 
 #####  Install/update of Instructor's plug in
 
