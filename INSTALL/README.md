@@ -5,9 +5,7 @@ First, install [Sublime Text 3](https://www.sublimetext.com/3).  Then, students 
 For instructors, install the server and Instructor's plug-in.  After installation, there is a dedicated menu for instructors on the ST3 menu bar.
 
 
-# Installation of the Student's plug-in
-
-### Quick Installation/Update of Student's plug-in
+# Quick Installation/Update of Student's plug-in
 
 In Sublime Text 3, go to View -> Show Console.  Then, copy this code to the console and hit enter:
 
@@ -15,7 +13,7 @@ In Sublime Text 3, go to View -> Show Console.  Then, copy this code to the cons
 import os; package_path = os.path.join(sublime.packages_path(), "C4BStudent"); os.mkdir(package_path) if not os.path.isdir(package_path) else print("dir exists"); c4b_py = os.path.join(package_path, "Code4Brownies.py") ; c4b_menu = os.path.join(package_path, "Main.sublime-menu"); import urllib.request; urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BStudent/Code4Brownies.py", c4b_py); urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BStudent/Main.sublime-menu", c4b_menu)
 ```
 
-### Quick Installation/Update of Instructor's server and plug-in
+# Quick Installation/Update of Instructor's server and plug-in
 
 ##### Donwload the server and run it on the instructor's machine.
 
@@ -42,7 +40,7 @@ import os; package_path = os.path.join(sublime.packages_path(), "C4BInstructor")
 ```
 
 
-### Manual Installation/Update of Student's plug-in
+# Manual Installation/Update of Student's plug-in
 
 If the Quick Installation/Update method does not work, do this:
 
@@ -53,7 +51,7 @@ in Sublime Text, click on Preferences / Browse Packages.
 
 
 
-### Manual Installation/Update of Instructor's plug-in
+# Manual Installation/Update of Instructor's plug-in
 
 If the quick install method does not work, you can install the plug in manually:
 
