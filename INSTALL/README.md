@@ -42,7 +42,7 @@ import os; package_path = os.path.join(sublime.packages_path(), "C4BInstructor")
 
 # Manual Installation/Update of Student's plug-in
 
-If the Quick Installation/Update method does not work, do this:
+If the Installation/Update method above does not work, do this:
 
 - Download [C4BStudent.zip](https://github.com/vtphan/Code4Brownies/raw/master/INSTALL/C4BStudent.zip).
 - Unzip the file into a directory called C4BStudent.
@@ -53,7 +53,7 @@ in Sublime Text, click on Preferences / Browse Packages.
 
 # Manual Installation/Update of Instructor's plug-in
 
-If the quick install method does not work, you can install the plug in manually:
+If the Installation/Update method above does not work, do this:
 
  - Download [C4BStudentInstructor.zip](https://github.com/vtphan/Code4Brownies/raw/master/INSTALL/C4BInstructor.zip).
  - Unzip the file into a directory called C4BInstructor.
