@@ -1,3 +1,10 @@
+# Overview
+
+First, install [Sublime Text 3](https://www.sublimetext.com/3).  Then, students can install the Sublime Text 3 plug in.  That's it.
+
+For instructors, install the server and Sublime Text 3's plug-in.
+
+
 # Installation of the Student's plug-in
 
 ## Quick Installation/Update of Student's plug-in
@@ -26,7 +33,7 @@ To run the server in the terminal Powershell (Windows)
     ./c4b_windows_amd64 -db db/your_db.csv -passcode your_passcode
 ````
 
-###  Install/update of Sublime Text 3 plug in
+###  Install/update of Instructor's plug in
 
 Open Console and execute the following code:
 
