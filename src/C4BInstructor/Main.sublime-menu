@@ -1,0 +1,43 @@
+[
+    {
+        "caption": "Instructor",
+        "id": "C4Bi",
+        "children": [
+            {
+                "caption": "Peek",
+                "id": "c4biGet",
+                "command": "c4bi_get"
+            },
+            {
+                "caption": "Get All",
+                "id": "c4biGetAll",
+                "command": "c4bi_get_all"
+            },
+            {
+                "caption": "Give a brownie",
+                "id": "c4biAwardPoint",
+                "command": "c4bi_award_point"
+            },
+            {
+                "caption": "Broadcast",
+                "id": "c4biBroadcast",
+                "command": "c4bi_broadcast"
+            },
+            {
+                "caption": "Current Points",
+                "id": "c4biPoints",
+                "command": "c4bi_points"
+            },
+            {
+                "caption": "Set information",
+                "id": "c4biSetInfo",
+                "command": "c4bi_set_info"
+            },
+            {
+                "caption": "About",
+                "id": "c4biAbout",
+                "command": "c4bi_about"
+            }
+        ]
+    }
+]

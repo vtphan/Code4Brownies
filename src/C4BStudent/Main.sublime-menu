@@ -1,0 +1,33 @@
+[
+    {
+        "caption": "ShareCode",
+        "id": "Code4Brownies",
+        "children": [
+            {
+                "caption": "Share this file",
+                "id": "c4bShare",
+                "command": "c4b_share"
+            },
+            {
+                "caption": "Whiteboard",
+                "id": "c4bReceivebroadcast",
+                "command": "c4b_receivebroadcast"
+            },
+            {
+                "caption": "My brownies",
+                "id": "c4bShowPoints",
+                "command": "c4b_show_points"
+            },
+            {
+                "caption": "Set information",
+                "id": "c4bSetInfo",
+                "command": "c4b_set_info"
+            },
+            {
+                "caption": "About",
+                "id": "c4bAbout",
+                "command": "c4b_about"
+            }
+        ]
+    }
+]
