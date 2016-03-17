@@ -1,8 +1,8 @@
 # Overview
 
-First, install [Sublime Text 3](https://www.sublimetext.com/3).  Then, students can install the Student's plug in.  That's it.
+First, install [Sublime Text 3](https://www.sublimetext.com/3).  Then, students can install the Student's plug in.  After installation, there is a dedicated menu for students on the ST3 menu bar.  That's it.
 
-For instructors, install the server and Instructor's plug-in.
+For instructors, install the server and Instructor's plug-in.  After installation, there is a dedicated menu for instructors on the ST3 menu bar.
 
 
 # Installation of the Student's plug-in
