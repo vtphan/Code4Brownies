@@ -21,6 +21,6 @@ The setting is basically as follows:
 + When instructor terminates the server, brownie points are saved to a local file.
 
 
-For instruction to install or update the software, click [HERE](INSTALL.md).
+For instruction to install or update the software, click [HERE](INSTALL).
 
 Copyright Vinhthuy Phan, 2015
