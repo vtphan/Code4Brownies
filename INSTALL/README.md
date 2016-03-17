@@ -17,7 +17,7 @@ import os; package_path = os.path.join(sublime.packages_path(), "C4BStudent"); o
 
 ### Quick Installation/Update of Instructor's server and plug-in
 
-#### Donwload the server and run it on the instructor's machine.
+##### Donwload the server and run it on the instructor's machine.
 
 - [Windows 64bit](https://github.com/vtphan/Code4Brownies/raw/master/INSTALL/c4b_windows_amd64)
 - [Mac 64bit](https://github.com/vtphan/Code4Brownies/raw/master/INSTALL/c4b_darwin_amd64).
@@ -33,7 +33,7 @@ To run the server in the terminal Powershell (Windows)
     ./c4b_windows_amd64 -db db/brownies.csv -passcode your_passcode
 ````
 
-####  Install/update of Instructor's plug in
+#####  Install/update of Instructor's plug in
 
 Open Console and execute the following code:
 
