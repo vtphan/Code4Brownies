@@ -25,12 +25,12 @@ import os; package_path = os.path.join(sublime.packages_path(), "C4BStudent"); o
 
 To run the server in the terminal (OSX)
 ```
-    ./c4b_darwin_amd64 -db db/your_db.csv -passcode your_passcode
+    ./c4b_darwin_amd64 -db db/brownies.csv -passcode your_passcode
 ````
 
 To run the server in the terminal Powershell (Windows)
 ```
-    ./c4b_windows_amd64 -db db/your_db.csv -passcode your_passcode
+    ./c4b_windows_amd64 -db db/brownies.csv -passcode your_passcode
 ````
 
 ###  Install/update of Instructor's plug in
