@@ -4,7 +4,7 @@ The setting is basically as follows:
 
 + Instructor and students install [Sublime Text 3](https://www.sublimetext.com/3).
 
-+ Instructor runs the server on his or her laptop and inform students of the server IP address.
++ Instructor runs the server on his or her laptop and informs students of the server IP address.
 
 + Students and instructor set the IP address.  ["Set information" on the menu]
 
@@ -18,7 +18,9 @@ The setting is basically as follows:
 
 + Instructor can give a brownie point to a student based on his/her submission.
 
++ When instructor terminates the server, brownie points are saved to a local file.
 
-For instruction to install or update the software, click [here](INSTALL.md)
+
+For instruction to install or update the software, click [HERE](INSTALL.md).
 
 Copyright Vinhthuy Phan, 2015
