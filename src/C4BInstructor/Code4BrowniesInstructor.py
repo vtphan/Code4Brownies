@@ -1,14 +1,14 @@
 #
 # Author: Vinhthuy Phan, 2015
 #
+VERSION = 0.10
+
 import sublime, sublime_plugin
 import urllib.parse
 import urllib.request
 import os
 import json
 import socket
-
-VERSION = 0.10
 
 c4bi_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
 c4bi_BROADCAST_PATH = "broadcast"
@@ -122,7 +122,8 @@ class c4biGetCommand(sublime_plugin.TextCommand):
 			response = c4biRequest(url,data)
 			if response is not None:
 				json_obj = json.loads(response)
-				userFile = os.path.join(POSTS_DIR, users[selected] + FILE_EXTENSION)
+				ext = '' if json_obj['Ext']=='' else '.'+json_obj['Ext']
+				userFile = os.path.join(POSTS_DIR, users[selected] + ext)
 				with open(userFile, 'w') as fp:
 					fp.write(json_obj['Body'])
 				new_view = self.view.window().open_file(userFile)
