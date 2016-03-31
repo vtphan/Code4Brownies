@@ -1,8 +1,9 @@
 #
+# Live Coding (student module)
 # Author: Vinhthuy Phan, 2015
 #
-VERSION = 0.10
-
+VERSION = 0.11
+import urllib.request
 import sublime, sublime_plugin
 import urllib.parse
 import urllib.request
@@ -112,3 +113,13 @@ class c4bAbout(sublime_plugin.WindowCommand):
 	def run(self):
 		sublime.message_dialog("Code4Brownies (v%s)\nCopyright 2015 Vinhthuy Phan" % VERSION)
 
+class c4bUpgrade(sublime_plugin.WindowCommand):
+	def run(self):
+		package_path = os.path.join(sublime.packages_path(), "C4BStudent")
+		if not os.path.isdir(package_path):
+			os.mkdir(package_path)
+		c4b_py = os.path.join(package_path, "Code4Brownies.py")
+		c4b_menu = os.path.join(package_path, "Main.sublime-menu")
+		urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BStudent/Code4Brownies.py", c4b_py)
+		urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BStudent/Main.sublime-menu", c4b_menu)
+		sublime.message_dialog("Code4Brownies has been upgraded to version %s" % VERSION)
