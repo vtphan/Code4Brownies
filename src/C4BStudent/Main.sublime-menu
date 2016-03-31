@@ -18,20 +18,22 @@
                 "id": "c4bShowPoints",
                 "command": "c4b_show_points"
             },
+            {"caption":"-", "id":"side-bar-separator"},
             {
                 "caption": "Set information",
                 "id": "c4bSetInfo",
                 "command": "c4b_set_info"
             },
-            {
-                "caption": "About",
-                "id": "c4bAbout",
-                "command": "c4b_about"
-            },
+            {"caption":"-", "id":"side-bar-separator"},
             {
                 "caption": "Upgrade",
                 "id": "c4bUpgrade",
                 "command": "c4b_upgrade"
+            },
+            {
+                "caption": "About",
+                "id": "c4bAbout",
+                "command": "c4b_about"
             }
         ]
     }
