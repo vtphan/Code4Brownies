@@ -39,7 +39,7 @@
                 "caption": "Upgrade",
                 "id": "c4biUpgrade",
                 "command": "c4bi_upgrade"
-            }
+            },
             {
                 "caption": "About",
                 "id": "c4biAbout",
