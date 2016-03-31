@@ -27,6 +27,11 @@
                 "caption": "About",
                 "id": "c4bAbout",
                 "command": "c4b_about"
+            },
+            {
+                "caption": "Upgrade",
+                "id": "c4bUpgrade",
+                "command": "c4b_upgrade"
             }
         ]
     }
