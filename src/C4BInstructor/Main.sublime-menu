@@ -36,14 +36,14 @@
             },
             {"caption":"-", "id":"side-bar-separator"},
             {
-                "caption": "Upgrade",
-                "id": "c4biUpgrade",
-                "command": "c4bi_upgrade"
-            },
-            {
                 "caption": "About",
                 "id": "c4biAbout",
                 "command": "c4bi_about"
+            },
+            {
+                "caption": "Upgrade",
+                "id": "c4biUpgrade",
+                "command": "c4bi_upgrade"
             }
         ]
     }
