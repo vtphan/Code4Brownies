@@ -28,11 +28,18 @@
                 "id": "c4biPoints",
                 "command": "c4bi_points"
             },
+            {"caption":"-", "id":"side-bar-separator"},
             {
                 "caption": "Set information",
                 "id": "c4biSetInfo",
                 "command": "c4bi_set_info"
             },
+            {"caption":"-", "id":"side-bar-separator"},
+            {
+                "caption": "Upgrade",
+                "id": "c4biUpgrade",
+                "command": "c4bi_upgrade"
+            }
             {
                 "caption": "About",
                 "id": "c4biAbout",

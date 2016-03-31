@@ -190,3 +190,19 @@ class c4biSetInfo(sublime_plugin.WindowCommand):
 			f.write(json.dumps(info, indent=4))
 
 		sublime.active_window().open_file(c4bi_FILE)
+
+class c4bUpgrade(sublime_plugin.WindowCommand):
+	def run(self):
+		if sublime.ok_cancel_dialog("Are you sure you want to upgrade Code4Brownies to the latest version?", "Yes"):	
+			package_path = os.path.join(sublime.packages_path(), "C4BInstructor"); 
+			if not os.path.isdir(package_path):
+				os.mkdir(package_path) 
+			c4b_py = os.path.join(package_path, "Code4BrowniesInstructor.py")
+			c4b_menu = os.path.join(package_path, "Main.sublime-menu")
+			try:
+				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BInstructor/Code4BrowniesInstructor.py", c4b_py)
+				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BInstructor/Main.sublime-menu", c4b_menu)
+				sublime.message_dialog("Code4Brownies has been upgraded to version %s" % VERSION)
+			except:
+				sublime.message_dialog("A problem occurred during upgrade.")
+
