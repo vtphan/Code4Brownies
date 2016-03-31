@@ -40,7 +40,8 @@ def c4bRequest(url, data):
 		with urllib.request.urlopen(req, None, TIMEOUT) as response:
 			return response.read().decode(encoding="utf-8")
 	except urllib.error.URLError:
-		return "Server not running or incorrect server address."
+		sublime.message_dialog("Server not running or incorrect server address.")
+		return None
 
 
 class c4bReceivebroadcastCommand(sublime_plugin.TextCommand):
@@ -75,7 +76,8 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 			values = {'uid':info['Name'], 'body':content, 'ext':ext}
 			data = urllib.parse.urlencode(values).encode('ascii')
 			response = c4bRequest(url,data)
-			sublime.message_dialog(response)
+			if response is not None:
+				sublime.message_dialog(response)
 
 
 class c4bShowPoints(sublime_plugin.WindowCommand):
@@ -87,7 +89,8 @@ class c4bShowPoints(sublime_plugin.WindowCommand):
 		values = {'uid':info['Name']}
 		data = urllib.parse.urlencode(values).encode('ascii')
 		response = c4bRequest(url,data)
-		sublime.message_dialog(response)
+		if response is not None:
+			sublime.message_dialog(response)
 
 
 class c4bSetInfo(sublime_plugin.WindowCommand):
@@ -121,6 +124,9 @@ class c4bUpgrade(sublime_plugin.WindowCommand):
 				os.mkdir(package_path)
 			c4b_py = os.path.join(package_path, "Code4Brownies.py")
 			c4b_menu = os.path.join(package_path, "Main.sublime-menu")
-			urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BStudent/Code4Brownies.py", c4b_py)
-			urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BStudent/Main.sublime-menu", c4b_menu)
-			sublime.message_dialog("Code4Brownies has been upgraded to version %s" % VERSION)
+			try:
+				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BStudent/Code4Brownies.py", c4b_py)
+				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BStudent/Main.sublime-menu", c4b_menu)
+				sublime.message_dialog("Code4Brownies has been upgraded to version %s" % VERSION)
+			except:
+				sublime.message_dialog("A problem occurred during upgrade.")
