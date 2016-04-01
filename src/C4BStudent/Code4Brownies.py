@@ -117,7 +117,7 @@ class c4bAbout(sublime_plugin.WindowCommand):
 			version = open(os.path.join(sublime.packages_path(), "C4BStudent", "VERSION")).read().strip()
 		except:
 			version = 'Unknown'
-		sublime.message_dialog("Code4Brownies (v%s)\nCopyright 2015 Vinhthuy Phan" % version)
+		sublime.message_dialog("Code4Brownies (v%s)\nCopyright 2015-2016 Vinhthuy Phan" % version)
 
 
 class c4bUpgrade(sublime_plugin.WindowCommand):

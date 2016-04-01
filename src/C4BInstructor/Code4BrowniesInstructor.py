@@ -172,7 +172,7 @@ class c4biAboutCommand(sublime_plugin.WindowCommand):
 		except:
 			version = 'Unknown'
 		addr = socket.gethostbyname(socket.gethostname()) + ":4030"
-		sublime.message_dialog("Code4Brownies (v%s)\nServer address: %s\n\nCopyright © 2015 Vinhthuy Phan." %
+		sublime.message_dialog("Code4Brownies (v%s)\nServer address: %s\n\nCopyright © 2015-2016 Vinhthuy Phan." %
 			(version,addr))
 
 
