@@ -10,6 +10,14 @@ import os; package_path = os.path.join(sublime.packages_path(), "C4BStudent"); o
 
 After installation, students can share codes using the menu "ShareCode".
 
+# Uninstall student's plugin
+
+In Sublime Text, go to View, open Console.  Then, execute this code:
+
+```
+import os; import shutil; package_path = os.path.join(sublime.packages_path(), "C4BStudent"); shutil.rmtree(package_path)
+```
+
 
 
 # Installation of [Sublime Text 3](https://www.sublimetext.com/3)'s plug-in for **instructor**
@@ -27,16 +35,6 @@ Finally, donwload the server and run it on the instructor's machine.
 - [Windows 64bit](https://github.com/vtphan/Code4Brownies/raw/master/INSTALL/c4b_windows_amd64)
 - [Mac 64bit](https://github.com/vtphan/Code4Brownies/raw/master/INSTALL/c4b_darwin_amd64).
 - Create a directory called "db" to store student records (in CSV format).
-
-
-
-# Uninstall student's plugin
-
-In Sublime Text, go to View, open Console.  Then, execute this code:
-
-```
-import os; import shutil; package_path = os.path.join(sublime.packages_path(), "C4BStudent"); shutil.rmtree(package_path)
-```
 
 # Uninstall instructor's plugin
 
