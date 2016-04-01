@@ -34,12 +34,12 @@
                 "id": "c4biSetInfo",
                 "command": "c4bi_set_info"
             },
+            {"caption":"-", "id":"side-bar-separator"},
             {
                 "caption": "Upgrade",
                 "id": "c4biUpgrade",
                 "command": "c4bi_upgrade"
             },
-            {"caption":"-", "id":"side-bar-separator"},
             {
                 "caption": "About",
                 "id": "c4biAbout",
