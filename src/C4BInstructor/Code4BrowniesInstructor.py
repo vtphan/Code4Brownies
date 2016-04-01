@@ -194,7 +194,7 @@ class c4biSetInfo(sublime_plugin.WindowCommand):
 
 		sublime.active_window().open_file(c4bi_FILE)
 
-class c4bUpgrade(sublime_plugin.WindowCommand):
+class c4biUpgrade(sublime_plugin.WindowCommand):
 	def run(self):
 		if sublime.ok_cancel_dialog("Are you sure you want to upgrade Code4Brownies to the latest version?", "Yes"):
 			package_path = os.path.join(sublime.packages_path(), "C4BInstructor");
