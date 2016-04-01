@@ -24,6 +24,14 @@ try:
 	os.mkdir(POSTS_DIR)
 except:
 	pass
+
+def get_ip_address():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    return s.getsockname()[0]
+
+SERVER_ADDR = get_ip_address()
+
 def c4bi_get_attr():
 	try:
 		with open(c4bi_FILE, 'r') as f:
@@ -31,12 +39,14 @@ def c4bi_get_attr():
 	except:
 		sublime.message_dialog("Please set information first.")
 		return None
-	if 'Server' not in json_obj or 'Passcode' not in json_obj:
-		sublime.message_dialog("Please set information completely.")
+	if 'Server' not in json_obj:
+		sublime.message_dialog("Please set server address.")
 		return None
 	if not json_obj['Server'].startswith("http://"):
 		sublime.message_dialog("Server must starts with http://\nReset information.")
 		return None
+	if 'Passcode' not in json_obj:
+		json_obj['Passcode'] = SERVER_ADDR
 	return json_obj
 
 
@@ -111,7 +121,7 @@ class c4biGetAllCommand(sublime_plugin.TextCommand):
 				sublime.status_message("Queue is empty.")
 
 
-class c4biGetCommand(sublime_plugin.TextCommand):
+class c4biPeekCommand(sublime_plugin.TextCommand):
 	def request_entry(self, info, users, edit):
 		def foo(selected):
 			if selected < 0:
@@ -133,7 +143,6 @@ class c4biGetCommand(sublime_plugin.TextCommand):
 		info = c4bi_get_attr()
 		if info is None:
 			return
-
 		url = urllib.parse.urljoin(info['Server'], c4bi_PEEK_PATH)
 		data = urllib.parse.urlencode({'passcode':info['Passcode']}).encode('ascii')
 		response = c4biRequest(url,data)
@@ -171,9 +180,8 @@ class c4biAboutCommand(sublime_plugin.WindowCommand):
 			version = open(os.path.join(sublime.packages_path(), "C4BInstructor", "VERSION")).read().strip()
 		except:
 			version = 'Unknown'
-		addr = socket.gethostbyname(socket.gethostname()) + ":4030"
-		sublime.message_dialog("Code4Brownies (v%s)\nServer address: %s\n\nCopyright © 2015-2016 Vinhthuy Phan." %
-			(version,addr))
+		sublime.message_dialog("Code4Brownies (v%s)\nCopyright © 2015-2016 Vinhthuy Phan." %
+			version)
 
 
 class c4biSetInfo(sublime_plugin.WindowCommand):
@@ -184,8 +192,6 @@ class c4biSetInfo(sublime_plugin.WindowCommand):
 		except:
 			info = dict()
 
-		if 'Passcode' not in info:
-			info['Passcode'] = 'password'
 		if 'Server' not in info:
 			info['Server'] = 'http://0.0.0.0:4030'
 
