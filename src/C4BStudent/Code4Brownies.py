@@ -1,5 +1,4 @@
 #
-# Live Coding (student module)
 # Author: Vinhthuy Phan, 2015
 #
 import sublime, sublime_plugin
