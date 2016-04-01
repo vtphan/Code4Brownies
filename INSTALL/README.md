@@ -1,4 +1,4 @@
-# Installation of [Sublime Text 3](https://www.sublimetext.com/3)'s plug-in for **students**.
+# Install student's plug-in
 
 First, install [Sublime Text 3](https://www.sublimetext.com/3).
 
@@ -20,9 +20,9 @@ import os; import shutil; package_path = os.path.join(sublime.packages_path(), "
 
 
 
-# Installation of [Sublime Text 3](https://www.sublimetext.com/3)'s plug-in for **instructor**
+# Install instructor's plug-in
 
-First, donwload and install [Sublime Text 3](https://www.sublimetext.com/3).
+First, install [Sublime Text 3](https://www.sublimetext.com/3).
 
 Then, go to View, open Console and execute this code:
 
