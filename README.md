@@ -16,7 +16,7 @@ Traditionally, coding is a very lonely process; it's hard to get instant feedbac
 + When instructor terminates the server, brownie points are saved to a local file.
 
 
-## Installation / Update
+## Installation
 
 Click [HERE](INSTALL).
 
