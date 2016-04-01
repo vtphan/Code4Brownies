@@ -2,7 +2,6 @@
 # Live Coding (student module)
 # Author: Vinhthuy Phan, 2015
 #
-VERSION = 0.11
 import urllib.request
 import sublime, sublime_plugin
 import urllib.parse
@@ -114,19 +113,26 @@ class c4bSetInfo(sublime_plugin.WindowCommand):
 
 class c4bAbout(sublime_plugin.WindowCommand):
 	def run(self):
-		sublime.message_dialog("Code4Brownies (v%s)\nCopyright 2015 Vinhthuy Phan" % VERSION)
+		try:
+			version = open(os.path.join(sublime.packages_path(), "VERSION")).read()
+		except:
+			version = 'Unknown'
+		sublime.message_dialog("Code4Brownies (v%s)\nCopyright 2015 Vinhthuy Phan" % version)
 
 class c4bUpgrade(sublime_plugin.WindowCommand):
 	def run(self):
-		if sublime.ok_cancel_dialog("Are you sure you want to upgrade Code4Brownies to the latest version?", "Yes"):	
+		if sublime.ok_cancel_dialog("Are you sure you want to upgrade Code4Brownies to the latest version?", "Yes"):
 			package_path = os.path.join(sublime.packages_path(), "C4BStudent")
 			if not os.path.isdir(package_path):
 				os.mkdir(package_path)
 			c4b_py = os.path.join(package_path, "Code4Brownies.py")
 			c4b_menu = os.path.join(package_path, "Main.sublime-menu")
+			c4b_version = os.path.join(package_path, "VERSION")
 			try:
 				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BStudent/Code4Brownies.py", c4b_py)
 				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BStudent/Main.sublime-menu", c4b_menu)
-				sublime.message_dialog("Code4Brownies has been upgraded to version %s" % VERSION)
+				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BStudent/VERSION", c4b_version)
+				version = open.read(c4b_version)
+				sublime.message_dialog("Code4Brownies has been upgraded to version %s" % version)
 			except:
 				sublime.message_dialog("A problem occurred during upgrade.")

@@ -1,7 +1,6 @@
 #
 # Author: Vinhthuy Phan, 2015
 #
-VERSION = 0.10
 
 import sublime, sublime_plugin
 import urllib.parse
@@ -168,9 +167,14 @@ class c4biAwardPointCommand(sublime_plugin.TextCommand):
 
 class c4biAboutCommand(sublime_plugin.WindowCommand):
 	def run(self):
+		package_path = os.path.join(sublime.packages_path(), "C4BInstructor");
+		try:
+			version = open(os.path.join(packages_path, "VERSION")).read()
+		except:
+			version = 'Unknown'
 		addr = socket.gethostbyname(socket.gethostname()) + ":4030"
 		sublime.message_dialog("Code4Brownies (v%s)\nServer address: %s\n\nCopyright © 2015 Vinhthuy Phan." %
-			(VERSION,addr))
+			(version,addr))
 
 
 class c4biSetInfo(sublime_plugin.WindowCommand):
@@ -193,16 +197,19 @@ class c4biSetInfo(sublime_plugin.WindowCommand):
 
 class c4bUpgrade(sublime_plugin.WindowCommand):
 	def run(self):
-		if sublime.ok_cancel_dialog("Are you sure you want to upgrade Code4Brownies to the latest version?", "Yes"):	
-			package_path = os.path.join(sublime.packages_path(), "C4BInstructor"); 
+		if sublime.ok_cancel_dialog("Are you sure you want to upgrade Code4Brownies to the latest version?", "Yes"):
+			package_path = os.path.join(sublime.packages_path(), "C4BInstructor");
 			if not os.path.isdir(package_path):
-				os.mkdir(package_path) 
+				os.mkdir(package_path)
 			c4b_py = os.path.join(package_path, "Code4BrowniesInstructor.py")
 			c4b_menu = os.path.join(package_path, "Main.sublime-menu")
+			c4b_version = os.path.join(package_path, "VERSION")
 			try:
 				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BInstructor/Code4BrowniesInstructor.py", c4b_py)
 				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BInstructor/Main.sublime-menu", c4b_menu)
-				sublime.message_dialog("Code4Brownies has been upgraded to version %s" % VERSION)
+				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BInstructor/VERSION", c4b_version)
+				version = open(c4b_version).read()
+				sublime.message_dialog("Code4Brownies has been upgraded to version %s" % version)
 			except:
 				sublime.message_dialog("A problem occurred during upgrade.")
 
