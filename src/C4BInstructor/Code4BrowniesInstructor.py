@@ -206,7 +206,7 @@ class c4bUpgrade(sublime_plugin.WindowCommand):
 			try:
 				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BInstructor/Code4BrowniesInstructor.py", c4b_py)
 				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BInstructor/Main.sublime-menu", c4b_menu)
-				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BInstructor/VERSION", c4b_version)
+				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/VERSION", c4b_version)
 				version = open(c4b_version).read()
 				sublime.message_dialog("Code4Brownies has been upgraded to version %s" % version)
 			except:
