@@ -119,6 +119,7 @@ class c4bAbout(sublime_plugin.WindowCommand):
 			version = 'Unknown'
 		sublime.message_dialog("Code4Brownies (v%s)\nCopyright 2015 Vinhthuy Phan" % version)
 
+
 class c4bUpgrade(sublime_plugin.WindowCommand):
 	def run(self):
 		if sublime.ok_cancel_dialog("Are you sure you want to upgrade Code4Brownies to the latest version?", "Yes"):
