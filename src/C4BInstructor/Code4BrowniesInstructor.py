@@ -209,7 +209,7 @@ class c4biUpgrade(sublime_plugin.WindowCommand):
 				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BInstructor/Main.sublime-menu", c4b_menu)
 				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/VERSION", c4b_version)
 				version = open(c4b_version).read()
-				sublime.message_dialog("Code4Brownies has been upgraded to version %s" % version)
+				sublime.message_dialog("Code4Brownies has been upgraded to version %s.  You might need to download the latest server at https://github.com/vtphan/Code4Brownies" % version)
 			except:
 				sublime.message_dialog("A problem occurred during upgrade.")
 
