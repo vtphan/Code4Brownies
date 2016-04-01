@@ -5,8 +5,8 @@
         "children": [
             {
                 "caption": "Peek",
-                "id": "c4biGet",
-                "command": "c4bi_get"
+                "id": "c4biPeek",
+                "command": "c4bi_peek"
             },
             {
                 "caption": "Get All",
