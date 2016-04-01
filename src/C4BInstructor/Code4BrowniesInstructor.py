@@ -167,9 +167,8 @@ class c4biAwardPointCommand(sublime_plugin.TextCommand):
 
 class c4biAboutCommand(sublime_plugin.WindowCommand):
 	def run(self):
-		package_path = os.path.join(sublime.packages_path(), "C4BInstructor");
 		try:
-			version = open(os.path.join(packages_path, "VERSION")).read()
+			version = open(os.path.join(sublime.packages_path(), "C4BInstructor", "VERSION")).read().strip()
 		except:
 			version = 'Unknown'
 		addr = socket.gethostbyname(socket.gethostname()) + ":4030"
