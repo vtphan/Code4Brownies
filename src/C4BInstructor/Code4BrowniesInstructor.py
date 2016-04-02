@@ -26,15 +26,6 @@ try:
 except:
 	pass
 
-def Init():
-	global PASSCODE, SERVER_ADDR
-	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	s.connect(("8.8.8.8", 80))
-	PASSCODE = s.getsockname()[0]
-	SERVER_ADDR = "http://%s:4030 " % s.getsockname()[0]
-
-Init()
-
 def c4biRequest(url, data):
 	req = urllib.request.Request(url, data)
 	try:
@@ -168,4 +159,13 @@ class c4biUpgrade(sublime_plugin.WindowCommand):
 				sublime.message_dialog("Code4Brownies has been upgraded to version %s.  Latest server is at https://github.com/vtphan/Code4Brownies" % version)
 			except:
 				sublime.message_dialog("A problem occurred during upgrade.")
+
+def Init():
+	global PASSCODE, SERVER_ADDR
+	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	s.connect(("8.8.8.8", 80))
+	PASSCODE = s.getsockname()[0]
+	SERVER_ADDR = "http://%s:4030 " % s.getsockname()[0]
+
+Init()
 
