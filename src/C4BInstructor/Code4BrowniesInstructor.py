@@ -76,7 +76,7 @@ class c4biGetAllCommand(sublime_plugin.TextCommand):
 				for entry in entries:
 					ext = '' if entry['Ext']=='' else '.'+entry['Ext']
 					userFile = os.path.join(POSTS_DIR, entry['Uid'] + ext)
-					with open(userFile, 'w') as fp:
+					with open(userFile, 'w', encoding='utf-8') as fp:
 						fp.write(entry['Body'])
 					new_view = self.view.window().open_file(userFile)
 					ACTIVE_USERS[new_view.id()] = entry['Uid']
@@ -96,7 +96,7 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 				json_obj = json.loads(response)
 				ext = '' if json_obj['Ext']=='' else '.'+json_obj['Ext']
 				userFile = os.path.join(POSTS_DIR, users[selected] + ext)
-				with open(userFile, 'w') as fp:
+				with open(userFile, 'w', encoding='utf-8') as fp:
 					fp.write(json_obj['Body'])
 				new_view = self.view.window().open_file(userFile)
 				ACTIVE_USERS[new_view.id()] = users[selected]
