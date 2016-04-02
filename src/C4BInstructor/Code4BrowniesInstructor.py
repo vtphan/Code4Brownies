@@ -18,6 +18,7 @@ c4bi_REQUEST_ENTRY_PATH = "get_post"
 c4bi_REQUEST_ENTRIES_PATH = "get_posts"
 TIMEOUT = 10
 ACTIVE_USERS = {}
+SERVER_ADDR, PASSCODE = "", ""
 
 POSTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Posts")
 try:
@@ -25,30 +26,13 @@ try:
 except:
 	pass
 
-def get_ip_address():
+def Init():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(("8.8.8.8", 80))
-    return s.getsockname()[0]
+    PASSCODE = s.getsockname()[0]
+    SERVER_ADDR = PASSCODE + ":4030"
 
-SERVER_ADDR = get_ip_address()
-
-def c4bi_get_attr():
-	try:
-		with open(c4bi_FILE, 'r') as f:
-			json_obj = json.loads(f.read())
-	except:
-		sublime.message_dialog("Please set information first.")
-		return None
-	if 'Server' not in json_obj:
-		sublime.message_dialog("Please set server address.")
-		return None
-	if not json_obj['Server'].startswith("http://"):
-		sublime.message_dialog("Server must starts with http://\nReset information.")
-		return None
-	if 'Passcode' not in json_obj:
-		json_obj['Passcode'] = SERVER_ADDR
-	return json_obj
-
+Init()
 
 def c4biRequest(url, data):
 	req = urllib.request.Request(url, data)
@@ -64,19 +48,15 @@ def c4biRequest(url, data):
 
 class c4biBroadcastCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
-		info = c4bi_get_attr()
-		if info is None:
-			return
-
 		content = self.view.substr(sublime.Region(0, self.view.size()))
-		url = urllib.parse.urljoin(info['Server'], c4bi_BROADCAST_PATH)
+		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
 		this_file_name = self.view.file_name()
 		if this_file_name is not None:
 			if '.' not in this_file_name:
 				ext = ''
 			else:
 				ext = this_file_name.split('.')[-1]
-			data = urllib.parse.urlencode({'passcode':info['Passcode'], 'content':content, 'ext':ext}).encode('ascii')
+			data = urllib.parse.urlencode({'passcode':PASSCODE, 'content':content, 'ext':ext}).encode('ascii')
 			response = c4biRequest(url,data)
 			if response is not None:
 				sublime.status_message(response)
@@ -88,8 +68,8 @@ class c4biPointsCommand(sublime_plugin.TextCommand):
 		if info is None:
 			return
 
-		url = urllib.parse.urljoin(info['Server'], c4bi_POINTS_PATH)
-		data = urllib.parse.urlencode({'passcode':info['Passcode']}).encode('ascii')
+		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_POINTS_PATH)
+		data = urllib.parse.urlencode({'passcode':PASSCODE}).encode('ascii')
 		response = c4biRequest(url,data)
 		if response is not None:
 			json_obj = json.loads(response)
@@ -100,12 +80,8 @@ class c4biPointsCommand(sublime_plugin.TextCommand):
 
 class c4biGetAllCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
-		info = c4bi_get_attr()
-		if info is None:
-			return
-
-		url = urllib.parse.urljoin(info['Server'], c4bi_REQUEST_ENTRIES_PATH)
-		data = urllib.parse.urlencode({'passcode':info['Passcode']}).encode('ascii')
+		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_REQUEST_ENTRIES_PATH)
+		data = urllib.parse.urlencode({'passcode':PASSCODE}).encode('ascii')
 		response = c4biRequest(url,data)
 		if response is not None:
 			entries = json.loads(response)
@@ -122,12 +98,12 @@ class c4biGetAllCommand(sublime_plugin.TextCommand):
 
 
 class c4biPeekCommand(sublime_plugin.TextCommand):
-	def request_entry(self, info, users, edit):
+	def request_entry(self, users, edit):
 		def foo(selected):
 			if selected < 0:
 				return
-			url = urllib.parse.urljoin(info['Server'], c4bi_REQUEST_ENTRY_PATH)
-			data = urllib.parse.urlencode({'passcode':info['Passcode'], 'post':selected}).encode('ascii')
+			url = urllib.parse.urljoin(SERVER_ADDR, c4bi_REQUEST_ENTRY_PATH)
+			data = urllib.parse.urlencode({'passcode':PASSCODE, 'post':selected}).encode('ascii')
 			response = c4biRequest(url,data)
 			if response is not None:
 				json_obj = json.loads(response)
@@ -140,11 +116,8 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 		return foo
 
 	def run(self, edit):
-		info = c4bi_get_attr()
-		if info is None:
-			return
-		url = urllib.parse.urljoin(info['Server'], c4bi_PEEK_PATH)
-		data = urllib.parse.urlencode({'passcode':info['Passcode']}).encode('ascii')
+		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_PEEK_PATH)
+		data = urllib.parse.urlencode({'passcode':PASSCODE}).encode('ascii')
 		response = c4biRequest(url,data)
 		if response is not None:
 			json_obj = json.loads(response)
@@ -160,15 +133,12 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 
 class c4biAwardPointCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
-		info = c4bi_get_attr()
-		if info is None:
-			return
 		uid = ACTIVE_USERS.get(self.view.id())
 		if uid is None:
 			sublime.message_dialog("There is no user associated with this file.")
 		else:
-			url = urllib.parse.urljoin(info['Server'], c4bi_BROWNIE_PATH)
-			data = urllib.parse.urlencode({'passcode':info['Passcode'], 'uid':uid}).encode('ascii')
+			url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROWNIE_PATH)
+			data = urllib.parse.urlencode({'passcode':PASSCODE, 'uid':uid}).encode('ascii')
 			response = c4biRequest(url,data)
 			if response is not None:
 				sublime.status_message(response)
@@ -182,23 +152,6 @@ class c4biAboutCommand(sublime_plugin.WindowCommand):
 			version = 'Unknown'
 		sublime.message_dialog("Code4Brownies (v%s)\nCopyright © 2015-2016 Vinhthuy Phan." %
 			version)
-
-
-class c4biSetInfo(sublime_plugin.WindowCommand):
-	def run(self):
-		try:
-			with open(c4bi_FILE, 'r') as f:
-				info = json.loads(f.read())
-		except:
-			info = dict()
-
-		if 'Server' not in info:
-			info['Server'] = 'http://0.0.0.0:4030'
-
-		with open(c4bi_FILE, 'w') as f:
-			f.write(json.dumps(info, indent=4))
-
-		sublime.active_window().open_file(c4bi_FILE)
 
 
 class c4biUpgrade(sublime_plugin.WindowCommand):
