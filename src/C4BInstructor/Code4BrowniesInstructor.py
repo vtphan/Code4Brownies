@@ -27,10 +27,11 @@ except:
 	pass
 
 def Init():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    PASSCODE = s.getsockname()[0]
-    SERVER_ADDR = PASSCODE + ":4030"
+	global PASSCODE, SERVER_ADDR
+	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	s.connect(("8.8.8.8", 80))
+	PASSCODE = s.getsockname()[0]
+	SERVER_ADDR = "http://%s:4030 " % s.getsockname()[0]
 
 Init()
 
@@ -64,10 +65,6 @@ class c4biBroadcastCommand(sublime_plugin.TextCommand):
 
 class c4biPointsCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
-		info = c4bi_get_attr()
-		if info is None:
-			return
-
 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_POINTS_PATH)
 		data = urllib.parse.urlencode({'passcode':PASSCODE}).encode('ascii')
 		response = c4biRequest(url,data)
