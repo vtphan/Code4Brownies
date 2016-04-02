@@ -52,7 +52,7 @@ class c4bReceivebroadcastCommand(sublime_plugin.TextCommand):
 			json_obj = json.loads(response)
 			content, ext = json_obj['whiteboard'], json_obj['ext']
 			wb = c4b_WHITEBOARD if ext == '' else c4b_WHITEBOARD + '.' + ext
-			with open(wb, 'w') as f:
+			with open(wb, 'w', encoding='utf-8') as f:
 				f.write(content)
 			new_view = self.view.window().open_file(wb)
 

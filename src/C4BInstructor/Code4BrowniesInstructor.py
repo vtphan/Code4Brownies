@@ -9,7 +9,6 @@ import os
 import json
 import socket
 
-c4bi_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
 c4bi_BROADCAST_PATH = "broadcast"
 c4bi_BROWNIE_PATH = "give_point"
 c4bi_PEEK_PATH = "peek"
@@ -32,7 +31,7 @@ def c4biRequest(url, data):
 		with urllib.request.urlopen(req, None, TIMEOUT) as response:
 			return response.read().decode(encoding="utf-8")
 	except urllib.error.HTTPError:
-		sublime.message_dialog("HTTP error: possibly due to incorrect passcode.")
+		sublime.message_dialog("HTTP error: possibly due to incorrect passcode.\n\nIf you don't know the passcode, restart the server and Sublime Text.")
 	except urllib.error.URLError:
 		sublime.message_dialog("Server not running or incorrect server address.")
 	return None
@@ -114,7 +113,7 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 			else:
 				users = [ entry['Uid'] for entry in json_obj ]
 				if users:
-					self.view.show_popup_menu(users, self.request_entry(info, users, edit))
+					self.view.show_popup_menu(users, self.request_entry(users, edit))
 				else:
 					sublime.status_message("Queue is empty.")
 
@@ -131,6 +130,15 @@ class c4biAwardPointCommand(sublime_plugin.TextCommand):
 			if response is not None:
 				sublime.status_message(response)
 
+class c4biPasscode(sublime_plugin.WindowCommand):
+	def run(self):
+		def set_passcode(p):
+			global PASSCODE
+			PASSCODE = p
+			sublime.message_dialog('Passcode is set.')
+
+		if sublime.yes_no_cancel_dialog("Only set a passcode if the server is run with an explicit passcode.  Are you sure you want to set a passcode?") == sublime.DIALOG_YES:
+			sublime.active_window().show_input_panel('Passcode','',set_passcode,None,None)
 
 class c4biAboutCommand(sublime_plugin.WindowCommand):
 	def run(self):
@@ -164,8 +172,8 @@ def Init():
 	global PASSCODE, SERVER_ADDR
 	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	s.connect(("8.8.8.8", 80))
-	PASSCODE = s.getsockname()[0]
 	SERVER_ADDR = "http://%s:4030 " % s.getsockname()[0]
+	PASSCODE = s.getsockname()[0]
 
 Init()
 

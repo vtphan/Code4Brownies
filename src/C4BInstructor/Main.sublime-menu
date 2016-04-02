@@ -30,6 +30,11 @@
             },
             {"caption":"-", "id":"side-bar-separator"},
             {
+                "caption": "Set passcode",
+                "id": "c4biPasscode",
+                "command": "c4bi_passcode"
+            },
+            {
                 "caption": "Upgrade",
                 "id": "c4biUpgrade",
                 "command": "c4bi_upgrade"
