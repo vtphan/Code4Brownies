@@ -137,7 +137,7 @@ class c4biPasscode(sublime_plugin.WindowCommand):
 			PASSCODE = p
 			sublime.message_dialog('Passcode is set.')
 
-		if sublime.yes_no_cancel_dialog("Only set a passcode if the server is run with an explicit passcode.  Are you sure you want to set a passcode?") == sublime.DIALOG_YES:
+		if sublime.ok_cancel_dialog("Set a passcode only if the server is not running on this computer, or you don't want to use the default passcode.  In that case, first, run the server with a passcode. Then, use the same passcode here."):
 			sublime.active_window().show_input_panel('Passcode','',set_passcode,None,None)
 
 class c4biAboutCommand(sublime_plugin.WindowCommand):
@@ -152,7 +152,7 @@ class c4biAboutCommand(sublime_plugin.WindowCommand):
 
 class c4biUpgrade(sublime_plugin.WindowCommand):
 	def run(self):
-		if sublime.ok_cancel_dialog("Are you sure you want to upgrade Code4Brownies to the latest version?", "Yes"):
+		if sublime.ok_cancel_dialog("Are you sure you want to upgrade Code4Brownies to the latest version?"):
 			package_path = os.path.join(sublime.packages_path(), "C4BInstructor");
 			if not os.path.isdir(package_path):
 				os.mkdir(package_path)
