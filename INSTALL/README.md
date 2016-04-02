@@ -44,5 +44,3 @@ In Sublime Text, go to View, open Console.  Then, execute this code:
 import os; import shutil; package_path = os.path.join(sublime.packages_path(), "C4BInstructor"); shutil.rmtree(package_path)
 ```
 
-
-Copyright Vinhthuy Phan, 2015
