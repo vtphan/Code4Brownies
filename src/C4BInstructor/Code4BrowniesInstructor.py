@@ -137,7 +137,7 @@ class c4biPasscode(sublime_plugin.WindowCommand):
 			PASSCODE = p
 			sublime.message_dialog('Passcode is set.')
 
-		if sublime.ok_cancel_dialog("Set a passcode only if the server is not running on this computer, or you don't want to use the default passcode.  In that case, first, click quick SublimeText.  Then, the server with a passcode, and the same passcode in SublimeText.", "Set passcode now"):
+		if sublime.ok_cancel_dialog("Set a passcode only if the server is not running on this computer, or you don't want to use the default passcode.  In that case, first, quit  SublimeText.  Then, the server with a passcode, and use that passcode here.", "Set passcode now"):
 			sublime.active_window().show_input_panel('Passcode','',set_passcode,None,None)
 
 class c4biAboutCommand(sublime_plugin.WindowCommand):
