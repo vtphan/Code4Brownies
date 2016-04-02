@@ -4,12 +4,12 @@
         "id": "C4Bi",
         "children": [
             {
-                "caption": "Peek",
-                "id": "c4biPeek",
-                "command": "c4bi_peek"
+                "caption": "Broadcast",
+                "id": "c4biBroadcast",
+                "command": "c4bi_broadcast"
             },
             {
-                "caption": "Get All",
+                "caption": "Get all",
                 "id": "c4biGetAll",
                 "command": "c4bi_get_all"
             },
@@ -19,12 +19,12 @@
                 "command": "c4bi_award_point"
             },
             {
-                "caption": "Broadcast",
-                "id": "c4biBroadcast",
-                "command": "c4bi_broadcast"
+                "caption": "Peek",
+                "id": "c4biPeek",
+                "command": "c4bi_peek"
             },
             {
-                "caption": "Current Points",
+                "caption": "Points",
                 "id": "c4biPoints",
                 "command": "c4bi_points"
             },
