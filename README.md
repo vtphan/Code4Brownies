@@ -25,12 +25,12 @@ Click [HERE](INSTALL).
 
 OS X: run the server in a terminal (OSX)
 ```
-    ./c4b_darwin_amd64 -db db/brownies.csv -passcode your_passcode
+    ./c4b_darwin_amd64 -db db/brownies.csv
 ````
 
 Windows: run the server in a Powershell terminal
 ```
-    ./c4b_windows_amd64 -db db/brownies.csv -passcode your_passcode
+    ./c4b_windows_amd64 -db db/brownies.csv
 ````
 
 Open ST3 and starting coding!  There is a new menu on ST3 menu bar dedicated for instructors and students, respectively, to share codes.
