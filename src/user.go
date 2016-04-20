@@ -23,7 +23,7 @@ type User struct {
 	points int
 }
 
-const WRITE_TO_DB_INTERVAL = 6
+const WRITE_TO_DB_INTERVAL = 300
 
 var USER_DB string
 var AllUsers = make(map[string]*User) // maps uids to users
