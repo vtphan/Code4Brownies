@@ -7,13 +7,17 @@ import urllib.request
 import os
 import json
 
-c4b_WHITEBOARD = os.path.join(os.path.dirname(os.path.realpath(__file__)), "whiteboard")
+c4b_WHITEBOARD_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Whiteboard")
 c4b_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
 c4b_SUBMIT_POST_PATH = "submit_post"
 c4b_MY_POINTS_PATH = "my_points"
 c4b_RECEIVE_BROADCAST_PATH = "receive_broadcast"
 TIMEOUT = 10
 
+try:
+	os.mkdir(c4b_WHITEBOARD_DIR)
+except:
+	pass
 
 def c4b_get_attr():
 	try:
@@ -43,6 +47,7 @@ def c4bRequest(url, data):
 
 class c4bReceivebroadcastCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
+		global c4b_TO_BE_CLOSED_VIEWS
 		info = c4b_get_attr()
 		if info is None:
 			return
@@ -51,7 +56,9 @@ class c4bReceivebroadcastCommand(sublime_plugin.TextCommand):
 		if response is not None:
 			json_obj = json.loads(response)
 			content, ext = json_obj['whiteboard'], json_obj['ext']
-			wb = c4b_WHITEBOARD if ext == '' else c4b_WHITEBOARD + '.' + ext
+			wb = os.path.join(c4b_WHITEBOARD_DIR, 'whiteboard')
+			if ext != '':
+				wb += '.' + ext
 			with open(wb, 'w', encoding='utf-8') as f:
 				f.write(content)
 			new_view = self.view.window().open_file(wb)
