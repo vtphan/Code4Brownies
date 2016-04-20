@@ -23,20 +23,17 @@ type User struct {
 	points int
 }
 
+const WRITE_TO_DB_INTERVAL = 6
+
 var USER_DB string
 var AllUsers = make(map[string]*User) // maps uids to users
 var RegisteredUsers = make(map[string]string)
+var DB_LOADED = false
 
 //-----------------------------------------------------------------
-
-func prepareCleanup() {
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-	signal.Notify(c, syscall.SIGTERM)
-	go func() {
-		<-c
+func writeToUserDB() {
+	if DB_LOADED == true {
 		t := time.Now()
-		fmt.Println("\n" + t.Format("Mon Jan 2 15:04:05 MST 2006"))
 
 		outFile, err := os.Create(USER_DB)
 		if err != nil {
@@ -44,7 +41,7 @@ func prepareCleanup() {
 		}
 		defer outFile.Close()
 
-		fmt.Println("Writing data to", USER_DB)
+		fmt.Println(t.Format("Mon Jan 2 15:04:05 MST 2006: write data to ") + USER_DB)
 		w := csv.NewWriter(outFile)
 		for uid, user := range AllUsers {
 			record := []string{uid, strconv.Itoa(user.points)}
@@ -56,7 +53,29 @@ func prepareCleanup() {
 		if err := w.Error(); err != nil {
 			panic(err)
 		}
-		os.Exit(1)
+	}
+}
+
+//-----------------------------------------------------------------
+
+func prepareCleanup() {
+	ticker := time.NewTicker(WRITE_TO_DB_INTERVAL * time.Second)
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	signal.Notify(quit, syscall.SIGTERM)
+
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				writeToUserDB()
+			case <-quit:
+				fmt.Println("Preparing to stop server...")
+				writeToUserDB()
+				ticker.Stop()
+				os.Exit(1)
+			}
+		}
 	}()
 }
 
@@ -110,5 +129,6 @@ func loadRecords() {
 	if err := writer.Error(); err != nil {
 		panic(err)
 	}
-	fmt.Println("Duplicated db to", USER_DB+".bak")
+	fmt.Println("Duplicate db to", USER_DB+".bak")
+	DB_LOADED = true
 }
