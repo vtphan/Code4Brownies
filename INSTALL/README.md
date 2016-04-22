@@ -19,6 +19,7 @@ import os; import shutil; package_path = os.path.join(sublime.packages_path(), "
 ```
 
 
+* * *
 
 # Install instructor's plug-in
 
