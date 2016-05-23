@@ -8,6 +8,7 @@ import urllib.request
 import os
 import json
 import socket
+import ntpath
 
 c4bi_BROADCAST_PATH = "broadcast"
 c4bi_BROWNIE_PATH = "give_point"
@@ -16,7 +17,6 @@ c4bi_POINTS_PATH = "points"
 c4bi_REQUEST_ENTRY_PATH = "get_post"
 c4bi_REQUEST_ENTRIES_PATH = "get_posts"
 TIMEOUT = 10
-ACTIVE_USERS = {}
 SERVER_ADDR, PASSCODE = "", ""
 
 POSTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Posts")
@@ -27,14 +27,14 @@ except:
 
 def c4biRequest(url, data):
 	req = urllib.request.Request(url, data)
-	try:
-		with urllib.request.urlopen(req, None, TIMEOUT) as response:
-			return response.read().decode(encoding="utf-8")
-	except urllib.error.HTTPError:
-		sublime.message_dialog("HTTP error: possibly due to incorrect passcode.\n\nIf you don't know the passcode, restart the server and Sublime Text.")
-	except urllib.error.URLError:
-		sublime.message_dialog("Server not running or incorrect server address.")
-	return None
+	# try:
+	with urllib.request.urlopen(req, None, TIMEOUT) as response:
+		return response.read().decode(encoding="utf-8")
+	# except urllib.error.HTTPError:
+	# 	sublime.message_dialog("HTTP error: possibly due to incorrect passcode.\n\nIf you don't know the passcode, restart the server and Sublime Text.")
+	# except urllib.error.URLError:
+	# 	sublime.message_dialog("Server not running or incorrect server address.")
+	# return None
 
 
 class c4biBroadcastCommand(sublime_plugin.TextCommand):
@@ -74,12 +74,12 @@ class c4biGetAllCommand(sublime_plugin.TextCommand):
 			entries = json.loads(response)
 			if entries:
 				for entry in entries:
+					print(entry)
 					ext = '' if entry['Ext']=='' else '.'+entry['Ext']
-					userFile = os.path.join(POSTS_DIR, entry['Uid'] + ext)
+					userFile = os.path.join(POSTS_DIR, entry['Sid'] + ext)
 					with open(userFile, 'w', encoding='utf-8') as fp:
 						fp.write(entry['Body'])
 					new_view = self.view.window().open_file(userFile)
-					ACTIVE_USERS[new_view.id()] = entry['Uid']
 			else:
 				sublime.status_message("Queue is empty.")
 
@@ -99,7 +99,7 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 				with open(userFile, 'w', encoding='utf-8') as fp:
 					fp.write(json_obj['Body'])
 				new_view = self.view.window().open_file(userFile)
-				ACTIVE_USERS[new_view.id()] = users[selected]
+				# ACTIVE_USERS[new_view.id()] = users[selected]
 		return foo
 
 	def run(self, edit):
@@ -120,15 +120,16 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 
 class c4biAwardPointCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
-		uid = ACTIVE_USERS.get(self.view.id())
-		if uid is None:
-			sublime.message_dialog("There is no user associated with this file.")
-		else:
+		this_file_name = self.view.file_name()
+		if this_file_name:
+			sid = this_file_name.split('.')[0]
+			sid = ntpath.basename(sid)
 			url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROWNIE_PATH)
-			data = urllib.parse.urlencode({'passcode':PASSCODE, 'uid':uid}).encode('ascii')
+			data = urllib.parse.urlencode({'passcode':PASSCODE, 'sid':sid}).encode('ascii')
 			response = c4biRequest(url,data)
 			if response is not None:
-				sublime.status_message(response)
+				# sublime.status_message(response)
+				sublime.message_dialog(response)
 
 class c4biPasscode(sublime_plugin.WindowCommand):
 	def run(self):

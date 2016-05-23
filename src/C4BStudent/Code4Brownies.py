@@ -34,7 +34,6 @@ def c4b_get_attr():
 		return None
 	return json_obj
 
-
 def c4bRequest(url, data):
 	req = urllib.request.Request(url, data)
 	try:
