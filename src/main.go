@@ -40,15 +40,19 @@ func informIPAddress() {
 
 //-----------------------------------------------------------------
 func writeToUserDB() {
-	t := time.Now()
-
-	// outFile, err := os.Create(USER_DB)
-	outFile, err := os.OpenFile(USER_DB, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+	var err error
+	var outFile *os.File
+	if _, err = os.Stat(USER_DB); err == nil {
+		outFile, err = os.OpenFile(USER_DB, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+	} else {
+		outFile, err = os.Create(USER_DB)
+	}
 	if err != nil {
 		panic(err)
 	}
 	defer outFile.Close()
 
+	t := time.Now()
 	fmt.Println(t.Format("Mon Jan 2 15:04:05 MST 2006: write data to ") + USER_DB)
 	w := csv.NewWriter(outFile)
 	for _, sub := range ProcessedSubs {
