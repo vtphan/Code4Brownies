@@ -11,7 +11,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"strings"
 )
 
 var ADDR = ""
@@ -25,13 +24,9 @@ func informIPAddress() string {
 		panic(err.Error() + "\n")
 	}
 	for _, a := range addrs {
-		if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
-			if ipnet.IP.To4() != nil {
-				if ! strings.HasPrefix(ipnet.IP.String(), "169.254.") {
-					fmt.Println("Server address http://" + ipnet.IP.String() + ":" + PORT)
-					return ipnet.IP.String()
-				}
-			}
+		if ipnet, ok := a.(*net.IPNet); ok && ipnet.IP.IsGlobalUnicast() {
+			fmt.Println("Server address http://" + ipnet.IP.String() + ":" + PORT)
+			return ipnet.IP.String()
 		}
 	}
 	return ""
