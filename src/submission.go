@@ -7,9 +7,9 @@ import (
 	"sync"
 	"os/exec"
 	"fmt"
-	// "time"
 	"strings"
 	"math/rand"
+	"runtime"
 )
 
 //-----------------------------------------------------------------
@@ -68,9 +68,13 @@ func AddSubmission(uid, body, ext string) {
 	}
 	NewSubs = append(NewSubs, &Submission{RandStringRunes(10),uid,pid,body,ext,0})
 	if len(NewSubs) == 1 {
-		_, err := exec.Command("afplay", "/System/Library/Sounds/Glass.aiff").Output()
-		if err != nil {
-			fmt.Println(err)
+		if runtime.GOOS == "darwin" {
+			_, err := exec.Command("afplay", "/System/Library/Sounds/Glass.aiff").Output()
+			if err != nil {
+				fmt.Println(err)
+			}
+		} else if runtime.GOOS == "windows" {
+			;
 		}
 	}
 }

@@ -10,6 +10,7 @@ import json
 import socket
 import ntpath
 
+SERVER_ADDR = "http://localhost:4030"
 c4bi_BROADCAST_PATH = "broadcast"
 c4bi_BROWNIE_PATH = "give_point"
 c4bi_PEEK_PATH = "peek"
@@ -17,7 +18,6 @@ c4bi_POINTS_PATH = "points"
 c4bi_REQUEST_ENTRY_PATH = "get_post"
 c4bi_REQUEST_ENTRIES_PATH = "get_posts"
 TIMEOUT = 10
-SERVER_ADDR, PASSCODE = "", ""
 
 POSTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Posts")
 try:
@@ -27,14 +27,14 @@ except:
 
 def c4biRequest(url, data):
 	req = urllib.request.Request(url, data)
-	# try:
-	with urllib.request.urlopen(req, None, TIMEOUT) as response:
-		return response.read().decode(encoding="utf-8")
-	# except urllib.error.HTTPError:
-	# 	sublime.message_dialog("HTTP error: possibly due to incorrect passcode.\n\nIf you don't know the passcode, restart the server and Sublime Text.")
-	# except urllib.error.URLError:
-	# 	sublime.message_dialog("Server not running or incorrect server address.")
-	# return None
+	try:
+		with urllib.request.urlopen(req, None, TIMEOUT) as response:
+			return response.read().decode(encoding="utf-8")
+	except urllib.error.HTTPError as err:
+		sublime.message_dialog("{0}".format(err))
+	except urllib.error.URLError as err:
+		sublime.message_dialog("{0}\nPossibly server not running or incorrect server address.".format(err))
+	return None
 
 
 class c4biBroadcastCommand(sublime_plugin.TextCommand):
@@ -47,7 +47,7 @@ class c4biBroadcastCommand(sublime_plugin.TextCommand):
 				ext = ''
 			else:
 				ext = this_file_name.split('.')[-1]
-			data = urllib.parse.urlencode({'passcode':PASSCODE, 'content':content, 'ext':ext}).encode('ascii')
+			data = urllib.parse.urlencode({'content':content, 'ext':ext}).encode('ascii')
 			response = c4biRequest(url,data)
 			if response is not None:
 				sublime.status_message(response)
@@ -56,7 +56,7 @@ class c4biBroadcastCommand(sublime_plugin.TextCommand):
 class c4biPointsCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_POINTS_PATH)
-		data = urllib.parse.urlencode({'passcode':PASSCODE}).encode('ascii')
+		data = urllib.parse.urlencode({}).encode('ascii')
 		response = c4biRequest(url,data)
 		if response is not None:
 			json_obj = json.loads(response)
@@ -73,7 +73,7 @@ class c4biPointsCommand(sublime_plugin.TextCommand):
 class c4biGetAllCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_REQUEST_ENTRIES_PATH)
-		data = urllib.parse.urlencode({'passcode':PASSCODE}).encode('ascii')
+		data = urllib.parse.urlencode({}).encode('ascii')
 		response = c4biRequest(url,data)
 		if response is not None:
 			entries = json.loads(response)
@@ -95,7 +95,7 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 			if selected < 0:
 				return
 			url = urllib.parse.urljoin(SERVER_ADDR, c4bi_REQUEST_ENTRY_PATH)
-			data = urllib.parse.urlencode({'passcode':PASSCODE, 'post':selected}).encode('ascii')
+			data = urllib.parse.urlencode({'post':selected}).encode('ascii')
 			response = c4biRequest(url,data)
 			if response is not None:
 				json_obj = json.loads(response)
@@ -108,7 +108,7 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 
 	def run(self, edit):
 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_PEEK_PATH)
-		data = urllib.parse.urlencode({'passcode':PASSCODE}).encode('ascii')
+		data = urllib.parse.urlencode({}).encode('ascii')
 		response = c4biRequest(url,data)
 		if response is not None:
 			json_obj = json.loads(response)
@@ -129,21 +129,11 @@ class c4biAwardPointCommand(sublime_plugin.TextCommand):
 			sid = this_file_name.split('.')[0]
 			sid = ntpath.basename(sid)
 			url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROWNIE_PATH)
-			data = urllib.parse.urlencode({'passcode':PASSCODE, 'sid':sid}).encode('ascii')
+			data = urllib.parse.urlencode({'sid':sid}).encode('ascii')
 			response = c4biRequest(url,data)
 			if response is not None:
 				# sublime.status_message(response)
 				sublime.message_dialog(response)
-
-class c4biPasscode(sublime_plugin.WindowCommand):
-	def run(self):
-		def set_passcode(p):
-			global PASSCODE
-			PASSCODE = p
-			sublime.message_dialog('Passcode is set.')
-
-		if sublime.ok_cancel_dialog("Set a passcode only if the server is not running on this computer, or you don't want to use the default passcode.  In that case, (1) quit  SublimeText; (2) run the server with a passcode, and use that passcode here.", "Set passcode now"):
-			sublime.active_window().show_input_panel('Passcode','',set_passcode,None,None)
 
 class c4biAboutCommand(sublime_plugin.WindowCommand):
 	def run(self):
@@ -173,12 +163,4 @@ class c4biUpgrade(sublime_plugin.WindowCommand):
 			except:
 				sublime.message_dialog("A problem occurred during upgrade.")
 
-def Init():
-	global PASSCODE, SERVER_ADDR
-	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	s.connect(("8.8.8.8", 80))
-	SERVER_ADDR = "http://%s:4030 " % s.getsockname()[0]
-	PASSCODE = s.getsockname()[0]
-
-Init()
 

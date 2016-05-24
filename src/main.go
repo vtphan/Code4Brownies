@@ -16,10 +16,9 @@ import (
 
 var ADDR = ""
 var PORT = "4030"
-var PASSCODE string
 
 //-----------------------------------------------------------------
-func informIPAddress() string {
+func informIPAddress() {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
 		panic(err.Error() + "\n")
@@ -27,12 +26,10 @@ func informIPAddress() string {
 	for _, a := range addrs {
 		if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
 			if ipnet.IP.To4() != nil {
-				fmt.Println("Server address http://" + ipnet.IP.String() + ":" + PORT)
-				return ipnet.IP.String()
+				fmt.Println("Serving from http://" + ipnet.IP.String() + ":" + PORT)
 			}
 		}
 	}
-	return ""
 }
 
 //-----------------------------------------------------------------
@@ -41,12 +38,8 @@ func main() {
 	os.Mkdir("db", 0777)
 	// USER_DB = filepath.Join(".", "db", "C4B_DB.csv")
 
-	ADDR = informIPAddress()
-	if ADDR == "" {
-		panic("Unable to connect to the network.")
-	}
+	informIPAddress()
 
-	flag.StringVar(&PASSCODE, "passcode", ADDR, "passcode to be used by the instructor to connect to the server.")
 	// flag.StringVar(&USER_DB, "db", USER_DB, "user database in csv format, which consists of UID,POINTS.")
 	flag.Parse()
 

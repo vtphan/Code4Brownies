@@ -14,7 +14,7 @@
                 "command": "c4bi_get_all"
             },
             {
-                "caption": "Give a brownie",
+                "caption": "Reward",
                 "id": "c4biAwardPoint",
                 "command": "c4bi_award_point"
             },
@@ -29,11 +29,6 @@
                 "command": "c4bi_points"
             },
             {"caption":"-", "id":"side-bar-separator"},
-            {
-                "caption": "Set passcode",
-                "id": "c4biPasscode",
-                "command": "c4bi_passcode"
-            },
             {
                 "caption": "Upgrade",
                 "id": "c4biUpgrade",

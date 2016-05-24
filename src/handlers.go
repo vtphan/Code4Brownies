@@ -64,7 +64,7 @@ func receive_broadcastHandler(w http.ResponseWriter, r *http.Request) {
 //-----------------------------------------------------------------
 
 func verifyPasscode(w http.ResponseWriter, r *http.Request) error {
-	if r.FormValue("passcode") != PASSCODE {
+	if r.Host != "localhost:4030" {
 		w.WriteHeader(http.StatusUnauthorized)
 		return errors.New("Unauthorized access")
 	}
@@ -110,9 +110,8 @@ func give_pointHandler(w http.ResponseWriter, r *http.Request) {
 			s.Points++
 			fmt.Fprintf(w, "Point awarded to " + s.Uid)
 		} else {
-			fmt.Fprintf(w, "Not found.")
+			fmt.Fprintf(w, "No submission is associated with this file.")
 		}
-
 		PrintState()
 	}
 }
