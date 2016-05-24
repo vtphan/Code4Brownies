@@ -40,8 +40,8 @@ def c4bRequest(url, data):
 	try:
 		with urllib.request.urlopen(req, None, TIMEOUT) as response:
 			return response.read().decode(encoding="utf-8")
-	except urllib.error.URLError:
-		sublime.message_dialog("Server not running or incorrect server address.")
+	except urllib.error.URLError as err:
+		sublime.message_dialog("{0}\nPossibly server not running or incorrect server address.".format(err))
 		return None
 
 
