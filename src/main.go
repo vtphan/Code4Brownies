@@ -55,15 +55,15 @@ func main() {
 
 	// student handlers
 	http.HandleFunc("/submit_post", submit_postHandler)   // rename this
-	// http.HandleFunc("/my_points", my_pointsHandler)
+	http.HandleFunc("/my_points", my_pointsHandler)
 	http.HandleFunc("/receive_broadcast", receive_broadcastHandler)
 
 	// teacher handlers
-	// http.HandleFunc("/points", pointsHandler)
+	http.HandleFunc("/points", pointsHandler)
 	http.HandleFunc("/give_point", give_pointHandler)
-	// http.HandleFunc("/peek", peekHandler)
+	http.HandleFunc("/peek", peekHandler)
 	http.HandleFunc("/broadcast", broadcastHandler)
-	// http.HandleFunc("/get_post", get_postHandler)
+	http.HandleFunc("/get_post", get_postHandler)
 	http.HandleFunc("/get_posts", get_postsHandler)
 	err := http.ListenAndServe("0.0.0.0:"+PORT, nil)
 	if err != nil {

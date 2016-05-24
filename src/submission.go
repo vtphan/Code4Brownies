@@ -64,7 +64,7 @@ func AddSubmission(uid, body, ext string) {
 	defer sem.Unlock()
 	pid := get_problem_id(body)
 	if _, ok := Problems[pid]; !ok {
-		pid = "nonexistent"
+		pid = "undefined"
 	}
 	NewSubs = append(NewSubs, &Submission{RandStringRunes(10),uid,pid,body,ext,0})
 	if len(NewSubs) == 1 {

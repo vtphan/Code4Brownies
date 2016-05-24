@@ -8,7 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	// "strconv"
+	"strconv"
 	"time"
 )
 
@@ -24,15 +24,15 @@ var Problems = make(map[string]time.Time)
 // users query to know their current points
 //-----------------------------------------------------------------
 func my_pointsHandler(w http.ResponseWriter, r *http.Request) {
-	// user := r.FormValue("uid")
-	// _, ok := AllUsers[user]
-	// if !ok {
-	// 	AllUsers[user] = &User{0}
-	// }
-	// record := AllUsers[user]
-	// cur_points := Points.get(user)
-	// mesg := fmt.Sprintf("Points for %s\nCurrent: %d\nTotal: %d\n", user, cur_points, record.points)
-	// fmt.Fprintf(w, mesg)
+	user := r.FormValue("uid")
+	total := 0
+	for _, s := range(ProcessedSubs) {
+		if user == s.Uid {
+			total += s.Points
+		}
+	}
+	mesg := fmt.Sprintf("%d points for %s\n", total, user)
+	fmt.Fprintf(w, mesg)
 }
 
 //-----------------------------------------------------------------
@@ -88,17 +88,17 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 //-----------------------------------------------------------------
 // return points of currently awarded users
 //-----------------------------------------------------------------
-// func pointsHandler(w http.ResponseWriter, r *http.Request) {
-// 	if verifyPasscode(w, r) == nil {
-// 		js, err := json.Marshal(Points.data)
-// 		if err != nil {
-// 			fmt.Println(err.Error())
-// 		} else {
-// 			w.Header().Set("Content-Type", "application/json")
-// 			w.Write(js)
-// 		}
-// 	}
-// }
+func pointsHandler(w http.ResponseWriter, r *http.Request) {
+	if verifyPasscode(w, r) == nil {
+		js, err := json.Marshal(ProcessedSubs)
+		if err != nil {
+			fmt.Println(err.Error())
+		} else {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(js)
+		}
+	}
+}
 
 //-----------------------------------------------------------------
 // give one brownie point to a user
@@ -120,37 +120,37 @@ func give_pointHandler(w http.ResponseWriter, r *http.Request) {
 //-----------------------------------------------------------------
 // return all current NewSubs
 //-----------------------------------------------------------------
-// func peekHandler(w http.ResponseWriter, r *http.Request) {
-// 	if verifyPasscode(w, r) == nil {
-// 		js, err := json.Marshal(NewSubs.queue)
-// 		if err != nil {
-// 			fmt.Println(err.Error())
-// 		} else {
-// 			w.Header().Set("Content-Type", "application/json")
-// 			w.Write(js)
-// 		}
-// 	}
-// }
+func peekHandler(w http.ResponseWriter, r *http.Request) {
+	if verifyPasscode(w, r) == nil {
+		js, err := json.Marshal(NewSubs)
+		if err != nil {
+			fmt.Println(err.Error())
+		} else {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(js)
+		}
+	}
+}
 
 //-----------------------------------------------------------------
 // Instructor retrieves code
 //-----------------------------------------------------------------
-// func get_postHandler(w http.ResponseWriter, r *http.Request) {
-// 	if verifyPasscode(w, r) == nil {
-// 		e, err := strconv.Atoi(r.FormValue("post"))
-// 		if err != nil {
-// 			fmt.Println(err.Error)
-// 		} else {
-// 			js, err := json.Marshal(NewSubs.Remove(e))
-// 			if err != nil {
-// 				fmt.Println(err.Error())
-// 			} else {
-// 				w.Header().Set("Content-Type", "application/json")
-// 				w.Write(js)
-// 			}
-// 		}
-// 	}
-// }
+func get_postHandler(w http.ResponseWriter, r *http.Request) {
+	if verifyPasscode(w, r) == nil {
+		e, err := strconv.Atoi(r.FormValue("post"))
+		if err != nil {
+			fmt.Println(err.Error)
+		} else {
+			js, err := json.Marshal(ProcessSubmission(e))
+			if err != nil {
+				fmt.Println(err.Error())
+			} else {
+				w.Header().Set("Content-Type", "application/json")
+				w.Write(js)
+			}
+		}
+	}
+}
 
 //-----------------------------------------------------------------
 // Instructor retrieves all codes

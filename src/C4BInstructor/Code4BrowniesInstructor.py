@@ -60,8 +60,13 @@ class c4biPointsCommand(sublime_plugin.TextCommand):
 		response = c4biRequest(url,data)
 		if response is not None:
 			json_obj = json.loads(response)
+			users = {}
+			for k,v in json_obj.items():
+				if v['Uid'] not in users:
+					users[v['Uid']] = 0
+				users[v['Uid']] += v['Points']
 			new_view = self.view.window().new_file()
-			users = [ "%s,%s" % (k,v) for k,v in json_obj.items() ]
+			users = [ "%s,%s" % (k,v) for k,v in sorted(users.items()) ]
 			new_view.insert(edit, 0, "\n".join(users))
 
 
@@ -95,11 +100,10 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 			if response is not None:
 				json_obj = json.loads(response)
 				ext = '' if json_obj['Ext']=='' else '.'+json_obj['Ext']
-				userFile = os.path.join(POSTS_DIR, users[selected] + ext)
+				userFile = os.path.join(POSTS_DIR, json_obj['Sid'] + ext)
 				with open(userFile, 'w', encoding='utf-8') as fp:
 					fp.write(json_obj['Body'])
 				new_view = self.view.window().open_file(userFile)
-				# ACTIVE_USERS[new_view.id()] = users[selected]
 		return foo
 
 	def run(self, edit):
@@ -111,7 +115,7 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 			if json_obj is None:
 				sublime.status_message("Queue is empty.")
 			else:
-				users = [ entry['Uid'] for entry in json_obj ]
+				users = [ '%s: %s, %s' % (entry['Uid'], entry['Pid'], entry['Sid']) for entry in json_obj ]
 				if users:
 					self.view.show_popup_menu(users, self.request_entry(users, edit))
 				else:
