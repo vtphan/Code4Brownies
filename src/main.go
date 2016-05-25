@@ -4,19 +4,19 @@
 package main
 
 import (
+	"encoding/csv"
 	"flag"
 	"fmt"
+	"log"
+	"math/rand"
 	"net"
 	"net/http"
 	"os"
 	"os/signal"
-	"math/rand"
-	"time"
-	"encoding/csv"
-	"strconv"
-	"log"
-	"syscall"
 	"path/filepath"
+	"strconv"
+	"syscall"
+	"time"
 )
 
 var ADDR = ""
@@ -24,18 +24,18 @@ var PORT = "4030"
 var USER_DB string
 
 //-----------------------------------------------------------------
-func informIPAddress() {
+func informIPAddress() string {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
 		panic(err.Error() + "\n")
 	}
 	for _, a := range addrs {
-		if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
-			if ipnet.IP.To4() != nil {
-				fmt.Println("Serving from http://" + ipnet.IP.String() + ":" + PORT)
-			}
+		if ipnet, ok := a.(*net.IPNet); ok && ipnet.IP.IsGlobalUnicast() {
+			fmt.Println("Server address http://" + ipnet.IP.String() + ":" + PORT)
+			return ipnet.IP.String()
 		}
 	}
+	return ""
 }
 
 //-----------------------------------------------------------------
@@ -97,7 +97,7 @@ func main() {
 	prepareCleanup()
 
 	// student handlers
-	http.HandleFunc("/submit_post", submit_postHandler)   // rename this
+	http.HandleFunc("/submit_post", submit_postHandler) // rename this
 	http.HandleFunc("/my_points", my_pointsHandler)
 	http.HandleFunc("/receive_broadcast", receive_broadcastHandler)
 

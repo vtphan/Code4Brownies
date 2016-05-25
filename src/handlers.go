@@ -26,7 +26,7 @@ var Problems = make(map[string]time.Time)
 func my_pointsHandler(w http.ResponseWriter, r *http.Request) {
 	user := r.FormValue("uid")
 	total := 0
-	for _, s := range(ProcessedSubs) {
+	for _, s := range ProcessedSubs {
 		if user == s.Uid {
 			total += s.Points
 		}
@@ -80,7 +80,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 		WhiteboardExt = r.FormValue("ext")
 		problem_id := get_problem_id(Whiteboard)
 		Problems[problem_id] = time.Now()
-		fmt.Println(Problems)
+		// fmt.Println(Problems)
 		fmt.Fprintf(w, "Content is saved to whiteboard.")
 	}
 }
@@ -108,7 +108,7 @@ func give_pointHandler(w http.ResponseWriter, r *http.Request) {
 		s := GetSubmission(r.FormValue("sid"))
 		if s != nil {
 			s.Points++
-			fmt.Fprintf(w, "Point awarded to " + s.Uid)
+			fmt.Fprintf(w, "Point awarded to "+s.Uid)
 		} else {
 			fmt.Fprintf(w, "No submission is associated with this file.")
 		}
