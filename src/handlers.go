@@ -63,7 +63,7 @@ func receive_broadcastHandler(w http.ResponseWriter, r *http.Request) {
 // Instructor's handlers
 //-----------------------------------------------------------------
 
-func verifyPasscode(w http.ResponseWriter, r *http.Request) error {
+func authorize(w http.ResponseWriter, r *http.Request) error {
 	if r.Host != "localhost:4030" {
 		w.WriteHeader(http.StatusUnauthorized)
 		return errors.New("Unauthorized access")
@@ -75,7 +75,7 @@ func verifyPasscode(w http.ResponseWriter, r *http.Request) error {
 // instructor broadcast contents to students
 //-----------------------------------------------------------------
 func broadcastHandler(w http.ResponseWriter, r *http.Request) {
-	if verifyPasscode(w, r) == nil {
+	if authorize(w, r) == nil {
 		Whiteboard = r.FormValue("content")
 		WhiteboardExt = r.FormValue("ext")
 		problem_id := get_problem_id(Whiteboard)
@@ -88,7 +88,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 // return points of currently awarded users
 //-----------------------------------------------------------------
 func pointsHandler(w http.ResponseWriter, r *http.Request) {
-	if verifyPasscode(w, r) == nil {
+	if authorize(w, r) == nil {
 		subs := loadDB()
 		for k,v := range(ProcessedSubs) {
 			subs[k] = v
@@ -107,7 +107,7 @@ func pointsHandler(w http.ResponseWriter, r *http.Request) {
 // give one brownie point to a user
 //-----------------------------------------------------------------
 func give_pointHandler(w http.ResponseWriter, r *http.Request) {
-	if verifyPasscode(w, r) == nil {
+	if authorize(w, r) == nil {
 		s := GetSubmission(r.FormValue("sid"))
 		if s != nil {
 			s.Points++
@@ -123,7 +123,7 @@ func give_pointHandler(w http.ResponseWriter, r *http.Request) {
 // return all current NewSubs
 //-----------------------------------------------------------------
 func peekHandler(w http.ResponseWriter, r *http.Request) {
-	if verifyPasscode(w, r) == nil {
+	if authorize(w, r) == nil {
 		js, err := json.Marshal(NewSubs)
 		if err != nil {
 			fmt.Println(err.Error())
@@ -138,7 +138,7 @@ func peekHandler(w http.ResponseWriter, r *http.Request) {
 // Instructor retrieves code
 //-----------------------------------------------------------------
 func get_postHandler(w http.ResponseWriter, r *http.Request) {
-	if verifyPasscode(w, r) == nil {
+	if authorize(w, r) == nil {
 		e, err := strconv.Atoi(r.FormValue("post"))
 		if err != nil {
 			fmt.Println(err.Error)
@@ -158,7 +158,7 @@ func get_postHandler(w http.ResponseWriter, r *http.Request) {
 // Instructor retrieves all codes
 //-----------------------------------------------------------------
 func get_postsHandler(w http.ResponseWriter, r *http.Request) {
-	if verifyPasscode(w, r) == nil {
+	if authorize(w, r) == nil {
 		js, err := json.Marshal(NewSubs)
 		if err != nil {
 			fmt.Println(err.Error())
