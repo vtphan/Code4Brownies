@@ -37,7 +37,7 @@ Windows: run the server in a Powershell terminal
 
 db.csv is the student database, stored in comma-separated format.
 
-Open ST3 and starting coding!  There is a new menu on ST3 menu bar dedicated for instructors and students, respectively, to share codes.
+To communicate through the server, instructor and students must [install corresponding Sublime Text plug-ins](INSTALL).  Afther the plug-in is installed, there is a new menu on Sublime Text dedicated for instructor or students, respectively, to share codes.
 
 
 
