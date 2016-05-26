@@ -80,7 +80,6 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 		WhiteboardExt = r.FormValue("ext")
 		problem_id := get_problem_id(Whiteboard)
 		Problems[problem_id] = time.Now()
-		// fmt.Println(Problems)
 		fmt.Fprintf(w, "Content is saved to whiteboard.")
 	}
 }
@@ -90,7 +89,11 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 //-----------------------------------------------------------------
 func pointsHandler(w http.ResponseWriter, r *http.Request) {
 	if verifyPasscode(w, r) == nil {
-		js, err := json.Marshal(ProcessedSubs)
+		subs := loadDB()
+		for k,v := range(ProcessedSubs) {
+			subs[k] = v
+		}
+		js, err := json.Marshal(subs)
 		if err != nil {
 			fmt.Println(err.Error())
 		} else {

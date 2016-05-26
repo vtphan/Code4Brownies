@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strings"
 	"math/rand"
+	"time"
 )
 
 //-----------------------------------------------------------------
@@ -21,9 +22,8 @@ type Submission struct {
 	Pid  string   // problem id. Example:  # :: dynamic programming (scafolding)
 	Body string
 	Ext string
-	// SubmitTime time.Time
-	// CompleteTime time.Time
 	Points int
+	Duration int  // in seconds
 }
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -43,7 +43,7 @@ var ProcessedSubs = make(map[string]*Submission)
 func get_problem_id(program string) string {
 	things := strings.SplitN(program, "\n", 2)
 	if len(things) > 0 && len(things[0]) > 2 {
-		return strings.Trim(things[0][2:], " ")
+		return strings.Replace(strings.Trim(things[0][2:], " "), ",", "", -1)
 	}
 	return "none"
 }
@@ -61,10 +61,13 @@ func AddSubmission(uid, body, ext string) {
 	sem.Lock()
 	defer sem.Unlock()
 	pid := get_problem_id(body)
+	duration := 0
 	if _, ok := Problems[pid]; !ok {
 		pid = "undefined"
+	} else {
+		duration = int(time.Since(Problems[pid]).Seconds())
 	}
-	NewSubs = append(NewSubs, &Submission{RandStringRunes(10),uid,pid,body,ext,0})
+	NewSubs = append(NewSubs, &Submission{RandStringRunes(10),uid,pid,body,ext,0,duration})
 	if len(NewSubs) == 1 {
 		fmt.Print("\x07")
 	}
@@ -89,13 +92,13 @@ func ProcessSubmission(i int) *Submission {
 func PrintState() {
 	fmt.Println("------\n\tNewSubs:")
 	for _, s := range(NewSubs) {
-		fmt.Printf("Sid: %s\nUid: %s\nPid: %s\nExt: %s\nBody length: %d\nPoints: %d\n\n",
-			s.Sid, s.Uid, s.Pid, s.Ext, len(s.Body), s.Points )
+		fmt.Printf("Sid: %s\nUid: %s\nPid: %s\nExt: %s\nBody length: %d\nPoints: %d\nDuration: %d\n\n",
+			s.Sid, s.Uid, s.Pid, s.Ext, len(s.Body), s.Points, s.Duration )
 	}
 	fmt.Println("\n\tProcessedSubs:")
 	for _, s := range(ProcessedSubs) {
-		fmt.Printf("Sid: %s\nUid: %s\nPid: %s\nExt: %s\nBody length: %d\nPoints: %d\n\n",
-			s.Sid, s.Uid, s.Pid, s.Ext, len(s.Body), s.Points )
+		fmt.Printf("Sid: %s\nUid: %s\nPid: %s\nExt: %s\nBody length: %d\nPoints: %d\nDuration: %d\n\n",
+			s.Sid, s.Uid, s.Pid, s.Ext, len(s.Body), s.Points, s.Duration )
 	}
 	fmt.Println("------")
 }
