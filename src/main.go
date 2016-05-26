@@ -40,7 +40,7 @@ func informIPAddress() string {
 }
 
 //-----------------------------------------------------------------
-func writeToUserDB() {
+func writeDB() {
 	var err error
 	var outFile *os.File
 	if _, err = os.Stat(USER_DB); err == nil {
@@ -117,7 +117,7 @@ func prepareCleanup() {
 			select {
 			case <-quit:
 				fmt.Println("Preparing to stop server...")
-				writeToUserDB()
+				writeDB()
 				os.Exit(1)
 			}
 		}
