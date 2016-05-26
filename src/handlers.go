@@ -43,7 +43,7 @@ func submit_postHandler(w http.ResponseWriter, r *http.Request) {
 	AddSubmission(uid, body, ext)
 	fmt.Println(uid, "submitted.")
 	fmt.Fprintf(w, uid+" submitted succesfully.")
-	PrintState()
+	// PrintState()
 }
 
 //-----------------------------------------------------------------
@@ -115,7 +115,7 @@ func give_pointHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			fmt.Fprintf(w, "No submission is associated with this file.")
 		}
-		PrintState()
+		// PrintState()
 	}
 }
 
@@ -169,6 +169,6 @@ func get_postsHandler(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(js)
 		}
-		PrintState()
+		// PrintState()
 	}
 }
