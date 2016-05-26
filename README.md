@@ -21,17 +21,21 @@ Traditionally, coding is a very lonely process; it's hard to get instant feedbac
 Click [HERE](INSTALL).
 
 
-## Running the software
+## Running the server
+
+Students and the instructor communicate by sending messages to the server.  The server must be run on the same computer of the instructor.
 
 OS X: run the server in a terminal (OSX)
 ```
-    ./c4b_darwin_amd64 -db db/brownies.csv
+    ./c4b_darwin_amd64 -db db.csv
 ````
 
 Windows: run the server in a Powershell terminal
 ```
-    ./c4b_windows_amd64 -db db/brownies.csv
+    ./c4b_windows_amd64.exe -db db.csv
 ````
+
+db.csv is the student database, stored in comma-separated format.
 
 Open ST3 and starting coding!  There is a new menu on ST3 menu bar dedicated for instructors and students, respectively, to share codes.
 
