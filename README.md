@@ -23,7 +23,7 @@ Click [HERE](INSTALL).
 
 ## Running the server
 
-Students and the instructor communicate by sending messages to the server.  The server must be run on the same computer of the instructor.
+Students and the instructor communicate by sending messages to a server.  The server must be run on the same computer of the instructor.
 
 OS X: run the server in a terminal (OSX)
 ```
@@ -32,7 +32,7 @@ OS X: run the server in a terminal (OSX)
 
 Windows: run the server in a Powershell terminal
 ```
-    ./c4b_windows_amd64.exe -db db.csv
+    .\c4b_windows_amd64.exe -db db.csv
 ````
 
 db.csv is the student database, stored in comma-separated format.
