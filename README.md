@@ -3,7 +3,7 @@ Traditionally, coding is a very lonely process; it's hard to get instant feedbac
 
 Code sharing is achieved through Sublime Text editors on students' and teacher's laptop talking to each other through a server run on the teacher's laptop.
 
-<center> <img src="diagram.png"> </center>
+<center> <img src="diagram.png" width=70%> </center>
 
 ## Basic Workflow
 
