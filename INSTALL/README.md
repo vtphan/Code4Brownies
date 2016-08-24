@@ -33,6 +33,7 @@ Finally, donwload the server and run it on the instructor's machine.
 
 - [Windows 64bit](https://github.com/vtphan/Code4Brownies/raw/master/INSTALL/c4b_windows_amd64.exe)
 - [Mac 64bit](https://github.com/vtphan/Code4Brownies/raw/master/INSTALL/c4b_darwin_amd64).
+- [Linux 64bit](https://github.com/vtphan/Code4Brownies/raw/master/INSTALL/c4b_linux_amd64).
 - Create a directory called "db" to store student records (in CSV format).
 
 # Uninstall instructor's plugin
