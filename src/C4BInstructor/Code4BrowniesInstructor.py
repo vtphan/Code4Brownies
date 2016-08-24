@@ -79,7 +79,7 @@ class c4biGetAllCommand(sublime_plugin.TextCommand):
 			entries = json.loads(response)
 			if entries:
 				for entry in entries:
-					print(entry)
+					# print(entry)
 					ext = '' if entry['Ext']=='' else '.'+entry['Ext']
 					userFile = os.path.join(POSTS_DIR, entry['Sid'] + ext)
 					with open(userFile, 'w', encoding='utf-8') as fp:
