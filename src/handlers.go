@@ -90,7 +90,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 func pointsHandler(w http.ResponseWriter, r *http.Request) {
 	if authorize(w, r) == nil {
 		subs := loadDB()
-		for k,v := range(ProcessedSubs) {
+		for k, v := range ProcessedSubs {
 			subs[k] = v
 		}
 		js, err := json.Marshal(subs)
