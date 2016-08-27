@@ -85,7 +85,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //-----------------------------------------------------------------
-// return points of currently awarded users
+// return points of all users
 //-----------------------------------------------------------------
 func pointsHandler(w http.ResponseWriter, r *http.Request) {
 	if authorize(w, r) == nil {
@@ -108,12 +108,21 @@ func pointsHandler(w http.ResponseWriter, r *http.Request) {
 //-----------------------------------------------------------------
 func give_pointHandler(w http.ResponseWriter, r *http.Request) {
 	if authorize(w, r) == nil {
-		s := GetSubmission(r.FormValue("sid"))
-		if s != nil {
-			s.Points++
-			fmt.Fprintf(w, "Point awarded to "+s.Uid)
-		} else {
-			fmt.Fprintf(w, "No submission is associated with this file.")
+		sub := GetSubmission(r.FormValue("sid"))
+		if sub != nil {
+			stage := r.FormValue("stage")
+			if stage == "1" {
+				total := 0
+				for _, s := range ProcessedSubs {
+					if s.Uid == sub.Uid {
+						total += s.Points
+					}
+				}
+				fmt.Fprintf(w, fmt.Sprintf("%s (%d)\n", sub.Uid, total))
+			} else if stage == "2" {
+				sub.Points++
+				fmt.Fprintf(w, "Point awarded to "+sub.Uid)
+			}
 		}
 		// PrintState()
 	}
@@ -135,7 +144,7 @@ func peekHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //-----------------------------------------------------------------
-// Instructor retrieves code
+// Instructor retrieves a new submission
 //-----------------------------------------------------------------
 func get_postHandler(w http.ResponseWriter, r *http.Request) {
 	if authorize(w, r) == nil {
@@ -155,7 +164,7 @@ func get_postHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //-----------------------------------------------------------------
-// Instructor retrieves all codes
+// Instructor retrieves all new submissions
 //-----------------------------------------------------------------
 func get_postsHandler(w http.ResponseWriter, r *http.Request) {
 	if authorize(w, r) == nil {

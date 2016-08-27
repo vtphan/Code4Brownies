@@ -25,6 +25,7 @@ try:
 except:
 	pass
 
+# ------------------------------------------------------------------
 def c4biRequest(url, data):
 	req = urllib.request.Request(url, data)
 	try:
@@ -37,6 +38,7 @@ def c4biRequest(url, data):
 	return None
 
 
+# ------------------------------------------------------------------
 class c4biBroadcastCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		content = self.view.substr(sublime.Region(0, self.view.size()))
@@ -53,6 +55,9 @@ class c4biBroadcastCommand(sublime_plugin.TextCommand):
 				sublime.status_message(response)
 
 
+# ------------------------------------------------------------------
+# Instructor retrieves all current and past points of all users.
+# ------------------------------------------------------------------
 class c4biPointsCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_POINTS_PATH)
@@ -69,7 +74,9 @@ class c4biPointsCommand(sublime_plugin.TextCommand):
 			users = [ "%s,%s" % (k,v) for k,v in sorted(users.items()) ]
 			new_view.insert(edit, 0, "\n".join(users))
 
-
+# ------------------------------------------------------------------
+# Instructor retrieves all posts.
+# ------------------------------------------------------------------
 class c4biGetAllCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_REQUEST_ENTRIES_PATH)
@@ -88,7 +95,9 @@ class c4biGetAllCommand(sublime_plugin.TextCommand):
 			else:
 				sublime.status_message("Queue is empty.")
 
-
+# ------------------------------------------------------------------
+# Instructor looks at new posts and is able to select one.
+# ------------------------------------------------------------------
 class c4biPeekCommand(sublime_plugin.TextCommand):
 	def request_entry(self, users, edit):
 		def foo(selected):
@@ -99,6 +108,7 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 			response = c4biRequest(url,data)
 			if response is not None:
 				json_obj = json.loads(response)
+				print(json_obj)
 				ext = '' if json_obj['Ext']=='' else '.'+json_obj['Ext']
 				userFile = os.path.join(POSTS_DIR, json_obj['Sid'] + ext)
 				with open(userFile, 'w', encoding='utf-8') as fp:
@@ -121,7 +131,11 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 				else:
 					sublime.status_message("Queue is empty.")
 
-
+# ------------------------------------------------------------------
+# Instructor rewards a brownie point.
+# Stage 1: find out how many points the person currently has.
+# Stage 2: decide to reward point.
+# ------------------------------------------------------------------
 class c4biAwardPointCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		this_file_name = self.view.file_name()
@@ -129,12 +143,16 @@ class c4biAwardPointCommand(sublime_plugin.TextCommand):
 			sid = this_file_name.split('.')[0]
 			sid = ntpath.basename(sid)
 			url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROWNIE_PATH)
-			data = urllib.parse.urlencode({'sid':sid}).encode('ascii')
+			data = urllib.parse.urlencode({'sid':sid, 'stage':'1'}).encode('ascii')
 			response = c4biRequest(url,data)
-			if response is not None:
-				# sublime.status_message(response)
-				sublime.message_dialog(response)
+			if response=="":
+				sublime.message_dialog("No person is associated with this file.")
+			elif sublime.ok_cancel_dialog("Reward point?\n" + response):
+				data = urllib.parse.urlencode({'sid':sid, 'stage':'2'}).encode('ascii')
+				response = c4biRequest(url,data)
+				sublime.status_message(response)
 
+# ------------------------------------------------------------------
 class c4biAboutCommand(sublime_plugin.WindowCommand):
 	def run(self):
 		try:
@@ -143,7 +161,7 @@ class c4biAboutCommand(sublime_plugin.WindowCommand):
 			version = 'Unknown'
 		sublime.message_dialog("Code4Brownies (v%s)\nCopyright © 2015-2016 Vinhthuy Phan" % version)
 
-
+# ------------------------------------------------------------------
 class c4biUpgrade(sublime_plugin.WindowCommand):
 	def run(self):
 		if sublime.ok_cancel_dialog("Are you sure you want to upgrade Code4Brownies to the latest version?"):
