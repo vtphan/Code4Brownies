@@ -147,7 +147,7 @@ class c4biAwardPointCommand(sublime_plugin.TextCommand):
 			response = c4biRequest(url,data)
 			if response=="":
 				sublime.message_dialog("No person is associated with this file.")
-			elif sublime.ok_cancel_dialog("Reward point?\n" + response):
+			elif sublime.ok_cancel_dialog("Give "+response+" a point?"):
 				data = urllib.parse.urlencode({'sid':sid, 'stage':'2'}).encode('ascii')
 				response = c4biRequest(url,data)
 				sublime.status_message(response)

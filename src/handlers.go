@@ -118,7 +118,7 @@ func give_pointHandler(w http.ResponseWriter, r *http.Request) {
 						total += s.Points
 					}
 				}
-				fmt.Fprintf(w, fmt.Sprintf("%s (%d)\n", sub.Uid, total))
+				fmt.Fprintf(w, fmt.Sprintf("%s (%d)", sub.Uid, total))
 			} else if stage == "2" {
 				sub.Points++
 				fmt.Fprintf(w, "Point awarded to "+sub.Uid)
