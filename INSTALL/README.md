@@ -21,6 +21,8 @@ import os; import shutil; package_path = os.path.join(sublime.packages_path(), "
 
 # Install instructor's plug-in
 
+To use Code4Brownies as an instructor, you will need to install Sublime Text (ST3), a plug in to ST3, and the server to run on your laptop. Instructor and students communicate via the server.
+
 First, install [Sublime Text 3](https://www.sublimetext.com/3).
 
 Open Sublime Text, go to View, click Show Console, copy this code, paste to console and hit enter:
