@@ -38,6 +38,26 @@ Finally, donwload the server and run it on the instructor's machine.
 - [Linux 64bit](https://github.com/vtphan/Code4Brownies/raw/master/INSTALL/c4b_linux_amd64).
 - Create a directory called "db" to store student records (in CSV format).
 
+### Running the server on the instructor's laptop
+
+Students and the instructor communicate by sending messages to a server.  The server should be run on the same computer of the instructor.
+
+OS X or Linux: run the server in a terminal (OSX)
+```
+    ./c4b_darwin_amd64 -db db.csv
+````
+
+Windows: run the server in a Powershell terminal
+```
+    .\c4b_windows_amd64.exe -db db.csv
+````
+
+db.csv is the student database, stored in comma-separated format.
+
+To communicate through the server, instructor and students must [install corresponding Sublime Text plug-ins](INSTALL).  Afther the plug-in is installed, there is a new menu on Sublime Text dedicated for instructor or students, respectively, to share codes.
+
+
+
 # Uninstall instructor's plugin
 
 Open Sublime Text, go to View, click Show Console, copy this code, paste to console and hit enter:
