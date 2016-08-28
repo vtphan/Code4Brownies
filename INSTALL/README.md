@@ -25,7 +25,7 @@ To use Code4Brownies as an instructor, you will need to install Sublime Text (ST
 
 First, install [Sublime Text 3](https://www.sublimetext.com/3).
 
-Open Sublime Text, go to View, click Show Console, copy this code, paste to console and hit enter:
+Net, open Sublime Text, go to View, click Show Console, copy the code below, paste it to console and hit enter:
 
 ```
 import os; package_path = os.path.join(sublime.packages_path(), "C4BInstructor"); os.mkdir(package_path) if not os.path.isdir(package_path) else print("dir exists"); c4b_py = os.path.join(package_path, "Code4BrowniesInstructor.py") ; c4b_menu = os.path.join(package_path, "Main.sublime-menu"); c4b_version = os.path.join(package_path, "VERSION"); import urllib.request; urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BInstructor/Code4BrowniesInstructor.py", c4b_py); urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BInstructor/Main.sublime-menu", c4b_menu); urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/VERSION", c4b_version)
