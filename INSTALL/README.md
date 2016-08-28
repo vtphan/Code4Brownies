@@ -40,7 +40,7 @@ Finally, donwload the server and run it on the instructor's machine.
 
 ### Running the server on the instructor's laptop
 
-Students and the instructor communicate by sending messages to a server.  The server should be run on the same computer of the instructor.
+Students and the instructor communicate by sending messages to a server.  The server should be run on the the instructor's computer.
 
 OS X or Linux: run the server in a terminal (OSX)
 ```
@@ -53,9 +53,6 @@ Windows: run the server in a Powershell terminal
 ````
 
 db.csv is the student database, stored in comma-separated format.
-
-To communicate through the server, instructor and students must [install corresponding Sublime Text plug-ins](INSTALL).  Afther the plug-in is installed, there is a new menu on Sublime Text dedicated for instructor or students, respectively, to share codes.
-
 
 
 # Uninstall instructor's plugin
