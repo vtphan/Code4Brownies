@@ -42,14 +42,19 @@ Finally, donwload the server and run it on the instructor's machine.
 
 Students and the instructor communicate by sending messages to a server.  The server should be run on the the instructor's computer.
 
-OS X or Linux: run the server in a terminal (OSX)
+Windows: run the server in a Powershell terminal
+```
+    .\c4b_windows_amd64.exe -db db.csv
+````
+
+OS X: run the server in a terminal
 ```
     ./c4b_darwin_amd64 -db db.csv
 ````
 
-Windows: run the server in a Powershell terminal
+Linux: run the server in a bash terminal
 ```
-    .\c4b_windows_amd64.exe -db db.csv
+    ./c4b_linux_amd64 -db db.csv
 ````
 
 db.csv is the student database, stored in comma-separated format.
