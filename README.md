@@ -25,24 +25,4 @@ Code sharing is achieved through Sublime Text editors on students' and teacher's
 Click [HERE](INSTALL).
 
 
-## Running the server
-
-Students and the instructor communicate by sending messages to a server.  The server must be run on the same computer of the instructor.
-
-OS X: run the server in a terminal (OSX)
-```
-    ./c4b_darwin_amd64 -db db.csv
-````
-
-Windows: run the server in a Powershell terminal
-```
-    .\c4b_windows_amd64.exe -db db.csv
-````
-
-db.csv is the student database, stored in comma-separated format.
-
-To communicate through the server, instructor and students must [install corresponding Sublime Text plug-ins](INSTALL).  Afther the plug-in is installed, there is a new menu on Sublime Text dedicated for instructor or students, respectively, to share codes.
-
-
-
 
