@@ -7,6 +7,7 @@ import (
 	"encoding/csv"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"math/rand"
 	"net"
@@ -17,13 +18,12 @@ import (
 	"strconv"
 	"syscall"
 	"time"
-	"io"
 )
 
 var ADDR = ""
 var PORT = "4030"
 var USER_DB string
-
+var SERVER = ""
 //-----------------------------------------------------------------
 func informIPAddress() string {
 	addrs, err := net.InterfaceAddrs()
@@ -32,8 +32,8 @@ func informIPAddress() string {
 	}
 	for _, a := range addrs {
 		if ipnet, ok := a.(*net.IPNet); ok && ipnet.IP.IsGlobalUnicast() {
-			fmt.Println("Server address http://" + ipnet.IP.String() + ":" + PORT)
-			return ipnet.IP.String()
+			// fmt.Println("Server address http://" + ipnet.IP.String() + ":" + PORT)
+			return ipnet.IP.String() + ":" + PORT
 		}
 	}
 	return ""
@@ -100,11 +100,12 @@ func loadDB() map[string]*Submission {
 		points, err := strconv.Atoi(record[2])
 		duration, err := strconv.Atoi(record[3])
 		sid := record[4]
-		s := &Submission{Uid: uid, Pid: pid, Points: points, Duration: duration, Sid:sid}
+		s := &Submission{Uid: uid, Pid: pid, Points: points, Duration: duration, Sid: sid}
 		entries[sid] = s
 	}
 	return entries
 }
+
 //-----------------------------------------------------------------
 
 func prepareCleanup() {
@@ -126,7 +127,9 @@ func prepareCleanup() {
 
 //-----------------------------------------------------------------
 func main() {
-	informIPAddress()
+	SERVER = informIPAddress()
+	fmt.Println("Server address:", "http://" + SERVER)
+
 	rand.Seed(time.Now().UnixNano())
 	USER_DB = filepath.Join(".", "C4B_DB.csv")
 	flag.StringVar(&USER_DB, "db", USER_DB, "user database in csv format, which consists of UID,POINTS.")
@@ -137,6 +140,7 @@ func main() {
 	http.HandleFunc("/submit_post", submit_postHandler) // rename this
 	http.HandleFunc("/my_points", my_pointsHandler)
 	http.HandleFunc("/receive_broadcast", receive_broadcastHandler)
+	http.HandleFunc("/query_poll", query_pollHandler)
 
 	// teacher handlers
 	http.HandleFunc("/points", pointsHandler)
@@ -145,6 +149,8 @@ func main() {
 	http.HandleFunc("/broadcast", broadcastHandler)
 	http.HandleFunc("/get_post", get_postHandler)
 	http.HandleFunc("/get_posts", get_postsHandler)
+	http.HandleFunc("/start_poll", start_pollHandler)
+	http.HandleFunc("/poll", view_pollHandler)
 	err := http.ListenAndServe("0.0.0.0:"+PORT, nil)
 	if err != nil {
 		panic(err.Error() + "\n")

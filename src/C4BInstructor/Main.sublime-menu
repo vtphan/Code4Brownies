@@ -24,6 +24,16 @@
                 "command": "c4bi_peek"
             },
             {
+                "caption": "Open/close poll",
+                "id": "c4biStartPoll",
+                "command": "c4bi_start_poll"
+            },
+            {
+                "caption": "View poll",
+                "id": "c4biViewPoll",
+                "command": "c4bi_view_poll"
+            },
+            {
                 "caption": "Points",
                 "id": "c4biPoints",
                 "command": "c4bi_points"
