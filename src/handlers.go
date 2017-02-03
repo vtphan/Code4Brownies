@@ -112,7 +112,9 @@ func authorize(w http.ResponseWriter, r *http.Request) error {
 func start_pollHandler(w http.ResponseWriter, r *http.Request) {
 	if authorize(w, r) == nil {
 		POLL_MODE = !POLL_MODE
-		// fmt.Println(POLL_MODE)
+		if !POLL_MODE {
+			POLL_RESULT = make(map[string]int)
+		}
 		fmt.Fprint(w, POLL_MODE)
 	} else {
 		fmt.Fprint(w, "Unauthorized")
