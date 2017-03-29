@@ -19,6 +19,7 @@ c4bi_POINTS_PATH = "points"
 c4bi_REQUEST_ENTRY_PATH = "get_post"
 c4bi_REQUEST_ENTRIES_PATH = "get_posts"
 c4bi_START_POLL_PATH = "start_poll"
+c4bi_NEW_PROBLEM_PATH = "new_problem"
 TIMEOUT = 10
 
 POSTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Posts")
@@ -81,6 +82,19 @@ class c4biPointsCommand(sublime_plugin.TextCommand):
 			new_view = self.view.window().new_file()
 			users = [ "%s,%s" % (k,v) for k,v in sorted(users.items()) ]
 			new_view.insert(edit, 0, "\n".join(users))
+
+# ------------------------------------------------------------------
+# Instructor retrieves all posts.
+# ------------------------------------------------------------------
+class c4biNewProblemCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		this_file_name = self.view.file_name()
+		lines = open(this_file_name).readlines()
+		prob_des = "" if len(lines)==0 else lines[0]
+		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_NEW_PROBLEM_PATH)
+		data = urllib.parse.urlencode({'description':prob_des}).encode('ascii')
+		c4biRequest(url,data)
+
 
 # ------------------------------------------------------------------
 # Instructor retrieves all posts.

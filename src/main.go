@@ -24,6 +24,7 @@ var ADDR = ""
 var PORT = "4030"
 var USER_DB string
 var SERVER = ""
+
 //-----------------------------------------------------------------
 func informIPAddress() string {
 	addrs, err := net.InterfaceAddrs()
@@ -128,7 +129,7 @@ func prepareCleanup() {
 //-----------------------------------------------------------------
 func main() {
 	SERVER = informIPAddress()
-	fmt.Println("Server address:", "http://" + SERVER)
+	fmt.Println("Server address:", "http://"+SERVER)
 
 	rand.Seed(time.Now().UnixNano())
 	USER_DB = filepath.Join(".", "C4B_DB.csv")
@@ -143,6 +144,7 @@ func main() {
 	http.HandleFunc("/query_poll", query_pollHandler)
 
 	// teacher handlers
+	http.HandleFunc("/new_problem", new_problemHandler)
 	http.HandleFunc("/points", pointsHandler)
 	http.HandleFunc("/give_point", give_pointHandler)
 	http.HandleFunc("/peek", peekHandler)

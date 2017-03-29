@@ -4,10 +4,10 @@
 package main
 
 import (
-	"sync"
 	"fmt"
-	"strings"
 	"math/rand"
+	"strings"
+	"sync"
 	"time"
 )
 
@@ -17,13 +17,13 @@ import (
 //-----------------------------------------------------------------
 
 type Submission struct {
-	Sid  string   // submission id
-	Uid  string   // user id
-	Pid  string   // problem id. Example:  # :: dynamic programming (scafolding)
-	Body string
-	Ext string
-	Points int
-	Duration int  // in seconds
+	Sid      string // submission id
+	Uid      string // user id
+	Pid      string // problem id. Example:  # :: dynamic programming (scafolding)
+	Body     string
+	Ext      string
+	Points   int
+	Duration int // in seconds
 }
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -60,14 +60,8 @@ func GetSubmission(sid string) *Submission {
 func AddSubmission(uid, body, ext string) {
 	sem.Lock()
 	defer sem.Unlock()
-	pid := get_problem_id(body)
-	duration := 0
-	if _, ok := Problems[pid]; !ok {
-		pid = "undefined"
-	} else {
-		duration = int(time.Since(Problems[pid]).Seconds())
-	}
-	NewSubs = append(NewSubs, &Submission{RandStringRunes(10),uid,pid,body,ext,0,duration})
+	duration := int(time.Since(ProblemStartingTime).Seconds())
+	NewSubs = append(NewSubs, &Submission{RandStringRunes(10), uid, ProblemID, body, ext, 0, duration})
 	if len(NewSubs) == 1 {
 		fmt.Print("\x07")
 	}
@@ -84,6 +78,7 @@ func ProcessSubmission(i int) *Submission {
 		s := NewSubs[i]
 		NewSubs = append(NewSubs[:i], NewSubs[i+1:]...)
 		ProcessedSubs[s.Sid] = s
+		fmt.Println(s)
 		return s
 	}
 }
@@ -91,16 +86,14 @@ func ProcessSubmission(i int) *Submission {
 // ------------------------------------------------------------------
 func PrintState() {
 	fmt.Println("------\n\tNewSubs:")
-	for _, s := range(NewSubs) {
+	for _, s := range NewSubs {
 		fmt.Printf("Sid: %s\nUid: %s\nPid: %s\nExt: %s\nBody length: %d\nPoints: %d\nDuration: %d\n\n",
-			s.Sid, s.Uid, s.Pid, s.Ext, len(s.Body), s.Points, s.Duration )
+			s.Sid, s.Uid, s.Pid, s.Ext, len(s.Body), s.Points, s.Duration)
 	}
 	fmt.Println("\n\tProcessedSubs:")
-	for _, s := range(ProcessedSubs) {
+	for _, s := range ProcessedSubs {
 		fmt.Printf("Sid: %s\nUid: %s\nPid: %s\nExt: %s\nBody length: %d\nPoints: %d\nDuration: %d\n\n",
-			s.Sid, s.Uid, s.Pid, s.Ext, len(s.Body), s.Points, s.Duration )
+			s.Sid, s.Uid, s.Pid, s.Ext, len(s.Body), s.Points, s.Duration)
 	}
 	fmt.Println("------")
 }
-
-

@@ -14,6 +14,11 @@
                 "command": "c4bi_get_all"
             },
             {
+                "caption": "New problem",
+                "id": "c4biNewProblem",
+                "command": "c4bi_new_problem"
+            },
+            {
                 "caption": "Reward",
                 "id": "c4biAwardPoint",
                 "command": "c4bi_award_point"

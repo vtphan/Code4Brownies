@@ -7,16 +7,20 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"html/template"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
-	"html/template"
 )
 
 var Whiteboard string
 var WhiteboardExt string
-var Problems = make(map[string]time.Time)
+
+var ProblemStartingTime time.Time
+var ProblemDescription string
+var ProblemID string
+
 var POLL_MODE = false
 var POLL_RESULT = make(map[string]int)
 
@@ -38,7 +42,7 @@ func query_pollHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err.Error())
 		} else {
 			w.Header().Set("Content-Type", "application/json")
-		   w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Access-Control-Allow-Origin", "*")
 			w.Write(js)
 		}
 	}
@@ -121,7 +125,6 @@ func start_pollHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
 //-----------------------------------------------------------------
 // View poll results
 //-----------------------------------------------------------------
@@ -149,9 +152,20 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	if authorize(w, r) == nil {
 		Whiteboard = r.FormValue("content")
 		WhiteboardExt = r.FormValue("ext")
-		problem_id := get_problem_id(Whiteboard)
-		Problems[problem_id] = time.Now()
 		fmt.Fprintf(w, "Content is saved to whiteboard.")
+	}
+}
+
+//-----------------------------------------------------------------
+// instructor broadcast contents to students
+//-----------------------------------------------------------------
+func new_problemHandler(w http.ResponseWriter, r *http.Request) {
+	if authorize(w, r) == nil {
+		ProblemStartingTime = time.Now()
+		ProblemDescription = r.FormValue("description")
+		ProblemID = RandStringRunes(5)
+		fmt.Println(ProblemStartingTime, ProblemID, ProblemDescription)
+		fmt.Fprintf(w, "Clock is restarted.")
 	}
 }
 
