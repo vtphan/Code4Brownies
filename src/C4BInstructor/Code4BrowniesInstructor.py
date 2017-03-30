@@ -13,7 +13,7 @@ import webbrowser
 
 SERVER_ADDR = "http://localhost:4030"
 c4bi_BROADCAST_PATH = "broadcast"
-c4bi_BROWNIE_PATH = "give_point"
+c4bi_BROWNIE_PATH = "give_points"
 c4bi_PEEK_PATH = "peek"
 c4bi_POINTS_PATH = "points"
 c4bi_REQUEST_ENTRY_PATH = "get_post"
@@ -74,13 +74,15 @@ class c4biPointsCommand(sublime_plugin.TextCommand):
 		response = c4biRequest(url,data)
 		if response is not None:
 			json_obj = json.loads(response)
-			users = {}
+			points, entries = {}, {}
 			for k,v in json_obj.items():
-				if v['Uid'] not in users:
-					users[v['Uid']] = 0
-				users[v['Uid']] += v['Points']
+				if v['Uid'] not in points:
+					points[v['Uid']] = 0
+					entries[v['Uid']] = 0
+				points[v['Uid']] += v['Points']
+				entries[v['Uid']] += 1
 			new_view = self.view.window().new_file()
-			users = [ "%s,%s" % (k,v) for k,v in sorted(users.items()) ]
+			users = [ "%s,%s,%s" % (k,entries[k],points[k]) for k,v in sorted(points.items()) ]
 			new_view.insert(edit, 0, "\n".join(users))
 
 # ------------------------------------------------------------------
@@ -91,10 +93,12 @@ class c4biNewProblemCommand(sublime_plugin.TextCommand):
 		this_file_name = self.view.file_name()
 		lines = open(this_file_name).readlines()
 		prob_des = "" if len(lines)==0 else lines[0]
+		prob_des = prob_des.strip('"').strip().replace(",","_")
 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_NEW_PROBLEM_PATH)
 		data = urllib.parse.urlencode({'description':prob_des}).encode('ascii')
-		c4biRequest(url,data)
-
+		response = c4biRequest(url,data)
+		if response is not None:
+			sublime.status_message(response)
 
 # ------------------------------------------------------------------
 # Instructor retrieves all posts.
@@ -169,25 +173,41 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 					sublime.status_message("Queue is empty.")
 
 # ------------------------------------------------------------------
-# Instructor rewards a brownie point.
-# Stage 1: find out how many points the person currently has.
-# Stage 2: decide to reward point.
+# Instructor rewards brownies.
 # ------------------------------------------------------------------
-class c4biAwardPointCommand(sublime_plugin.TextCommand):
+class c4biAwardPoint1Command(sublime_plugin.TextCommand):
 	def run(self, edit):
-		this_file_name = self.view.file_name()
-		if this_file_name:
-			sid = this_file_name.split('.')[0]
-			sid = ntpath.basename(sid)
-			url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROWNIE_PATH)
-			data = urllib.parse.urlencode({'sid':sid, 'stage':'1'}).encode('ascii')
-			response = c4biRequest(url,data)
-			if response=="":
-				sublime.message_dialog("No person is associated with this file.")
-			elif sublime.ok_cancel_dialog("Give "+response+" a point?"):
-				data = urllib.parse.urlencode({'sid':sid, 'stage':'2'}).encode('ascii')
-				response = c4biRequest(url,data)
-				sublime.status_message(response)
+		award_points(self, edit, 1)
+
+class c4biAwardPoint2Command(sublime_plugin.TextCommand):
+	def run(self, edit):
+		award_points(self, edit, 2)
+
+class c4biAwardPoint3Command(sublime_plugin.TextCommand):
+	def run(self, edit):
+		award_points(self, edit, 3)
+
+class c4biAwardPoint4Command(sublime_plugin.TextCommand):
+	def run(self, edit):
+		award_points(self, edit, 4)
+
+class c4biAwardPoint5Command(sublime_plugin.TextCommand):
+	def run(self, edit):
+		award_points(self, edit, 5)
+
+def award_points(self, edit, points):
+	this_file_name = self.view.file_name()
+	if this_file_name:
+		sid = this_file_name.split('.')[0]
+		sid = ntpath.basename(sid)
+		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROWNIE_PATH)
+		data = urllib.parse.urlencode({'sid':sid, 'points':points}).encode('ascii')
+		response = c4biRequest(url,data)
+		if response:
+			sublime.status_message(response)
+			self.view.window().run_command('close')
+		else:
+			sublime.status_message("no uid associated with this file.")
 
 # ------------------------------------------------------------------
 class c4biAboutCommand(sublime_plugin.WindowCommand):

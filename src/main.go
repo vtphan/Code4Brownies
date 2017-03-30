@@ -20,10 +20,7 @@ import (
 	"time"
 )
 
-var ADDR = ""
-var PORT = "4030"
-var USER_DB string
-var SERVER = ""
+
 
 //-----------------------------------------------------------------
 func informIPAddress() string {
@@ -58,7 +55,7 @@ func writeDB() {
 	fmt.Println(t.Format("Mon Jan 2 15:04:05 MST 2006: write data to ") + USER_DB)
 	w := csv.NewWriter(outFile)
 	for _, sub := range ProcessedSubs {
-		record := []string{sub.Uid, sub.Pid, strconv.Itoa(sub.Points), strconv.Itoa(sub.Duration), sub.Sid}
+		record := []string{sub.Uid, sub.Pid, strconv.Itoa(sub.Points), strconv.Itoa(sub.Duration), sub.Sid, sub.Pdes}
 		if err := w.Write(record); err != nil {
 			log.Fatalln("error writing record to csv:", err)
 		}
@@ -127,6 +124,17 @@ func prepareCleanup() {
 }
 
 //-----------------------------------------------------------------
+func Authorize(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Host != "localhost:4030" {
+			w.WriteHeader(http.StatusUnauthorized)
+			fmt.Fprint(w, "Unauthorized")
+		} else {
+			fn(w, r)
+		}
+	}
+}
+//-----------------------------------------------------------------
 func main() {
 	SERVER = informIPAddress()
 	fmt.Println("Server address:", "http://"+SERVER)
@@ -143,16 +151,19 @@ func main() {
 	http.HandleFunc("/receive_broadcast", receive_broadcastHandler)
 	http.HandleFunc("/query_poll", query_pollHandler)
 
-	// teacher handlers
-	http.HandleFunc("/new_problem", new_problemHandler)
-	http.HandleFunc("/points", pointsHandler)
-	http.HandleFunc("/give_point", give_pointHandler)
-	http.HandleFunc("/peek", peekHandler)
-	http.HandleFunc("/broadcast", broadcastHandler)
-	http.HandleFunc("/get_post", get_postHandler)
-	http.HandleFunc("/get_posts", get_postsHandler)
-	http.HandleFunc("/start_poll", start_pollHandler)
+	// public handlers
 	http.HandleFunc("/poll", view_pollHandler)
+
+	// teacher handlers
+	http.HandleFunc("/new_problem", Authorize(new_problemHandler))
+	http.HandleFunc("/points", Authorize(pointsHandler))
+	http.HandleFunc("/give_points", Authorize(give_pointsHandler))
+	http.HandleFunc("/peek", Authorize(peekHandler))
+	http.HandleFunc("/broadcast", Authorize(broadcastHandler))
+	http.HandleFunc("/get_post", Authorize(get_postHandler))
+	http.HandleFunc("/get_posts", Authorize(get_postsHandler))
+	http.HandleFunc("/start_poll", Authorize(start_pollHandler))
+
 	err := http.ListenAndServe("0.0.0.0:"+PORT, nil)
 	if err != nil {
 		panic(err.Error() + "\n")

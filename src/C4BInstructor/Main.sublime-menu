@@ -21,7 +21,33 @@
             {
                 "caption": "Reward",
                 "id": "c4biAwardPoint",
-                "command": "c4bi_award_point"
+                "children": [
+                    {
+                        "caption": "1",
+                        "id": "c4biAwardPoint1",
+                        "command": "c4bi_award_point1"
+                    },
+                    {
+                        "caption": "2",
+                        "id": "c4biAwardPoint2",
+                        "command": "c4bi_award_point2"
+                    },
+                    {
+                        "caption": "3",
+                        "id": "c4biAwardPoint3",
+                        "command": "c4bi_award_point3"
+                    },
+                    {
+                        "caption": "4",
+                        "id": "c4biAwardPoint4",
+                        "command": "c4bi_award_point4"
+                    },
+                    {
+                        "caption": "5",
+                        "id": "c4biAwardPoint5",
+                        "command": "c4bi_award_point5"
+                    }
+                ]
             },
             {
                 "caption": "Peek",

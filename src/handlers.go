@@ -5,7 +5,6 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -14,22 +13,9 @@ import (
 	"time"
 )
 
-var Whiteboard string
-var WhiteboardExt string
-
-var ProblemStartingTime time.Time
-var ProblemDescription string
-var ProblemID string
-
-var POLL_MODE = false
-var POLL_RESULT = make(map[string]int)
-
-type Data struct {
-	SERVER string
-}
 
 //-----------------------------------------------------------------
-// Student's handlers
+// STUDENT's HANDLERS
 //-----------------------------------------------------------------
 
 //-----------------------------------------------------------------
@@ -53,13 +39,16 @@ func query_pollHandler(w http.ResponseWriter, r *http.Request) {
 //-----------------------------------------------------------------
 func my_pointsHandler(w http.ResponseWriter, r *http.Request) {
 	user := r.FormValue("uid")
-	total := 0
+	entries, points := 0, 0
 	for _, s := range ProcessedSubs {
 		if user == s.Uid {
-			total += s.Points
+			if s.Points > 0 {
+				points += s.Points
+				entries += 1
+			}
 		}
 	}
-	mesg := fmt.Sprintf("%d points for %s\n", total, user)
+	mesg := fmt.Sprintf("%s: %d entries, %d points.\n", user, entries, points)
 	fmt.Fprintf(w, mesg)
 }
 
@@ -99,31 +88,8 @@ func receive_broadcastHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //-----------------------------------------------------------------
-// Instructor's handlers
+// PUBLIC HANDLERS
 //-----------------------------------------------------------------
-
-func authorize(w http.ResponseWriter, r *http.Request) error {
-	if r.Host != "localhost:4030" {
-		w.WriteHeader(http.StatusUnauthorized)
-		return errors.New("Unauthorized access")
-	}
-	return nil
-}
-
-//-----------------------------------------------------------------
-// Collect poll answers from students
-//-----------------------------------------------------------------
-func start_pollHandler(w http.ResponseWriter, r *http.Request) {
-	if authorize(w, r) == nil {
-		POLL_MODE = !POLL_MODE
-		if !POLL_MODE {
-			POLL_RESULT = make(map[string]int)
-		}
-		fmt.Fprint(w, POLL_MODE)
-	} else {
-		fmt.Fprint(w, "Unauthorized")
-	}
-}
 
 //-----------------------------------------------------------------
 // View poll results
@@ -145,71 +111,72 @@ func view_pollHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+
+//-----------------------------------------------------------------
+// INSTRUCTOR's HANDLERS
+//-----------------------------------------------------------------
+
+//-----------------------------------------------------------------
+// Collect poll answers from students
+//-----------------------------------------------------------------
+func start_pollHandler(w http.ResponseWriter, r *http.Request) {
+	POLL_MODE = !POLL_MODE
+	if !POLL_MODE {
+		POLL_RESULT = make(map[string]int)
+	}
+	fmt.Fprint(w, POLL_MODE)
+}
+
 //-----------------------------------------------------------------
 // instructor broadcast contents to students
 //-----------------------------------------------------------------
 func broadcastHandler(w http.ResponseWriter, r *http.Request) {
-	if authorize(w, r) == nil {
-		Whiteboard = r.FormValue("content")
-		WhiteboardExt = r.FormValue("ext")
-		fmt.Fprintf(w, "Content is saved to whiteboard.")
-	}
+	Whiteboard = r.FormValue("content")
+	WhiteboardExt = r.FormValue("ext")
+	fmt.Fprintf(w, "Content is saved to whiteboard.")
 }
 
 //-----------------------------------------------------------------
 // instructor broadcast contents to students
 //-----------------------------------------------------------------
 func new_problemHandler(w http.ResponseWriter, r *http.Request) {
-	if authorize(w, r) == nil {
-		ProblemStartingTime = time.Now()
-		ProblemDescription = r.FormValue("description")
-		ProblemID = RandStringRunes(5)
-		fmt.Println(ProblemStartingTime, ProblemID, ProblemDescription)
-		fmt.Fprintf(w, "Clock is restarted.")
-	}
+	ProblemStartingTime = time.Now()
+	ProblemDescription = r.FormValue("description")
+	ProblemID = RandStringRunes(8)
+	fmt.Fprintf(w, "Starting a new problem. Clock restarted.")
 }
 
 //-----------------------------------------------------------------
 // return points of all users
 //-----------------------------------------------------------------
 func pointsHandler(w http.ResponseWriter, r *http.Request) {
-	if authorize(w, r) == nil {
-		subs := loadDB()
-		for k, v := range ProcessedSubs {
-			subs[k] = v
-		}
-		js, err := json.Marshal(subs)
-		if err != nil {
-			fmt.Println(err.Error())
-		} else {
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(js)
-		}
+	subs := loadDB()
+	for k, v := range ProcessedSubs {
+		subs[k] = v
+	}
+	js, err := json.Marshal(subs)
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
 	}
 }
 
 //-----------------------------------------------------------------
 // give one brownie point to a user
 //-----------------------------------------------------------------
-func give_pointHandler(w http.ResponseWriter, r *http.Request) {
-	if authorize(w, r) == nil {
-		sub := GetSubmission(r.FormValue("sid"))
-		if sub != nil {
-			stage := r.FormValue("stage")
-			if stage == "1" {
-				total := 0
-				for _, s := range ProcessedSubs {
-					if s.Uid == sub.Uid {
-						total += s.Points
-					}
-				}
-				fmt.Fprintf(w, fmt.Sprintf("%s (%d)", sub.Uid, total))
-			} else if stage == "2" {
-				sub.Points++
-				fmt.Fprintf(w, "Point awarded to "+sub.Uid)
-			}
+func give_pointsHandler(w http.ResponseWriter, r *http.Request) {
+	sub := GetSubmission(r.FormValue("sid"))
+	if sub != nil {
+		points, err := strconv.Atoi(r.FormValue("points"))
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			sub.Points = points
+			mesg := fmt.Sprintf("%s: %d points.\n", sub.Uid, points)
+			fmt.Fprintf(w, mesg)
 		}
-		// PrintState()
 	}
 }
 
@@ -217,14 +184,12 @@ func give_pointHandler(w http.ResponseWriter, r *http.Request) {
 // return all current NewSubs
 //-----------------------------------------------------------------
 func peekHandler(w http.ResponseWriter, r *http.Request) {
-	if authorize(w, r) == nil {
-		js, err := json.Marshal(NewSubs)
-		if err != nil {
-			fmt.Println(err.Error())
-		} else {
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(js)
-		}
+	js, err := json.Marshal(NewSubs)
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
 	}
 }
 
@@ -232,18 +197,16 @@ func peekHandler(w http.ResponseWriter, r *http.Request) {
 // Instructor retrieves a new submission
 //-----------------------------------------------------------------
 func get_postHandler(w http.ResponseWriter, r *http.Request) {
-	if authorize(w, r) == nil {
-		e, err := strconv.Atoi(r.FormValue("post"))
+	e, err := strconv.Atoi(r.FormValue("post"))
+	if err != nil {
+		fmt.Println(err.Error)
+	} else {
+		js, err := json.Marshal(ProcessSubmission(e))
 		if err != nil {
-			fmt.Println(err.Error)
+			fmt.Println(err.Error())
 		} else {
-			js, err := json.Marshal(ProcessSubmission(e))
-			if err != nil {
-				fmt.Println(err.Error())
-			} else {
-				w.Header().Set("Content-Type", "application/json")
-				w.Write(js)
-			}
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(js)
 		}
 	}
 }
@@ -252,93 +215,16 @@ func get_postHandler(w http.ResponseWriter, r *http.Request) {
 // Instructor retrieves all new submissions
 //-----------------------------------------------------------------
 func get_postsHandler(w http.ResponseWriter, r *http.Request) {
-	if authorize(w, r) == nil {
-		js, err := json.Marshal(NewSubs)
-		if err != nil {
-			fmt.Println(err.Error())
-		} else {
-			for len(NewSubs) > 0 {
-				ProcessSubmission(0)
-			}
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(js)
+	js, err := json.Marshal(NewSubs)
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		for len(NewSubs) > 0 {
+			ProcessSubmission(0)
 		}
-		// PrintState()
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
 	}
 }
 
-//-----------------------------------------------------------------
 
-var POLL_TEMPLATE = `
-<!DOCTYPE HTML>
-<html>
-<head>
-	<script type="text/javascript">
-	window.onload = function () {
-		var updateInterval = 3000;
-		var maxUpdateTime = 300000;
-		var totalUpdateTime = 0;
-		var dps = [];
-		var poll_view_url = "http://{{.SERVER}}/query_poll";
-		var get_data = function() {
-			$.getJSON(poll_view_url, function( data ) {
-				$.each( data, function( key, val ) {
-					var new_key = true;
-					for (var i=0; i< dps.length; i++){
-						if (key == dps[i].label) {
-							dps[i].y = val;
-							new_key = false;
-						}
-					}
-					if (new_key == true) {
-						dps.push({"label": key, "y": val});
-					}
-				});
-				totalUpdateTime += updateInterval;
-				if (totalUpdateTime > maxUpdateTime) {
-					clearInterval(updateInterval);
-				}
-			});
-		}
-		get_data();
-		var chart = new CanvasJS.Chart("chartContainer",{
-			theme: "theme2",
-			axisX:{
-			},
-			axisY: {
-				interval: 1,
-				gridThickness: 0,
-				title: ""
-			},
-			legend:{
-				verticalAlign: "top",
-				horizontalAlign: "centre",
-				fontSize: 18
-			},
-			data : [{
-				type: "bar",
-				showInLegend: true,
-				legendMarkerType: "none",
-				legendText: "Poll result",
-				indexLabel: "{y}",
-				dataPoints: dps
-			}]
-		});
-		chart.render();
-		var updateChart = function () {
-			get_data();
-			chart.render();
-			// console.log("updated", dps)
-		};
-		setInterval(updateChart, updateInterval);
-	}
-	</script>
-	<script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
-  	<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
-</head>
-<body>
-	<div id="chartContainer" style="height:600px; width:100%;">
-	</div>
-</body>
-</html>
-`

@@ -1,0 +1,8 @@
+[
+    { "keys": ["ctrl+1"], "command": "c4bi_award_point1" },
+    { "keys": ["ctrl+2"], "command": "c4bi_award_point2" },
+    { "keys": ["ctrl+3"], "command": "c4bi_award_point3" },
+    { "keys": ["ctrl+4"], "command": "c4bi_award_point4" },
+    { "keys": ["ctrl+5"], "command": "c4bi_award_point5" },
+    { "keys": ["super+shift+0"], "command": "c4bi_get_all" }
+]

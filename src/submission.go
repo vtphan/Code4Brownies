@@ -6,8 +6,6 @@ package main
 import (
 	"fmt"
 	"math/rand"
-	"strings"
-	"sync"
 	"time"
 )
 
@@ -16,36 +14,12 @@ import (
 // Submitted asynchronously, submissions must be synchronized.
 //-----------------------------------------------------------------
 
-type Submission struct {
-	Sid      string // submission id
-	Uid      string // user id
-	Pid      string // problem id. Example:  # :: dynamic programming (scafolding)
-	Body     string
-	Ext      string
-	Points   int
-	Duration int // in seconds
-}
-
-var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
 func RandStringRunes(n int) string {
 	b := make([]rune, n)
 	for i := range b {
 		b[i] = letterRunes[rand.Intn(len(letterRunes))]
 	}
 	return string(b)
-}
-
-var sem sync.Mutex
-var NewSubs = make([]*Submission, 0)
-var ProcessedSubs = make(map[string]*Submission)
-
-func get_problem_id(program string) string {
-	things := strings.SplitN(program, "\n", 2)
-	if len(things) > 0 && len(things[0]) > 2 {
-		return strings.Replace(strings.Trim(things[0][2:], " "), ",", "", -1)
-	}
-	return "none"
 }
 
 // ------------------------------------------------------------------
@@ -58,10 +32,12 @@ func GetSubmission(sid string) *Submission {
 
 // ------------------------------------------------------------------
 func AddSubmission(uid, body, ext string) {
-	sem.Lock()
-	defer sem.Unlock()
-	duration := int(time.Since(ProblemStartingTime).Seconds())
-	NewSubs = append(NewSubs, &Submission{RandStringRunes(10), uid, ProblemID, body, ext, 0, duration})
+	SEM.Lock()
+	defer SEM.Unlock()
+	dur := int(time.Since(ProblemStartingTime).Seconds())
+	pid := ProblemID
+	des := ProblemDescription
+	NewSubs = append(NewSubs, &Submission{RandStringRunes(10), uid, pid, body, ext, 0, dur, des})
 	if len(NewSubs) == 1 {
 		fmt.Print("\x07")
 	}
@@ -73,12 +49,11 @@ func ProcessSubmission(i int) *Submission {
 	if i < 0 || len(NewSubs) == 0 || i > len(NewSubs) {
 		return &Submission{}
 	} else {
-		sem.Lock()
-		defer sem.Unlock()
+		SEM.Lock()
+		defer SEM.Unlock()
 		s := NewSubs[i]
 		NewSubs = append(NewSubs[:i], NewSubs[i+1:]...)
 		ProcessedSubs[s.Sid] = s
-		fmt.Println(s)
 		return s
 	}
 }
