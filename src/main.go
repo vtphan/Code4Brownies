@@ -28,7 +28,6 @@ func informIPAddress() string {
 	}
 	for _, a := range addrs {
 		if ipnet, ok := a.(*net.IPNet); ok && ipnet.IP.IsGlobalUnicast() {
-			// fmt.Println("Server address http://" + ipnet.IP.String() + ":" + PORT)
 			return ipnet.IP.String() + ":" + PORT
 		}
 	}

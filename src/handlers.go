@@ -101,7 +101,7 @@ func view_pollHandler(w http.ResponseWriter, r *http.Request) {
 		t, err := t.Parse(POLL_TEMPLATE)
 		if err == nil {
 			w.Header().Set("Content-Type", "text/html")
-			t.Execute(w, &Data{SERVER})
+			t.Execute(w, &TemplateData{SERVER})
 		} else {
 			fmt.Println(err)
 		}

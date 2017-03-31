@@ -18,13 +18,6 @@ var ProblemStartingTime time.Time
 var ProblemDescription string
 var ProblemID string
 
-var POLL_MODE = false
-var POLL_RESULT = make(map[string]int)
-
-type Data struct {
-	SERVER string
-}
-
 type Submission struct {
 	Sid      string // submission id
 	Uid      string // user id
@@ -42,6 +35,11 @@ var SEM sync.Mutex
 var NewSubs = make([]*Submission, 0)
 var ProcessedSubs = make(map[string]*Submission)
 
+type TemplateData struct {
+	SERVER string
+}
+var POLL_MODE = false
+var POLL_RESULT = make(map[string]int)
 var POLL_TEMPLATE = `
 <!DOCTYPE HTML>
 <html>
