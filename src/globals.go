@@ -1,3 +1,6 @@
+//
+// Author: Vinhthuy Phan, 2015 - 2017
+//
 package main
 import (
 	"time"

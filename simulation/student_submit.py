@@ -1,4 +1,4 @@
-# test 6
+# Simulation of students submitting / sharing files
 import argparse
 import random
 from urllib.parse import urljoin, urlencode
