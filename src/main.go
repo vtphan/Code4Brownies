@@ -20,8 +20,6 @@ import (
 	"time"
 )
 
-
-
 //-----------------------------------------------------------------
 func informIPAddress() string {
 	addrs, err := net.InterfaceAddrs()
@@ -134,10 +132,12 @@ func Authorize(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
 		}
 	}
 }
+
 //-----------------------------------------------------------------
 func main() {
 	SERVER = informIPAddress()
 	fmt.Println("Server address:", "http://"+SERVER)
+	fmt.Println("Server must be run on the same machine with which codes are shared in SublimeText.")
 
 	rand.Seed(time.Now().UnixNano())
 	USER_DB = filepath.Join(".", "C4B_DB.csv")
@@ -164,6 +164,7 @@ func main() {
 	http.HandleFunc("/get_posts", Authorize(get_postsHandler))
 	http.HandleFunc("/start_poll", Authorize(start_pollHandler))
 
+	ProblemStartingTime = time.Now()
 	err := http.ListenAndServe("0.0.0.0:"+PORT, nil)
 	if err != nil {
 		panic(err.Error() + "\n")
