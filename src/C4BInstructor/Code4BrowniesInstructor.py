@@ -111,7 +111,7 @@ class c4biGetAllCommand(sublime_plugin.TextCommand):
 		if response is not None:
 			entries = json.loads(response)
 			if entries:
-				for entry in entries:
+				for entry in reversed(entries):
 					# print(entry)
 					ext = '' if entry['Ext']=='' else '.'+entry['Ext']
 					userFile = os.path.join(POSTS_DIR, entry['Sid'] + ext)
