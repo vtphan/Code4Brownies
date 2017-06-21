@@ -2,10 +2,12 @@
 // Author: Vinhthuy Phan, 2015 - 2017
 //
 package main
+
 import (
-	"time"
 	"sync"
+	"time"
 )
+
 var ADDR = ""
 var PORT = "4030"
 var USER_DB string
@@ -19,14 +21,15 @@ var ProblemDescription string
 var ProblemID string
 
 type Submission struct {
-	Sid      string // submission id
-	Uid      string // user id
-	Pid      string // problem id
-	Body     string
-	Ext      string
-	Points   int
-	Duration int // in seconds
-	Pdes 		string // problem description
+	Sid       string // submission id
+	Uid       string // user id
+	Pid       string // problem id
+	Body      string
+	Ext       string
+	Points    int
+	Duration  int    // in seconds
+	Pdes      string // problem description
+	Timestamp string
 }
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -38,6 +41,7 @@ var ProcessedSubs = make(map[string]*Submission)
 type TemplateData struct {
 	SERVER string
 }
+
 var POLL_MODE = false
 var POLL_RESULT = make(map[string]int)
 var POLL_TEMPLATE = `

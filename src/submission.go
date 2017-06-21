@@ -37,7 +37,8 @@ func AddSubmission(uid, body, ext string) {
 	dur := int(time.Since(ProblemStartingTime).Seconds())
 	pid := ProblemID
 	des := ProblemDescription
-	NewSubs = append(NewSubs, &Submission{RandStringRunes(10), uid, pid, body, ext, 0, dur, des})
+	timestamp := time.Now().Format("Mon Jan 2 15:04:05 MST 2006")
+	NewSubs = append(NewSubs, &Submission{RandStringRunes(10), uid, pid, body, ext, 0, dur, des, timestamp})
 	if len(NewSubs) == 1 {
 		fmt.Print("\x07")
 	}

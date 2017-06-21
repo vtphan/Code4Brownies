@@ -31,7 +31,15 @@ func writeDB() {
 	fmt.Println(t.Format("Mon Jan 2 15:04:05 MST 2006: write data to ") + USER_DB)
 	w := csv.NewWriter(outFile)
 	for _, sub := range ProcessedSubs {
-		record := []string{sub.Uid, sub.Pid, strconv.Itoa(sub.Points), strconv.Itoa(sub.Duration), sub.Sid, sub.Pdes}
+		record := []string{
+			sub.Uid,
+			sub.Pid,
+			strconv.Itoa(sub.Points),
+			strconv.Itoa(sub.Duration),
+			sub.Sid,
+			sub.Pdes,
+			sub.Timestamp,
+		}
 		if err := w.Write(record); err != nil {
 			log.Fatalln("error writing record to csv:", err)
 		}
@@ -61,6 +69,10 @@ func loadDB() map[string]*Submission {
 	defer userFile.Close()
 	reader := csv.NewReader(userFile)
 	entries := make(map[string]*Submission)
+
+	// Skip header
+	reader.Read()
+
 	for {
 		record, err := reader.Read()
 		if err == io.EOF {
@@ -74,7 +86,17 @@ func loadDB() map[string]*Submission {
 		points, err := strconv.Atoi(record[2])
 		duration, err := strconv.Atoi(record[3])
 		sid := record[4]
-		s := &Submission{Uid: uid, Pid: pid, Points: points, Duration: duration, Sid: sid}
+		des := record[5]
+		timestamp := record[6]
+		s := &Submission{
+			Uid:       uid,
+			Pid:       pid,
+			Points:    points,
+			Duration:  duration,
+			Sid:       sid,
+			Pdes:      des,
+			Timestamp: timestamp,
+		}
 		entries[sid] = s
 	}
 	return entries
