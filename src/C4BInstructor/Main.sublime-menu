@@ -9,14 +9,14 @@
                 "command": "c4bi_broadcast"
             },
             {
+                "caption": "Clear whiteboard",
+                "id": "c4biClearBoard",
+                "command": "c4bi_clear_board"
+            },
+            {
                 "caption": "Get all",
                 "id": "c4biGetAll",
                 "command": "c4bi_get_all"
-            },
-            {
-                "caption": "New problem",
-                "id": "c4biNewProblem",
-                "command": "c4bi_new_problem"
             },
             {
                 "caption": "Reward",
@@ -74,6 +74,11 @@
                 "caption": "Upgrade",
                 "id": "c4biUpgrade",
                 "command": "c4bi_upgrade"
+            },
+            {
+                "caption": "Clean local directory",
+                "id": "c4biClean",
+                "command": "c4bi_clean"
             },
             {
                 "caption": "About",

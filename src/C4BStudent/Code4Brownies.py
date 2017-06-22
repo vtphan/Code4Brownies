@@ -1,5 +1,5 @@
-#
-# Author: Vinhthuy Phan, 2015
+# Code4Brownies - Student module
+# Author: Vinhthuy Phan, 2015-2017
 #
 import sublime, sublime_plugin
 import urllib.parse
@@ -7,18 +7,13 @@ import urllib.request
 import os
 import json
 
-c4b_WHITEBOARD_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Whiteboard")
 c4b_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
 c4b_SUBMIT_POST_PATH = "submit_post"
 c4b_MY_POINTS_PATH = "my_points"
 c4b_RECEIVE_BROADCAST_PATH = "receive_broadcast"
 TIMEOUT = 10
 
-try:
-	os.mkdir(c4b_WHITEBOARD_DIR)
-except:
-	pass
-
+# ------------------------------------------------------------------
 def c4b_get_attr():
 	try:
 		with open(c4b_FILE, 'r') as f:
@@ -34,7 +29,7 @@ def c4b_get_attr():
 		return None
 	return json_obj
 
-
+# ------------------------------------------------------------------
 def c4bRequest(url, data):
 	req = urllib.request.Request(url, data)
 	try:
@@ -44,7 +39,7 @@ def c4bRequest(url, data):
 		sublime.message_dialog("{0}\nPossibly server not running or incorrect server address.".format(err))
 		return None
 
-
+# ------------------------------------------------------------------
 class c4bReceivebroadcastCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		global c4b_TO_BE_CLOSED_VIEWS
@@ -56,14 +51,10 @@ class c4bReceivebroadcastCommand(sublime_plugin.TextCommand):
 		if response is not None:
 			json_obj = json.loads(response)
 			content, ext = json_obj['whiteboard'], json_obj['ext']
-			wb = os.path.join(c4b_WHITEBOARD_DIR, 'whiteboard')
-			if ext != '':
-				wb += '.' + ext
-			with open(wb, 'w', encoding='utf-8') as f:
-				f.write(content)
-			new_view = self.view.window().open_file(wb)
+			new_view = self.view.window().new_file()
+			new_view.insert(edit, 0, content)
 
-
+# ------------------------------------------------------------------
 class c4bShareCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		this_file_name = self.view.file_name()
@@ -83,7 +74,7 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 			if response is not None:
 				sublime.message_dialog(response)
 
-
+# ------------------------------------------------------------------
 class c4bShowPoints(sublime_plugin.WindowCommand):
 	def run(self):
 		info = c4b_get_attr()
@@ -96,7 +87,7 @@ class c4bShowPoints(sublime_plugin.WindowCommand):
 		if response is not None:
 			sublime.message_dialog(response)
 
-
+# ------------------------------------------------------------------
 class c4bSetInfo(sublime_plugin.WindowCommand):
 	def run(self):
 		try:
@@ -115,7 +106,7 @@ class c4bSetInfo(sublime_plugin.WindowCommand):
 
 		sublime.active_window().open_file(c4b_FILE)
 
-
+# ------------------------------------------------------------------
 class c4bAbout(sublime_plugin.WindowCommand):
 	def run(self):
 		try:
@@ -124,7 +115,7 @@ class c4bAbout(sublime_plugin.WindowCommand):
 			version = 'Unknown'
 		sublime.message_dialog("Code4Brownies (v%s)\nCopyright 2015-2016 Vinhthuy Phan" % version)
 
-
+# ------------------------------------------------------------------
 class c4bUpgrade(sublime_plugin.WindowCommand):
 	def run(self):
 		if sublime.ok_cancel_dialog("Are you sure you want to upgrade Code4Brownies to the latest version?", "Yes"):

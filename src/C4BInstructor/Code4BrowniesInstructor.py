@@ -1,5 +1,5 @@
-#
-# Author: Vinhthuy Phan, 2015
+# Code4Brownies - Instructor module
+# Author: Vinhthuy Phan, 2015-2017
 #
 
 import sublime, sublime_plugin
@@ -13,6 +13,7 @@ import webbrowser
 
 SERVER_ADDR = "http://localhost:4030"
 c4bi_BROADCAST_PATH = "broadcast"
+c4bi_CLEAR_BOARD_PATH = "clear_board"
 c4bi_BROWNIE_PATH = "give_points"
 c4bi_PEEK_PATH = "peek"
 c4bi_POINTS_PATH = "points"
@@ -28,7 +29,6 @@ try:
 except:
 	pass
 
-
 # ------------------------------------------------------------------
 def c4biRequest(url, data):
 	req = urllib.request.Request(url, data)
@@ -42,27 +42,66 @@ def c4biRequest(url, data):
 	return None
 
 # ------------------------------------------------------------------
+class c4biCleanCommand(sublime_plugin.ApplicationCommand):
+	def run(self):
+		if sublime.ok_cancel_dialog("Remove all student-submitted files."):
+			files = [ f for f in os.listdir(POSTS_DIR) if f.startswith('c4b_') ]
+			for f in files:
+				local_file = os.path.join(POSTS_DIR, f)
+				os.remove(local_file)
+				sublime.status_message("remove " + local_file)
+
+# ------------------------------------------------------------------
 class c4biViewPollCommand(sublime_plugin.ApplicationCommand):
 	def run(self):
 		webbrowser.open(SERVER_ADDR + "/poll")
-
 
 # ------------------------------------------------------------------
 class c4biBroadcastCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		content = self.view.substr(sublime.Region(0, self.view.size()))
+		pid = content.split('\n',1)[0]
+		file_name = self.view.file_name()
 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
-		this_file_name = self.view.file_name()
-		if this_file_name is not None:
-			if '.' not in this_file_name:
+		if file_name is not None:
+			if '.' not in file_name:
 				ext = ''
 			else:
-				ext = this_file_name.split('.')[-1]
-			data = urllib.parse.urlencode({'content':content, 'ext':ext}).encode('ascii')
+				ext = file_name.split('.')[-1]
+			data = urllib.parse.urlencode({'content':content, 'ext':ext, 'pid':pid}).encode('ascii')
 			response = c4biRequest(url,data)
 			if response is not None:
 				sublime.status_message(response)
 
+# ------------------------------------------------------------------
+# Instructor sends signal to clear whiteboard.
+# ------------------------------------------------------------------
+class c4biClearBoardCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_CLEAR_BOARD_PATH)
+		data = urllib.parse.urlencode({}).encode('ascii')
+		response = c4biRequest(url, data)
+		if response is not None:
+			sublime.status_message(response)
+
+# ------------------------------------------------------------------
+# def broadcast_file(file_name, content, problem_id=''):
+# 	url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
+# 	if file_name is not None:
+# 		if '.' not in file_name:
+# 			ext = ''
+# 		else:
+# 			ext = file_name.split('.')[-1]
+# 		data = urllib.parse.urlencode({'content':content, 'ext':ext, 'pid':problem_id}).encode('ascii')
+# 		response = c4biRequest(url,data)
+# 		if response is not None:
+# 			sublime.status_message(response)
+
+# class c4biBroadcastChallengeCommand(sublime_plugin.TextCommand):
+# 	def run(self, edit):
+# 		content = self.view.substr(sublime.Region(0, self.view.size()))
+# 		pid = content.split('\n',1)[0]
+# 		broadcast_file(self.view.file_name(), content, pid)
 
 # ------------------------------------------------------------------
 # Instructor retrieves all current and past points of all users.
@@ -88,21 +127,6 @@ class c4biPointsCommand(sublime_plugin.TextCommand):
 # ------------------------------------------------------------------
 # Instructor retrieves all posts.
 # ------------------------------------------------------------------
-class c4biNewProblemCommand(sublime_plugin.TextCommand):
-	def run(self, edit):
-		this_file_name = self.view.file_name()
-		lines = open(this_file_name).readlines()
-		prob_des = "" if len(lines)==0 else lines[0]
-		prob_des = prob_des.strip('"').strip().replace(",","_")
-		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_NEW_PROBLEM_PATH)
-		data = urllib.parse.urlencode({'description':prob_des}).encode('ascii')
-		response = c4biRequest(url,data)
-		if response is not None:
-			sublime.status_message(response)
-
-# ------------------------------------------------------------------
-# Instructor retrieves all posts.
-# ------------------------------------------------------------------
 class c4biGetAllCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_REQUEST_ENTRIES_PATH)
@@ -110,6 +134,7 @@ class c4biGetAllCommand(sublime_plugin.TextCommand):
 		response = c4biRequest(url,data)
 		if response is not None:
 			entries = json.loads(response)
+			# print(entries)
 			if entries:
 				for entry in reversed(entries):
 					# print(entry)
@@ -149,7 +174,7 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 			response = c4biRequest(url,data)
 			if response is not None:
 				json_obj = json.loads(response)
-				print(json_obj)
+				# print(json_obj)
 				ext = '' if json_obj['Ext']=='' else '.'+json_obj['Ext']
 				userFile = os.path.join(POSTS_DIR, json_obj['Sid'] + ext)
 				with open(userFile, 'w', encoding='utf-8') as fp:
