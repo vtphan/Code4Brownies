@@ -13,6 +13,7 @@ import webbrowser
 
 SERVER_ADDR = "http://localhost:4030"
 c4bi_BROADCAST_PATH = "broadcast"
+c4bi_TEST_DATA_PATH = "test_data"
 c4bi_CLEAR_BOARD_PATH = "clear_board"
 c4bi_BROWNIE_PATH = "give_points"
 c4bi_PEEK_PATH = "peek"
@@ -62,16 +63,45 @@ class c4biBroadcastCommand(sublime_plugin.TextCommand):
 		content = self.view.substr(sublime.Region(0, self.view.size()))
 		pid = content.split('\n',1)[0]
 		file_name = self.view.file_name()
-		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
 		if file_name is not None:
-			if '.' not in file_name:
-				ext = ''
-			else:
-				ext = file_name.split('.')[-1]
+			ext = file_name.split('.')[-1] if '.' in file_name else ''
+			url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
 			data = urllib.parse.urlencode({'content':content, 'ext':ext, 'pid':pid}).encode('ascii')
 			response = c4biRequest(url,data)
 			if response is not None:
 				sublime.status_message(response)
+				local_dir = os.path.dirname(file_name)
+
+				# For future usage: currently not supporting sending test data to server
+				# self.send_test_data(local_dir)
+			else:
+				sublime.status_message("Unexpected response from server.")
+		else:
+			sublime.status_message("Must specify an existing file to broadcast.")
+
+	def send_test_data(self, local_dir):
+		def on_done(selected_idx):
+			if selected_idx >= 0:
+				selected_file = os.path.join(local_dir, files[selected_idx])
+				try:
+					with open(selected_file, 'r', encoding='utf-8') as f:
+						content = f.read()
+					url = urllib.parse.urljoin(SERVER_ADDR, c4bi_TEST_DATA_PATH)
+					data = urllib.parse.urlencode({'content':content}).encode('ascii')
+				except:
+					sublime.status_message("Test data must be in ASCII format.")
+				else:
+					response = c4biRequest(url,data)
+					if response is not None:
+						sublime.status_message(response)
+					else:
+						sublime.status_message("Unexpected response from server.")
+			else:
+				sublime.status_message("No test data for this challenge.")
+
+		files = os.listdir(local_dir)
+		self.view.window().show_quick_panel(files, on_done)
+
 
 # ------------------------------------------------------------------
 # Instructor sends signal to clear whiteboard.
@@ -83,25 +113,6 @@ class c4biClearBoardCommand(sublime_plugin.TextCommand):
 		response = c4biRequest(url, data)
 		if response is not None:
 			sublime.status_message(response)
-
-# ------------------------------------------------------------------
-# def broadcast_file(file_name, content, problem_id=''):
-# 	url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
-# 	if file_name is not None:
-# 		if '.' not in file_name:
-# 			ext = ''
-# 		else:
-# 			ext = file_name.split('.')[-1]
-# 		data = urllib.parse.urlencode({'content':content, 'ext':ext, 'pid':problem_id}).encode('ascii')
-# 		response = c4biRequest(url,data)
-# 		if response is not None:
-# 			sublime.status_message(response)
-
-# class c4biBroadcastChallengeCommand(sublime_plugin.TextCommand):
-# 	def run(self, edit):
-# 		content = self.view.substr(sublime.Region(0, self.view.size()))
-# 		pid = content.split('\n',1)[0]
-# 		broadcast_file(self.view.file_name(), content, pid)
 
 # ------------------------------------------------------------------
 # Instructor retrieves all current and past points of all users.

@@ -19,6 +19,7 @@ var WhiteboardExt string
 var ProblemStartingTime time.Time
 var ProblemDescription string
 var ProblemID string
+var ProblemTestData = ""
 
 type Submission struct {
 	Sid       string // submission id

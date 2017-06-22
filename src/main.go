@@ -87,6 +87,7 @@ func main() {
 	http.HandleFunc("/give_points", Authorize(give_pointsHandler))
 	http.HandleFunc("/peek", Authorize(peekHandler))
 	http.HandleFunc("/broadcast", Authorize(broadcastHandler))
+	http.HandleFunc("/test_data", Authorize(test_dataHandler))
 	http.HandleFunc("/clear_board", Authorize(clear_boardHandler))
 	http.HandleFunc("/get_post", Authorize(get_postHandler))
 	http.HandleFunc("/get_posts", Authorize(get_postsHandler))

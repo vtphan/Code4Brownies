@@ -138,6 +138,14 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //-----------------------------------------------------------------
+// instructor sends test data
+//-----------------------------------------------------------------
+func test_dataHandler(w http.ResponseWriter, r *http.Request) {
+	ProblemTestData = r.FormValue("content")
+	fmt.Fprintf(w, "Test data received.")
+}
+
+//-----------------------------------------------------------------
 // instructor sends a signal to clear whiteboard
 //-----------------------------------------------------------------
 func clear_boardHandler(w http.ResponseWriter, r *http.Request) {
