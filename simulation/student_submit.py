@@ -4,6 +4,7 @@ import random
 from urllib.parse import urljoin, urlencode
 import urllib.request
 import time
+import sys
 
 SERVER = 'http://localhost:4030'
 SUBMIT_URL = urljoin(SERVER, 'submit_post')
@@ -22,20 +23,22 @@ def make_request(url, data):
 		with urllib.request.urlopen(req, None, 10) as response:
 			return response.read().decode(encoding="utf-8")
 	except urllib.error.URLError as err:
-		sublime.message_dialog("{0}\nPossibly server not running or incorrect server address.".format(err))
-		return None
+		raise Exception("{0}\nPossibly server not running or incorrect server address.".format(err))
+
 
 parser = argparse.ArgumentParser(description='Simulate student submissions')
 parser.add_argument('uid', type=str)
+parser.add_argument('problem_description', type=str)
 parser.add_argument('submit_intervals', type=int, nargs='+')
 args = parser.parse_args()
 
 print("Making", len(args.submit_intervals)+1, "requests to", SUBMIT_URL)
 for i in range(len(args.submit_intervals)+1):
-	values = {'uid':args.uid, 'body':'Submission #%s from %s.'%(i,args.uid), 'ext':'txt'}
+	body = '%s\nSubmission #%s from %s' % (args.problem_description,i,args.uid)
+	values = {'uid':args.uid, 'body':body, 'ext':'txt'}
 	data = urllib.parse.urlencode(values).encode('ascii')
 	if i==0:
-		print("Request ", i)
+		print("Request", i)
 	else:
 		print("Request", i, "duration", args.submit_intervals[i-1])
 		time.sleep(args.submit_intervals[i-1])
