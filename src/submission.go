@@ -6,6 +6,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"strings"
 	"time"
 )
 
@@ -19,7 +20,7 @@ func RandStringRunes(n int) string {
 	for i := range b {
 		b[i] = letterRunes[rand.Intn(len(letterRunes))]
 	}
-	return string(b)
+	return "c4b_" + string(b)
 }
 
 // ------------------------------------------------------------------
@@ -35,8 +36,13 @@ func AddSubmission(uid, body, ext string) {
 	SEM.Lock()
 	defer SEM.Unlock()
 	dur := int(time.Since(ProblemStartingTime).Seconds())
+	des := strings.SplitN(body, "\n", 2)[0]
 	pid := ProblemID
-	des := ProblemDescription
+	// Make sure that student submits the correct file
+	if des != ProblemDescription {
+		pid = ""
+		des = ""
+	}
 	timestamp := time.Now().Format("Mon Jan 2 15:04:05 MST 2006")
 	NewSubs = append(NewSubs, &Submission{RandStringRunes(10), uid, pid, body, ext, 0, dur, des, timestamp})
 	if len(NewSubs) == 1 {

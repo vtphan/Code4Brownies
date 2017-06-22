@@ -83,11 +83,11 @@ func main() {
 	http.HandleFunc("/poll", view_pollHandler)
 
 	// teacher handlers
-	http.HandleFunc("/new_problem", Authorize(new_problemHandler))
 	http.HandleFunc("/points", Authorize(pointsHandler))
 	http.HandleFunc("/give_points", Authorize(give_pointsHandler))
 	http.HandleFunc("/peek", Authorize(peekHandler))
 	http.HandleFunc("/broadcast", Authorize(broadcastHandler))
+	http.HandleFunc("/clear_board", Authorize(clear_boardHandler))
 	http.HandleFunc("/get_post", Authorize(get_postHandler))
 	http.HandleFunc("/get_posts", Authorize(get_postsHandler))
 	http.HandleFunc("/start_poll", Authorize(start_pollHandler))

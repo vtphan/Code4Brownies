@@ -13,7 +13,6 @@ import (
 	"time"
 )
 
-
 //-----------------------------------------------------------------
 // STUDENT's HANDLERS
 //-----------------------------------------------------------------
@@ -111,7 +110,6 @@ func view_pollHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
 //-----------------------------------------------------------------
 // INSTRUCTOR's HANDLERS
 //-----------------------------------------------------------------
@@ -134,16 +132,19 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	Whiteboard = r.FormValue("content")
 	WhiteboardExt = r.FormValue("ext")
 	fmt.Fprintf(w, "Content is saved to whiteboard.")
+	ProblemStartingTime = time.Now()
+	ProblemID = RandStringRunes(8)
+	ProblemDescription = strings.SplitN(Whiteboard, "\n", 2)[0]
 }
 
 //-----------------------------------------------------------------
-// instructor broadcast contents to students
+// instructor sends a signal to clear whiteboard
 //-----------------------------------------------------------------
-func new_problemHandler(w http.ResponseWriter, r *http.Request) {
+func clear_boardHandler(w http.ResponseWriter, r *http.Request) {
 	ProblemStartingTime = time.Now()
-	ProblemDescription = r.FormValue("description")
-	ProblemID = RandStringRunes(8)
-	fmt.Fprintf(w, "Starting a new problem. Clock restarted.")
+	ProblemDescription = "none"
+	ProblemID = "none"
+	fmt.Fprintf(w, "Whiteboard is clear.")
 }
 
 //-----------------------------------------------------------------
@@ -226,5 +227,3 @@ func get_postsHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(js)
 	}
 }
-
-
