@@ -52,7 +52,7 @@ func my_pointsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //-----------------------------------------------------------------
-// users submit their codes
+// students submit their codes
 //-----------------------------------------------------------------
 func submit_postHandler(w http.ResponseWriter, r *http.Request) {
 	uid, body, ext := r.FormValue("uid"), r.FormValue("body"), r.FormValue("ext")
@@ -70,6 +70,24 @@ func submit_postHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(uid, "submitted.")
 		fmt.Fprintf(w, uid+" submitted succesfully.")
 		// PrintState()
+	}
+}
+
+//-----------------------------------------------------------------
+// students receive feedback
+//-----------------------------------------------------------------
+func receive_feedbackHandler(w http.ResponseWriter, r *http.Request) {
+	uid := r.FormValue("uid")
+	content, ok := MyBoard[uid]
+	if !ok {
+		content = ""
+	}
+	js, err := json.Marshal(map[string]string{"content": content})
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
 	}
 }
 
@@ -113,6 +131,18 @@ func view_pollHandler(w http.ResponseWriter, r *http.Request) {
 //-----------------------------------------------------------------
 // INSTRUCTOR's HANDLERS
 //-----------------------------------------------------------------
+
+//-----------------------------------------------------------------
+// Give feedback by sending current file, which was submitted by a student
+//-----------------------------------------------------------------
+func give_feedbackHandler(w http.ResponseWriter, r *http.Request) {
+	content := r.FormValue("content")
+	sid := r.FormValue("sid")
+	sub := ProcessedSubs[sid]
+	uid := sub.Uid
+	MyBoard[uid] = content
+	fmt.Fprint(w, "Feedback saved.")
+}
 
 //-----------------------------------------------------------------
 // Collect poll answers from students

@@ -15,6 +15,7 @@ var SERVER = ""
 
 var Whiteboard string
 var WhiteboardExt string
+var MyBoard = make(map[string]string)
 
 var ProblemStartingTime time.Time
 var ProblemDescription string

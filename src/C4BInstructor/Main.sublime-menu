@@ -19,6 +19,11 @@
                 "command": "c4bi_get_all"
             },
             {
+                "caption": "Give feedback",
+                "id": "c4biGiveFeedback",
+                "command": "c4bi_give_feedback"
+            },
+            {
                 "caption": "Reward",
                 "id": "c4biAwardPoint",
                 "children": [

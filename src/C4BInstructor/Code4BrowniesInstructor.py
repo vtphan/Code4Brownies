@@ -13,7 +13,6 @@ import webbrowser
 
 SERVER_ADDR = "http://localhost:4030"
 c4bi_BROADCAST_PATH = "broadcast"
-c4bi_TEST_DATA_PATH = "test_data"
 c4bi_CLEAR_BOARD_PATH = "clear_board"
 c4bi_BROWNIE_PATH = "give_points"
 c4bi_PEEK_PATH = "peek"
@@ -22,6 +21,7 @@ c4bi_REQUEST_ENTRY_PATH = "get_post"
 c4bi_REQUEST_ENTRIES_PATH = "get_posts"
 c4bi_START_POLL_PATH = "start_poll"
 c4bi_NEW_PROBLEM_PATH = "new_problem"
+c4bi_GIVE_FEEDBACK_PATH = "give_feedback"
 TIMEOUT = 10
 
 POSTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Posts")
@@ -63,45 +63,16 @@ class c4biBroadcastCommand(sublime_plugin.TextCommand):
 		content = self.view.substr(sublime.Region(0, self.view.size()))
 		pid = content.split('\n',1)[0]
 		file_name = self.view.file_name()
+		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
 		if file_name is not None:
-			ext = file_name.split('.')[-1] if '.' in file_name else ''
-			url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
+			if '.' not in file_name:
+				ext = ''
+			else:
+				ext = file_name.split('.')[-1]
 			data = urllib.parse.urlencode({'content':content, 'ext':ext, 'pid':pid}).encode('ascii')
 			response = c4biRequest(url,data)
 			if response is not None:
 				sublime.status_message(response)
-				local_dir = os.path.dirname(file_name)
-
-				# For future usage: currently not supporting sending test data to server
-				# self.send_test_data(local_dir)
-			else:
-				sublime.status_message("Unexpected response from server.")
-		else:
-			sublime.status_message("Must specify an existing file to broadcast.")
-
-	def send_test_data(self, local_dir):
-		def on_done(selected_idx):
-			if selected_idx >= 0:
-				selected_file = os.path.join(local_dir, files[selected_idx])
-				try:
-					with open(selected_file, 'r', encoding='utf-8') as f:
-						content = f.read()
-					url = urllib.parse.urljoin(SERVER_ADDR, c4bi_TEST_DATA_PATH)
-					data = urllib.parse.urlencode({'content':content}).encode('ascii')
-				except:
-					sublime.status_message("Test data must be in ASCII format.")
-				else:
-					response = c4biRequest(url,data)
-					if response is not None:
-						sublime.status_message(response)
-					else:
-						sublime.status_message("Unexpected response from server.")
-			else:
-				sublime.status_message("No test data for this challenge.")
-
-		files = os.listdir(local_dir)
-		self.view.window().show_quick_panel(files, on_done)
-
 
 # ------------------------------------------------------------------
 # Instructor sends signal to clear whiteboard.
@@ -113,6 +84,25 @@ class c4biClearBoardCommand(sublime_plugin.TextCommand):
 		response = c4biRequest(url, data)
 		if response is not None:
 			sublime.status_message(response)
+
+# ------------------------------------------------------------------
+# def broadcast_file(file_name, content, problem_id=''):
+# 	url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
+# 	if file_name is not None:
+# 		if '.' not in file_name:
+# 			ext = ''
+# 		else:
+# 			ext = file_name.split('.')[-1]
+# 		data = urllib.parse.urlencode({'content':content, 'ext':ext, 'pid':problem_id}).encode('ascii')
+# 		response = c4biRequest(url,data)
+# 		if response is not None:
+# 			sublime.status_message(response)
+
+# class c4biBroadcastChallengeCommand(sublime_plugin.TextCommand):
+# 	def run(self, edit):
+# 		content = self.view.substr(sublime.Region(0, self.view.size()))
+# 		pid = content.split('\n',1)[0]
+# 		broadcast_file(self.view.file_name(), content, pid)
 
 # ------------------------------------------------------------------
 # Instructor retrieves all current and past points of all users.
@@ -156,6 +146,23 @@ class c4biGetAllCommand(sublime_plugin.TextCommand):
 					new_view = self.view.window().open_file(userFile)
 			else:
 				sublime.status_message("Queue is empty.")
+
+# ------------------------------------------------------------------
+# Instructor gives feedback on this specific file
+# ------------------------------------------------------------------
+class c4biGiveFeedbackCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		this_file_name = self.view.file_name()
+		if this_file_name is not None:
+			sid = this_file_name.rsplit('.',-1)[0]
+			sid = ntpath.basename(sid)
+			content = self.view.substr(sublime.Region(0, self.view.size()))
+			values = {'content':content, 'sid':sid}
+			data = urllib.parse.urlencode(values).encode('ascii')
+			url = urllib.parse.urljoin(SERVER_ADDR, c4bi_GIVE_FEEDBACK_PATH)
+			response = c4biRequest(url,data)
+			if response is not None:
+				sublime.status_message(response)
 
 # ------------------------------------------------------------------
 # Instructor starts poll mode
@@ -234,7 +241,7 @@ class c4biAwardPoint5Command(sublime_plugin.TextCommand):
 def award_points(self, edit, points):
 	this_file_name = self.view.file_name()
 	if this_file_name:
-		sid = this_file_name.split('.')[0]
+		sid = this_file_name.rsplit('.',-1)[0]
 		sid = ntpath.basename(sid)
 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROWNIE_PATH)
 		data = urllib.parse.urlencode({'sid':sid, 'points':points}).encode('ascii')

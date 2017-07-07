@@ -14,6 +14,11 @@
                 "command": "c4b_receivebroadcast"
             },
             {
+                "caption": "Get feedback",
+                "id": "c4bGetFeedback",
+                "command": "c4b_get_feedback"
+            },
+            {
                 "caption": "My brownies",
                 "id": "c4bShowPoints",
                 "command": "c4b_show_points"
