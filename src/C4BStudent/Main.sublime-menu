@@ -9,7 +9,7 @@
                 "command": "c4b_share"
             },
             {
-                "caption": "Get content",
+                "caption": "Content from",
                 "id": "c4bGetContent",
                 "children": [
                     {
@@ -21,11 +21,6 @@
                         "caption": "My Board",
                         "id": "c4bMyBoard",
                         "command": "c4b_my_board"
-                    },
-                    {
-                        "caption": "Feedback",
-                        "id": "c4bGetFeedback",
-                        "command": "c4b_get_feedback"
                     }
                 ]
             },

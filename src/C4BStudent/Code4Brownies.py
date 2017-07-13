@@ -11,7 +11,7 @@ c4b_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
 c4b_SUBMIT_POST_PATH = "submit_post"
 c4b_MY_POINTS_PATH = "my_points"
 c4b_RECEIVE_BROADCAST_PATH = "receive_broadcast"
-c4b_RECEIVE_FEEDBACK_PATH = "receive_feedback"
+# c4b_RECEIVE_FEEDBACK_PATH = "receive_feedback"
 
 TIMEOUT = 10
 
@@ -75,22 +75,22 @@ class c4bMyBoardCommand(sublime_plugin.TextCommand):
 		_receive_broadcast(self, edit, info['Name'])
 
 # ------------------------------------------------------------------
-class c4bGetFeedbackCommand(sublime_plugin.TextCommand):
-	def run(self, edit):
-		info = c4b_get_attr()
-		if info is None:
-			return
-		data = urllib.parse.urlencode({'uid':info['Name']}).encode('ascii')
-		url = urllib.parse.urljoin(info['Server'], c4b_RECEIVE_FEEDBACK_PATH)
-		response = c4bRequest(url, data)
-		if response is not None:
-			json_obj = json.loads(response)
-			content = json_obj['content']
-			if len(content.strip()) > 0:
-				new_view = self.view.window().new_file()
-				new_view.insert(edit, 0, content)
-			else:
-				sublime.message_dialog("You have no feedback.")
+# class c4bGetFeedbackCommand(sublime_plugin.TextCommand):
+# 	def run(self, edit):
+# 		info = c4b_get_attr()
+# 		if info is None:
+# 			return
+# 		data = urllib.parse.urlencode({'uid':info['Name']}).encode('ascii')
+# 		url = urllib.parse.urljoin(info['Server'], c4b_RECEIVE_FEEDBACK_PATH)
+# 		response = c4bRequest(url, data)
+# 		if response is not None:
+# 			json_obj = json.loads(response)
+# 			content = json_obj['content']
+# 			if len(content.strip()) > 0:
+# 				new_view = self.view.window().new_file()
+# 				new_view.insert(edit, 0, content)
+# 			else:
+# 				sublime.message_dialog("You have no feedback.")
 
 # ------------------------------------------------------------------
 class c4bShareCommand(sublime_plugin.TextCommand):

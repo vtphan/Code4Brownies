@@ -77,20 +77,20 @@ func submit_postHandler(w http.ResponseWriter, r *http.Request) {
 //-----------------------------------------------------------------
 // students receive feedback
 //-----------------------------------------------------------------
-func receive_feedbackHandler(w http.ResponseWriter, r *http.Request) {
-	uid := r.FormValue("uid")
-	content, ok := Feedback[uid]
-	if !ok {
-		content = ""
-	}
-	js, err := json.Marshal(map[string]string{"content": content})
-	if err != nil {
-		fmt.Println(err.Error())
-	} else {
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
-	}
-}
+// func receive_feedbackHandler(w http.ResponseWriter, r *http.Request) {
+// 	uid := r.FormValue("uid")
+// 	content, ok := Feedback[uid]
+// 	if !ok {
+// 		content = ""
+// 	}
+// 	js, err := json.Marshal(map[string]string{"content": content})
+// 	if err != nil {
+// 		fmt.Println(err.Error())
+// 	} else {
+// 		w.Header().Set("Content-Type", "application/json")
+// 		w.Write(js)
+// 	}
+// }
 
 //-----------------------------------------------------------------
 // student receives broadcast or content from his own board
@@ -100,7 +100,6 @@ func receive_broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	var js []byte
 	var err error
 	if uid == "" {
-		// js, err = json.Marshal(map[string]string{"whiteboard": Whiteboard, "ext": WhiteboardExt})
 		js, err = json.Marshal(map[string]string{"content": Whiteboard})
 	} else {
 		content, ok := Board[uid]
@@ -148,18 +147,18 @@ func view_pollHandler(w http.ResponseWriter, r *http.Request) {
 //-----------------------------------------------------------------
 // Give feedback by sending current file, which was submitted by a student
 //-----------------------------------------------------------------
-func give_feedbackHandler(w http.ResponseWriter, r *http.Request) {
-	content := r.FormValue("content")
-	sid := r.FormValue("sid")
-	sub, ok := ProcessedSubs[sid]
-	if ok {
-		uid := sub.Uid
-		Feedback[uid] = content
-		fmt.Fprint(w, "Feedback saved.")
-	} else {
-		fmt.Fprint(w, "sid "+sid+" is not found.")
-	}
-}
+// func give_feedbackHandler(w http.ResponseWriter, r *http.Request) {
+// 	content := r.FormValue("content")
+// 	sid := r.FormValue("sid")
+// 	sub, ok := ProcessedSubs[sid]
+// 	if ok {
+// 		uid := sub.Uid
+// 		Feedback[uid] = content
+// 		fmt.Fprint(w, "Feedback saved.")
+// 	} else {
+// 		fmt.Fprint(w, "sid "+sid+" is not found.")
+// 	}
+// }
 
 //-----------------------------------------------------------------
 // Collect poll answers from students

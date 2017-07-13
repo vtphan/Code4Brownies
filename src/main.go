@@ -77,14 +77,14 @@ func main() {
 	http.HandleFunc("/submit_post", submit_postHandler) // rename this
 	http.HandleFunc("/my_points", my_pointsHandler)
 	http.HandleFunc("/receive_broadcast", receive_broadcastHandler)
-	http.HandleFunc("/receive_feedback", receive_feedbackHandler)
+	// http.HandleFunc("/receive_feedback", receive_feedbackHandler)
 	http.HandleFunc("/query_poll", query_pollHandler)
 
 	// public handlers
 	http.HandleFunc("/poll", view_pollHandler)
 
 	// teacher handlers
-	http.HandleFunc("/give_feedback", Authorize(give_feedbackHandler))
+	// http.HandleFunc("/give_feedback", Authorize(give_feedbackHandler))
 	http.HandleFunc("/points", Authorize(pointsHandler))
 	http.HandleFunc("/give_points", Authorize(give_pointsHandler))
 	http.HandleFunc("/peek", Authorize(peekHandler))

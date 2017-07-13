@@ -21,7 +21,7 @@ c4bi_REQUEST_ENTRY_PATH = "get_post"
 c4bi_REQUEST_ENTRIES_PATH = "get_posts"
 c4bi_START_POLL_PATH = "start_poll"
 c4bi_NEW_PROBLEM_PATH = "new_problem"
-c4bi_GIVE_FEEDBACK_PATH = "give_feedback"
+# c4bi_GIVE_FEEDBACK_PATH = "give_feedback"
 TIMEOUT = 10
 
 POSTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Posts")
@@ -69,6 +69,29 @@ def _broadcast(self, sids=''):
 			sublime.status_message(response)
 
 # ------------------------------------------------------------------
+# Instructor gives feedback on this specific file
+# ------------------------------------------------------------------
+class c4biGiveFeedbackCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		this_file_name = self.view.file_name()
+		if this_file_name is not None:
+			sid = this_file_name.rsplit('.',-1)[0]
+			sid = ntpath.basename(sid)
+			if sid.startswith('c4b_'):
+				_broadcast(self, sid)
+			else:
+				sublime.message_dialog("No student associated to this window.")
+			# content = self.view.substr(sublime.Region(0, self.view.size()))
+			# values = {'content':content, 'sid':sid}
+			# data = urllib.parse.urlencode(values).encode('ascii')
+			# url = urllib.parse.urljoin(SERVER_ADDR, c4bi_GIVE_FEEDBACK_PATH)
+			# response = c4biRequest(url,data)
+			# if response is not None:
+			# 	sublime.status_message(response)
+
+# ------------------------------------------------------------------
+# Instructor broadcasts content on group defined by current window
+# ------------------------------------------------------------------
 class c4biBroadcastGroupCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		fnames = [ v.file_name() for v in sublime.active_window().views() ]
@@ -77,7 +100,7 @@ class c4biBroadcastGroupCommand(sublime_plugin.TextCommand):
 		if sids != '':
 			_broadcast(self, sids)
 		else:
-			sublime.message_dialog("There are no group in this window.")
+			sublime.message_dialog("No students' files in this window.")
 
 # ------------------------------------------------------------------
 class c4biBroadcastCommand(sublime_plugin.TextCommand):
@@ -169,23 +192,6 @@ class c4biGetAllCommand(sublime_plugin.TextCommand):
 					new_view = self.view.window().open_file(userFile)
 			else:
 				sublime.status_message("Queue is empty.")
-
-# ------------------------------------------------------------------
-# Instructor gives feedback on this specific file
-# ------------------------------------------------------------------
-class c4biGiveFeedbackCommand(sublime_plugin.TextCommand):
-	def run(self, edit):
-		this_file_name = self.view.file_name()
-		if this_file_name is not None:
-			sid = this_file_name.rsplit('.',-1)[0]
-			sid = ntpath.basename(sid)
-			content = self.view.substr(sublime.Region(0, self.view.size()))
-			values = {'content':content, 'sid':sid}
-			data = urllib.parse.urlencode(values).encode('ascii')
-			url = urllib.parse.urljoin(SERVER_ADDR, c4bi_GIVE_FEEDBACK_PATH)
-			response = c4biRequest(url,data)
-			if response is not None:
-				sublime.status_message(response)
 
 # ------------------------------------------------------------------
 # Instructor starts poll mode

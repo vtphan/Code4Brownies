@@ -4,60 +4,66 @@
         "id": "C4Bi",
         "children": [
             {
-                "caption": "Copy to Whiteboard",
-                "id": "c4biBroadcast",
-                "command": "c4bi_broadcast"
-            },
-            {
-                "caption": "Clear Whiteboard",
-                "id": "c4biClearBoard",
-                "command": "c4bi_clear_board"
-            },
-            {
                 "caption": "Get all",
                 "id": "c4biGetAll",
                 "command": "c4bi_get_all"
             },
             {
-                "caption": "Give feedback",
-                "id": "c4biGiveFeedback",
-                "command": "c4bi_give_feedback"
+                "caption": "Copy file to",
+                "id": "c4biCopyContent",
+                "children": [
+                    {
+                        "caption": "Whiteboard",
+                        "id": "c4biBroadcast",
+                        "command": "c4bi_broadcast"
+                    },
+                    {
+                        "caption": "This group's boards",
+                        "id": "c4biBroadcastGroup",
+                        "command": "c4bi_broadcast_group"
+                    },
+                    {
+                        "caption": "This student's board",
+                        "id": "c4biGiveFeedback",
+                        "command": "c4bi_give_feedback"
+                    }
+                ]
             },
             {
-                "caption": "Reward",
+                "caption": "Give brownies to this student",
                 "id": "c4biAwardPoint",
                 "children": [
                     {
-                        "caption": "1",
+                        "caption": "1 brownie",
                         "id": "c4biAwardPoint1",
                         "command": "c4bi_award_point1"
                     },
                     {
-                        "caption": "2",
+                        "caption": "2 brownies",
                         "id": "c4biAwardPoint2",
                         "command": "c4bi_award_point2"
                     },
                     {
-                        "caption": "3",
+                        "caption": "3 brownies",
                         "id": "c4biAwardPoint3",
                         "command": "c4bi_award_point3"
                     },
                     {
-                        "caption": "4",
+                        "caption": "4 brownies",
                         "id": "c4biAwardPoint4",
                         "command": "c4bi_award_point4"
                     },
                     {
-                        "caption": "5",
+                        "caption": "5 brownies",
                         "id": "c4biAwardPoint5",
                         "command": "c4bi_award_point5"
                     }
                 ]
             },
             {
-                "caption": "Copy to Group",
-                "id": "c4biBroadcastGroup",
-                "command": "c4bi_broadcast_group"
+                "caption": "Clear Whiteboard",
+                "id": "c4biClearBoard",
+                "command": "c4bi_clear_board"
             },
             {
                 "caption": "Peek",
