@@ -4,12 +4,12 @@
         "id": "C4Bi",
         "children": [
             {
-                "caption": "Broadcast",
+                "caption": "Copy to Whiteboard",
                 "id": "c4biBroadcast",
                 "command": "c4bi_broadcast"
             },
             {
-                "caption": "Clear whiteboard",
+                "caption": "Clear Whiteboard",
                 "id": "c4biClearBoard",
                 "command": "c4bi_clear_board"
             },
@@ -53,6 +53,11 @@
                         "command": "c4bi_award_point5"
                     }
                 ]
+            },
+            {
+                "caption": "Copy to Group",
+                "id": "c4biBroadcastGroup",
+                "command": "c4bi_broadcast_group"
             },
             {
                 "caption": "Peek",

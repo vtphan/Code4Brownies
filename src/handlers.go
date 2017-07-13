@@ -56,6 +56,7 @@ func my_pointsHandler(w http.ResponseWriter, r *http.Request) {
 //-----------------------------------------------------------------
 func submit_postHandler(w http.ResponseWriter, r *http.Request) {
 	uid, body, ext := r.FormValue("uid"), r.FormValue("body"), r.FormValue("ext")
+
 	if POLL_MODE {
 		// fmt.Println(uid, body)
 		lines := strings.Split(body, "\n")
@@ -78,7 +79,7 @@ func submit_postHandler(w http.ResponseWriter, r *http.Request) {
 //-----------------------------------------------------------------
 func receive_feedbackHandler(w http.ResponseWriter, r *http.Request) {
 	uid := r.FormValue("uid")
-	content, ok := MyBoard[uid]
+	content, ok := Feedback[uid]
 	if !ok {
 		content = ""
 	}
@@ -92,10 +93,22 @@ func receive_feedbackHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //-----------------------------------------------------------------
-// students receive broadcast
+// student receives broadcast or content from his own board
 //-----------------------------------------------------------------
 func receive_broadcastHandler(w http.ResponseWriter, r *http.Request) {
-	js, err := json.Marshal(map[string]string{"whiteboard": Whiteboard, "ext": WhiteboardExt})
+	uid := r.FormValue("uid")
+	var js []byte
+	var err error
+	if uid == "" {
+		// js, err = json.Marshal(map[string]string{"whiteboard": Whiteboard, "ext": WhiteboardExt})
+		js, err = json.Marshal(map[string]string{"content": Whiteboard})
+	} else {
+		content, ok := Board[uid]
+		if !ok {
+			content = ""
+		}
+		js, err = json.Marshal(map[string]string{"content": content})
+	}
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
@@ -138,10 +151,14 @@ func view_pollHandler(w http.ResponseWriter, r *http.Request) {
 func give_feedbackHandler(w http.ResponseWriter, r *http.Request) {
 	content := r.FormValue("content")
 	sid := r.FormValue("sid")
-	sub := ProcessedSubs[sid]
-	uid := sub.Uid
-	MyBoard[uid] = content
-	fmt.Fprint(w, "Feedback saved.")
+	sub, ok := ProcessedSubs[sid]
+	if ok {
+		uid := sub.Uid
+		Feedback[uid] = content
+		fmt.Fprint(w, "Feedback saved.")
+	} else {
+		fmt.Fprint(w, "sid "+sid+" is not found.")
+	}
 }
 
 //-----------------------------------------------------------------
@@ -159,12 +176,26 @@ func start_pollHandler(w http.ResponseWriter, r *http.Request) {
 // instructor broadcast contents to students
 //-----------------------------------------------------------------
 func broadcastHandler(w http.ResponseWriter, r *http.Request) {
-	Whiteboard = r.FormValue("content")
-	WhiteboardExt = r.FormValue("ext")
-	fmt.Fprintf(w, "Content is saved to whiteboard.")
-	ProblemStartingTime = time.Now()
-	ProblemID = RandStringRunes(8)
-	ProblemDescription = strings.SplitN(Whiteboard, "\n", 2)[0]
+	if r.FormValue("sids") == "" {
+		Whiteboard = r.FormValue("content")
+		// WhiteboardExt = r.FormValue("ext")
+		ProblemStartingTime = time.Now()
+		ProblemID = RandStringRunes(8)
+		ProblemDescription = strings.SplitN(Whiteboard, "\n", 2)[0]
+	} else {
+		sids := strings.Split(r.FormValue("sids"), ",")
+		for i := 0; i < len(sids); i++ {
+			sid := string(sids[i])
+			sub, ok := ProcessedSubs[sid]
+			if ok {
+				Board[sub.Uid] = r.FormValue("content")
+			} else {
+				fmt.Fprintf(w, "sid "+sid+" is not found.")
+				return
+			}
+		}
+	}
+	fmt.Fprintf(w, "Content copied to Whiteboard.")
 }
 
 //-----------------------------------------------------------------
@@ -182,6 +213,7 @@ func clear_boardHandler(w http.ResponseWriter, r *http.Request) {
 	ProblemStartingTime = time.Now()
 	ProblemDescription = "none"
 	ProblemID = "none"
+	Whiteboard = ""
 	fmt.Fprintf(w, "Whiteboard is clear.")
 }
 

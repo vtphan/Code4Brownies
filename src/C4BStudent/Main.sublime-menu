@@ -9,14 +9,25 @@
                 "command": "c4b_share"
             },
             {
-                "caption": "Whiteboard",
-                "id": "c4bReceivebroadcast",
-                "command": "c4b_receivebroadcast"
-            },
-            {
-                "caption": "Get feedback",
-                "id": "c4bGetFeedback",
-                "command": "c4b_get_feedback"
+                "caption": "Get content",
+                "id": "c4bGetContent",
+                "children": [
+                    {
+                        "caption": "Whiteboard",
+                        "id": "c4bReceivebroadcast",
+                        "command": "c4b_receivebroadcast"
+                    },
+                    {
+                        "caption": "My Board",
+                        "id": "c4bMyBoard",
+                        "command": "c4b_my_board"
+                    },
+                    {
+                        "caption": "Feedback",
+                        "id": "c4bGetFeedback",
+                        "command": "c4b_get_feedback"
+                    }
+                ]
             },
             {
                 "caption": "My brownies",

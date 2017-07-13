@@ -14,8 +14,12 @@ var USER_DB string
 var SERVER = ""
 
 var Whiteboard string
-var WhiteboardExt string
-var MyBoard = make(map[string]string)
+
+// var WhiteboardExt string
+
+// Board and Feedback for each uid
+var Board = make(map[string]string)
+var Feedback = make(map[string]string)
 
 var ProblemStartingTime time.Time
 var ProblemDescription string

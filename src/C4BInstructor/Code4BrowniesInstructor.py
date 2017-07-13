@@ -58,21 +58,44 @@ class c4biViewPollCommand(sublime_plugin.ApplicationCommand):
 		webbrowser.open(SERVER_ADDR + "/poll")
 
 # ------------------------------------------------------------------
+def _broadcast(self, sids=''):
+	content = self.view.substr(sublime.Region(0, self.view.size()))
+	file_name = self.view.file_name()
+	url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
+	if file_name is not None:
+		data = urllib.parse.urlencode({'content':content, 'sids':sids}).encode('ascii')
+		response = c4biRequest(url,data)
+		if response is not None:
+			sublime.status_message(response)
+
+# ------------------------------------------------------------------
+class c4biBroadcastGroupCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		fnames = [ v.file_name() for v in sublime.active_window().views() ]
+		names = [ ntpath.basename(n.rsplit('.',-1)[0]) for n in fnames ]
+		sids = ','.join([ n for n in names if n.startswith('c4b_') ])
+		if sids != '':
+			_broadcast(self, sids)
+		else:
+			sublime.message_dialog("There are no group in this window.")
+
+# ------------------------------------------------------------------
 class c4biBroadcastCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
-		content = self.view.substr(sublime.Region(0, self.view.size()))
-		pid = content.split('\n',1)[0]
-		file_name = self.view.file_name()
-		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
-		if file_name is not None:
-			if '.' not in file_name:
-				ext = ''
-			else:
-				ext = file_name.split('.')[-1]
-			data = urllib.parse.urlencode({'content':content, 'ext':ext, 'pid':pid}).encode('ascii')
-			response = c4biRequest(url,data)
-			if response is not None:
-				sublime.status_message(response)
+		_broadcast(self)
+		# content = self.view.substr(sublime.Region(0, self.view.size()))
+		# pid = content.split('\n',1)[0]
+		# file_name = self.view.file_name()
+		# url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
+		# if file_name is not None:
+		# 	if '.' not in file_name:
+		# 		ext = ''
+		# 	else:
+		# 		ext = file_name.split('.')[-1]
+		# 	data = urllib.parse.urlencode({'content':content, 'ext':ext, 'pid':pid}).encode('ascii')
+		# 	response = c4biRequest(url,data)
+		# 	if response is not None:
+		# 		sublime.status_message(response)
 
 # ------------------------------------------------------------------
 # Instructor sends signal to clear whiteboard.
