@@ -52,11 +52,15 @@ OS X: run the server in a terminal
     ./c4b_darwin_amd64 -db db.csv
 ````
 
-Linux: run the server in a bash terminal
+Linux: run the server in a terminal
 ```
     ./c4b_linux_amd64 -db db.csv
 ````
 
+If you want to run the server with the source code, you need to install Go.  To run the server:
+```
+    ./go run *.go -db db.csv
+````
 db.csv is the student database, stored in comma-separated format.
 
 
