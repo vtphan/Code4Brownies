@@ -78,7 +78,7 @@ func main() {
 	http.HandleFunc("/my_points", my_pointsHandler)
 	http.HandleFunc("/receive_broadcast", receive_broadcastHandler)
 	// http.HandleFunc("/receive_feedback", receive_feedbackHandler)
-	http.HandleFunc("/query_poll", query_pollHandler)
+	// http.HandleFunc("/query_poll", query_pollHandler)
 
 	// public handlers
 	http.HandleFunc("/poll", view_pollHandler)

@@ -20,18 +20,18 @@ import (
 //-----------------------------------------------------------------
 // Query poll results
 //-----------------------------------------------------------------
-func query_pollHandler(w http.ResponseWriter, r *http.Request) {
-	if POLL_MODE {
-		js, err := json.Marshal(POLL_RESULT)
-		if err != nil {
-			fmt.Println(err.Error())
-		} else {
-			w.Header().Set("Content-Type", "application/json")
-			w.Header().Set("Access-Control-Allow-Origin", "*")
-			w.Write(js)
-		}
-	}
-}
+// func query_pollHandler(w http.ResponseWriter, r *http.Request) {
+// 	if POLL_MODE {
+// 		js, err := json.Marshal(POLL_RESULT)
+// 		if err != nil {
+// 			fmt.Println(err.Error())
+// 		} else {
+// 			w.Header().Set("Content-Type", "application/json")
+// 			w.Header().Set("Access-Control-Allow-Origin", "*")
+// 			w.Write(js)
+// 		}
+// 	}
+// }
 
 //-----------------------------------------------------------------
 // users query to know their current points
