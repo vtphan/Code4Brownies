@@ -79,11 +79,9 @@ func main() {
 	http.HandleFunc("/receive_broadcast", receive_broadcastHandler)
 	http.HandleFunc("/register", registerHandler)
 
-	// public handlers
-	http.HandleFunc("/poll", view_pollHandler)
-
 	// teacher handlers
-	http.HandleFunc("/query_poll", query_pollHandler)
+	http.HandleFunc("/query_poll", Authorize(query_pollHandler))
+	http.HandleFunc("/view_poll", Authorize(view_pollHandler))
 	http.HandleFunc("/points", Authorize(pointsHandler))
 	http.HandleFunc("/give_points", Authorize(give_pointsHandler))
 	http.HandleFunc("/peek", Authorize(peekHandler))

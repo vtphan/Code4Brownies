@@ -6,6 +6,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/http"
 	"strconv"
 	"strings"
@@ -29,6 +30,26 @@ func query_pollHandler(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Access-Control-Allow-Origin", "*")
 			w.Write(js)
 		}
+	}
+}
+
+//-----------------------------------------------------------------
+// View poll results
+//-----------------------------------------------------------------
+func view_pollHandler(w http.ResponseWriter, r *http.Request) {
+	if POLL_MODE {
+		// tmpl, err := template.ParseFiles("poll.html")
+		t := template.New("poll template")
+		t, err := t.Parse(POLL_TEMPLATE)
+		if err == nil {
+			w.Header().Set("Content-Type", "text/html")
+			t.Execute(w, &TemplateData{SERVER})
+		} else {
+			fmt.Println(err)
+		}
+		// fmt.Fprintf(w, "OK")
+	} else {
+		fmt.Fprintf(w, "There is no on-going poll.")
 	}
 }
 

@@ -18,6 +18,11 @@
                 "id": "c4bShowPoints",
                 "command": "c4b_show_points"
             },
+            {
+                "caption": "Vote",
+                "id": "c4bVote",
+                "command": "c4b_vote"
+            },
             {"caption":"-", "id":"side-bar-separator"},
             {
                 "caption": "Set information",

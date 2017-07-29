@@ -64,35 +64,12 @@ def _receive_broadcast(self, edit, uid):
 		sublime.message_dialog("Register, if you have not done so.")
 
 # ------------------------------------------------------------------
-# class c4bReceivebroadcastCommand(sublime_plugin.TextCommand):
-# 	def run(self, edit):
-# 		_receive_broadcast(self, edit)
-
-# ------------------------------------------------------------------
 class c4bMyBoardCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		info = c4b_get_attr()
 		if info is None:
 			return
 		_receive_broadcast(self, edit, info['Name'])
-
-# ------------------------------------------------------------------
-# class c4bGetFeedbackCommand(sublime_plugin.TextCommand):
-# 	def run(self, edit):
-# 		info = c4b_get_attr()
-# 		if info is None:
-# 			return
-# 		data = urllib.parse.urlencode({'uid':info['Name']}).encode('ascii')
-# 		url = urllib.parse.urljoin(info['Server'], c4b_RECEIVE_FEEDBACK_PATH)
-# 		response = c4bRequest(url, data)
-# 		if response is not None:
-# 			json_obj = json.loads(response)
-# 			content = json_obj['content']
-# 			if len(content.strip()) > 0:
-# 				new_view = self.view.window().new_file()
-# 				new_view.insert(edit, 0, content)
-# 			else:
-# 				sublime.message_dialog("You have no feedback.")
 
 # ------------------------------------------------------------------
 class c4bShareCommand(sublime_plugin.TextCommand):
@@ -113,6 +90,26 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 			response = c4bRequest(url,data)
 			if response is not None:
 				sublime.message_dialog(response)
+
+# ------------------------------------------------------------------
+class c4bVote(sublime_plugin.WindowCommand):
+	def run(self):
+		sublime.active_window().show_input_panel("Write your answer and hit Enter",
+			"",
+			self.vote,
+			None,
+			None)
+
+	def vote(self, answer):
+		info = c4b_get_attr()
+		if info is None:
+			return
+		url = urllib.parse.urljoin(info['Server'], c4b_SHARE_PATH)
+		values = {'uid':info['Name'], 'body':answer, 'ext':''}
+		data = urllib.parse.urlencode(values).encode('ascii')
+		response = c4bRequest(url,data)
+		if response is not None:
+			sublime.message_dialog(response)
 
 # ------------------------------------------------------------------
 class c4bRegister(sublime_plugin.WindowCommand):

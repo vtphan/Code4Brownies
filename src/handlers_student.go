@@ -6,7 +6,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"net/http"
 	"strings"
 )
@@ -68,24 +67,6 @@ func shareHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //-----------------------------------------------------------------
-// students receive feedback
-//-----------------------------------------------------------------
-// func receive_feedbackHandler(w http.ResponseWriter, r *http.Request) {
-// 	uid := r.FormValue("uid")
-// 	content, ok := Feedback[uid]
-// 	if !ok {
-// 		content = ""
-// 	}
-// 	js, err := json.Marshal(map[string]string{"content": content})
-// 	if err != nil {
-// 		fmt.Println(err.Error())
-// 	} else {
-// 		w.Header().Set("Content-Type", "application/json")
-// 		w.Write(js)
-// 	}
-// }
-
-//-----------------------------------------------------------------
 // student receives broadcast or content from his own board
 //-----------------------------------------------------------------
 func receive_broadcastHandler(w http.ResponseWriter, r *http.Request) {
@@ -101,29 +82,5 @@ func receive_broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
-	}
-}
-
-//-----------------------------------------------------------------
-// PUBLIC HANDLERS
-//-----------------------------------------------------------------
-
-//-----------------------------------------------------------------
-// View poll results
-//-----------------------------------------------------------------
-func view_pollHandler(w http.ResponseWriter, r *http.Request) {
-	if POLL_MODE {
-		// tmpl, err := template.ParseFiles("poll.html")
-		t := template.New("poll template")
-		t, err := t.Parse(POLL_TEMPLATE)
-		if err == nil {
-			w.Header().Set("Content-Type", "text/html")
-			t.Execute(w, &TemplateData{SERVER})
-		} else {
-			fmt.Println(err)
-		}
-		// fmt.Fprintf(w, "OK")
-	} else {
-		fmt.Fprintf(w, "There is no on-going poll.")
 	}
 }

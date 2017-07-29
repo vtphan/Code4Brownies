@@ -59,7 +59,7 @@ var POLL_TEMPLATE = `
       google.charts.setOnLoadCallback(drawChart);
       function drawChart() {
       	// console.log(totalUpdateTime);
-			var poll_view_url = "http://192.168.0.13:4030/query_poll";
+			var poll_view_url = "http://localhost:4030/query_poll";
 			$.getJSON(poll_view_url, function( result ) {
 				var data = new google.visualization.DataTable();
 				data.addColumn('string', 'Answer');

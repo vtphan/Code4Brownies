@@ -53,7 +53,7 @@ class c4biCleanCommand(sublime_plugin.ApplicationCommand):
 # ------------------------------------------------------------------
 class c4biViewPollCommand(sublime_plugin.ApplicationCommand):
 	def run(self):
-		webbrowser.open(SERVER_ADDR + "/poll")
+		webbrowser.open(SERVER_ADDR + "/view_poll")
 
 # ------------------------------------------------------------------
 def _broadcast(self, sids='__all__'):
