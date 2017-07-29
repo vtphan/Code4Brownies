@@ -6,14 +6,18 @@ import urllib.parse
 import urllib.request
 import os
 import json
+import threading
+import time
 
 c4b_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
 c4b_REGISTER_PATH = "register"
 c4b_SHARE_PATH = "share"
 c4b_MY_POINTS_PATH = "my_points"
 c4b_RECEIVE_BROADCAST_PATH = "receive_broadcast"
+c4b_CHECK_BROADCAST_PATH = "check_broadcast"
 
 TIMEOUT = 10
+RUNNING_BACKGROUND_TASK = False
 
 # ------------------------------------------------------------------
 def c4b_get_attr():
@@ -42,7 +46,45 @@ def c4bRequest(url, data):
 		return None
 
 # ------------------------------------------------------------------
-def _receive_broadcast(self, edit, uid):
+def check_with_server():
+	MAX_POLLING_TIME = 2700  # 90 minutes
+	SLEEP_TIME, TOTAL_SLEEP_TIME = 120, 0
+	RUNNING_BACKGROUND_TASK = True
+	while TOTAL_SLEEP_TIME < MAX_POLLING_TIME:
+		info = c4b_get_attr()
+		if info is None:
+			return
+		url = urllib.parse.urljoin(info['Server'], c4b_CHECK_BROADCAST_PATH)
+		values = {'uid':info['Name']}
+		data = urllib.parse.urlencode(values).encode('ascii')
+		req = urllib.request.Request(url, data)
+		try:
+			with urllib.request.urlopen(req, None, TIMEOUT) as r:
+				response = r.read().decode(encoding="utf-8")
+				print(response)
+				if response == "true":
+					sublime.status_message("Your whiteboard has been updated!")
+					# _receive_broadcast(self, edit, info['Name'])
+					# sublime.run_command('c4b_my_board')
+		except urllib.error.URLError as err:
+			print("Cannot connect with server. Stop polling.")
+			break
+		TOTAL_SLEEP_TIME += SLEEP_TIME
+		time.sleep(SLEEP_TIME)
+	RUNNING_BACKGROUND_TASK = False
+
+# ------------------------------------------------------------------
+def background_task():
+	bg_thread = threading.Thread(target=check_with_server)
+	bg_thread.start()
+
+# ------------------------------------------------------------------
+class c4bAutoUpdateBoardCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		background_task()
+
+# ------------------------------------------------------------------
+def _receive_broadcast(edit, uid):
 	info = c4b_get_attr()
 	if info is None:
 		return
@@ -53,7 +95,7 @@ def _receive_broadcast(self, edit, uid):
 		json_obj = json.loads(response)
 		content = json_obj['content']
 		if len(content.strip()) > 0:
-			new_view = self.view.window().new_file()
+			new_view = sublime.active_window().new_file()
 			new_view.insert(edit, 0, content)
 		else:
 			if uid=='':
@@ -69,27 +111,43 @@ class c4bMyBoardCommand(sublime_plugin.TextCommand):
 		info = c4b_get_attr()
 		if info is None:
 			return
-		_receive_broadcast(self, edit, info['Name'])
+		_receive_broadcast(edit, info['Name'])
 
 # ------------------------------------------------------------------
 class c4bShareCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
+		info = c4b_get_attr()
+		if info is None:
+			return
+		url = urllib.parse.urljoin(info['Server'], c4b_SHARE_PATH)
+
+		# Guesstimate extension
 		this_file_name = self.view.file_name()
+		header = ''
 		if this_file_name is not None:
+			lines = open(this_file_name).readlines()
+			if len(lines)>0 and (lines[0].startswith('#') or lines[0].startswith('//')):
+				header = lines[0]
 			if '.' not in this_file_name:
 				ext = ''
 			else:
 				ext = this_file_name.split('.')[-1]
-			info = c4b_get_attr()
-			if info is None:
-				return
-			url = urllib.parse.urljoin(info['Server'], c4b_SHARE_PATH)
+		else:
+			ext = 'py'
+
+		# Determine content
+		content = ''.join([ self.view.substr(s) for s in self.view.sel() ])
+		if len(content) < 10:  # probably selected by mistake
 			content = self.view.substr(sublime.Region(0, self.view.size()))
-			values = {'uid':info['Name'], 'body':content, 'ext':ext}
-			data = urllib.parse.urlencode(values).encode('ascii')
-			response = c4bRequest(url,data)
-			if response is not None:
-				sublime.message_dialog(response)
+		else:
+			content = header + '\n' + content
+
+		# Now send
+		values = {'uid':info['Name'], 'body':content, 'ext':ext}
+		data = urllib.parse.urlencode(values).encode('ascii')
+		response = c4bRequest(url,data)
+		if response is not None:
+			sublime.message_dialog(response)
 
 # ------------------------------------------------------------------
 class c4bVote(sublime_plugin.WindowCommand):

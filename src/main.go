@@ -77,6 +77,7 @@ func main() {
 	http.HandleFunc("/share", shareHandler)
 	http.HandleFunc("/my_points", my_pointsHandler)
 	http.HandleFunc("/receive_broadcast", receive_broadcastHandler)
+	http.HandleFunc("/check_broadcast", check_broadcastHandler)
 	http.HandleFunc("/register", registerHandler)
 
 	// teacher handlers

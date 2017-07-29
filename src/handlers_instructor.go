@@ -72,6 +72,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	if r.FormValue("sids") == "__all__" {
 		for _, board := range Boards {
 			board.Content = r.FormValue("content")
+			board.Changed = true
 			des = strings.SplitN(board.Content, "\n", 2)[0]
 			if des != board.Description { // a new exercise/problem
 				board.Description = des
@@ -85,6 +86,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 			sub, ok := ProcessedSubs[sid]
 			if ok {
 				Boards[sub.Uid].Content = r.FormValue("content")
+				Boards[sub.Uid].Changed = true
 				des = strings.SplitN(Boards[sub.Uid].Content, "\n", 2)[0]
 				if des != Boards[sub.Uid].Description { // a new exercise/problem
 					Boards[sub.Uid].Description = des

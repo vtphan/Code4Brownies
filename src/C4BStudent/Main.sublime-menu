@@ -13,6 +13,11 @@
                 "id": "c4bMyBoard",
                 "command": "c4b_my_board"
             },
+            // {
+            //     "caption": "Auto-update Board",
+            //     "id": "c4bAutoUpdateBoard",
+            //     "command": "c4b_auto_update_board"
+            // },
             {
                 "caption": "My brownies",
                 "id": "c4bShowPoints",

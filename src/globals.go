@@ -17,6 +17,7 @@ type Board struct {
 	Content      string
 	Description  string
 	StartingTime time.Time
+	Changed      bool
 }
 
 var Boards = make(map[string]*Board)

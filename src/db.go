@@ -115,7 +115,7 @@ func loadDB() map[string]*Submission {
 		des := record[4]
 		timestamp := record[5]
 		if sid == "Register" {
-			Boards[uid] = &Board{"", "", time.Now()}
+			Boards[uid] = &Board{"", "", time.Now(), false}
 		} else {
 			s := &Submission{
 				Uid:       uid,
