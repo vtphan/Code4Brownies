@@ -35,18 +35,18 @@ func GetSubmission(sid string) *Submission {
 func AddSubmission(uid, body, ext string) {
 	SEM.Lock()
 	defer SEM.Unlock()
-	dur := int(time.Since(ProblemStartingTime).Seconds())
-	des := strings.SplitN(body, "\n", 2)[0]
-	pid := ProblemID
-	// Make sure that student submits the correct file
-	if des != ProblemDescription {
-		pid = ""
-		des = ""
-	}
-	timestamp := time.Now().Format("Mon Jan 2 15:04:05 MST 2006")
-	NewSubs = append(NewSubs, &Submission{RandStringRunes(10), uid, pid, body, ext, 0, dur, des, timestamp})
-	if len(NewSubs) == 1 {
-		fmt.Print("\x07")
+	board, ok := Boards[uid]
+	if ok {
+		dur := int(time.Since(board.StartingTime).Seconds())
+		des := strings.SplitN(body, "\n", 2)[0]
+		if des != board.Description {
+			des = ""
+		}
+		timestamp := time.Now().Format("Mon Jan 2 15:04:05 MST 2006")
+		NewSubs = append(NewSubs, &Submission{RandStringRunes(10), uid, body, ext, 0, dur, des, timestamp})
+		if len(NewSubs) == 1 {
+			fmt.Print("\x07")
+		}
 	}
 }
 
@@ -69,13 +69,13 @@ func ProcessSubmission(i int) *Submission {
 func PrintState() {
 	fmt.Println("------\n\tNewSubs:")
 	for _, s := range NewSubs {
-		fmt.Printf("Sid: %s\nUid: %s\nPid: %s\nExt: %s\nBody length: %d\nPoints: %d\nDuration: %d\n\n",
-			s.Sid, s.Uid, s.Pid, s.Ext, len(s.Body), s.Points, s.Duration)
+		fmt.Printf("Sid: %s\nUid: %s\nExt: %s\nBody length: %d\nPoints: %d\nDuration: %d\n\n",
+			s.Sid, s.Uid, s.Ext, len(s.Body), s.Points, s.Duration)
 	}
 	fmt.Println("\n\tProcessedSubs:")
 	for _, s := range ProcessedSubs {
-		fmt.Printf("Sid: %s\nUid: %s\nPid: %s\nExt: %s\nBody length: %d\nPoints: %d\nDuration: %d\n\n",
-			s.Sid, s.Uid, s.Pid, s.Ext, len(s.Body), s.Points, s.Duration)
+		fmt.Printf("Sid: %s\nUid: %s\nExt: %s\nBody length: %d\nPoints: %d\nDuration: %d\n\n",
+			s.Sid, s.Uid, s.Ext, len(s.Body), s.Points, s.Duration)
 	}
 	fmt.Println("------")
 }

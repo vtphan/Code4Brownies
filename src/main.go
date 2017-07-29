@@ -74,28 +74,25 @@ func main() {
 	prepareCleanup()
 
 	// student handlers
-	http.HandleFunc("/submit_post", submit_postHandler) // rename this
+	http.HandleFunc("/share", shareHandler)
 	http.HandleFunc("/my_points", my_pointsHandler)
 	http.HandleFunc("/receive_broadcast", receive_broadcastHandler)
-	// http.HandleFunc("/receive_feedback", receive_feedbackHandler)
-	// http.HandleFunc("/query_poll", query_pollHandler)
+	http.HandleFunc("/register", registerHandler)
 
 	// public handlers
 	http.HandleFunc("/poll", view_pollHandler)
 
 	// teacher handlers
-	// http.HandleFunc("/give_feedback", Authorize(give_feedbackHandler))
+	http.HandleFunc("/query_poll", query_pollHandler)
 	http.HandleFunc("/points", Authorize(pointsHandler))
 	http.HandleFunc("/give_points", Authorize(give_pointsHandler))
 	http.HandleFunc("/peek", Authorize(peekHandler))
 	http.HandleFunc("/broadcast", Authorize(broadcastHandler))
-	http.HandleFunc("/test_data", Authorize(test_dataHandler))
-	http.HandleFunc("/clear_board", Authorize(clear_boardHandler))
 	http.HandleFunc("/get_post", Authorize(get_postHandler))
 	http.HandleFunc("/get_posts", Authorize(get_postsHandler))
 	http.HandleFunc("/start_poll", Authorize(start_pollHandler))
 
-	ProblemStartingTime = time.Now()
+	loadDB()
 	err := http.ListenAndServe("0.0.0.0:"+PORT, nil)
 	if err != nil {
 		panic(err.Error() + "\n")

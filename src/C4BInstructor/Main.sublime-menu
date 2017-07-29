@@ -9,28 +9,28 @@
                 "command": "c4bi_get_all"
             },
             {
-                "caption": "Copy file to",
+                "caption": "Share with",
                 "id": "c4biCopyContent",
                 "children": [
                     {
-                        "caption": "Whiteboard",
+                        "caption": "All",
                         "id": "c4biBroadcast",
                         "command": "c4bi_broadcast"
                     },
                     {
-                        "caption": "This group's boards",
+                        "caption": "Group",
                         "id": "c4biBroadcastGroup",
                         "command": "c4bi_broadcast_group"
                     },
                     {
-                        "caption": "This student's board",
+                        "caption": "Individual",
                         "id": "c4biGiveFeedback",
                         "command": "c4bi_give_feedback"
                     }
                 ]
             },
             {
-                "caption": "Give brownies to this student",
+                "caption": "Give brownies",
                 "id": "c4biAwardPoint",
                 "children": [
                     {
@@ -59,11 +59,6 @@
                         "command": "c4bi_award_point5"
                     }
                 ]
-            },
-            {
-                "caption": "Clear Whiteboard",
-                "id": "c4biClearBoard",
-                "command": "c4bi_clear_board"
             },
             {
                 "caption": "Peek",

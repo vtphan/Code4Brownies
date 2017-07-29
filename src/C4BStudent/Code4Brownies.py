@@ -8,10 +8,10 @@ import os
 import json
 
 c4b_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
-c4b_SUBMIT_POST_PATH = "submit_post"
+c4b_REGISTER_PATH = "register"
+c4b_SHARE_PATH = "share"
 c4b_MY_POINTS_PATH = "my_points"
 c4b_RECEIVE_BROADCAST_PATH = "receive_broadcast"
-# c4b_RECEIVE_FEEDBACK_PATH = "receive_feedback"
 
 TIMEOUT = 10
 
@@ -42,14 +42,14 @@ def c4bRequest(url, data):
 		return None
 
 # ------------------------------------------------------------------
-def _receive_broadcast(self, edit, uid=''):
+def _receive_broadcast(self, edit, uid):
 	info = c4b_get_attr()
 	if info is None:
 		return
 	data = urllib.parse.urlencode({'uid':uid}).encode('ascii')
 	url = urllib.parse.urljoin(info['Server'], c4b_RECEIVE_BROADCAST_PATH)
 	response = c4bRequest(url, data)
-	if response is not None:
+	if response != "":
 		json_obj = json.loads(response)
 		content = json_obj['content']
 		if len(content.strip()) > 0:
@@ -60,11 +60,13 @@ def _receive_broadcast(self, edit, uid=''):
 				sublime.message_dialog("Whiteboard is empty.")
 			else:
 				sublime.message_dialog("Your board is empty.")
+	else:
+		sublime.message_dialog("Register, if you have not done so.")
 
 # ------------------------------------------------------------------
-class c4bReceivebroadcastCommand(sublime_plugin.TextCommand):
-	def run(self, edit):
-		_receive_broadcast(self, edit)
+# class c4bReceivebroadcastCommand(sublime_plugin.TextCommand):
+# 	def run(self, edit):
+# 		_receive_broadcast(self, edit)
 
 # ------------------------------------------------------------------
 class c4bMyBoardCommand(sublime_plugin.TextCommand):
@@ -104,9 +106,23 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 			info = c4b_get_attr()
 			if info is None:
 				return
-			url = urllib.parse.urljoin(info['Server'], c4b_SUBMIT_POST_PATH)
+			url = urllib.parse.urljoin(info['Server'], c4b_SHARE_PATH)
 			content = self.view.substr(sublime.Region(0, self.view.size()))
 			values = {'uid':info['Name'], 'body':content, 'ext':ext}
+			data = urllib.parse.urlencode(values).encode('ascii')
+			response = c4bRequest(url,data)
+			if response is not None:
+				sublime.message_dialog(response)
+
+# ------------------------------------------------------------------
+class c4bRegister(sublime_plugin.WindowCommand):
+	def run(self):
+		info = c4b_get_attr()
+		if info is None:
+			sublime.message_dialog("Please Set Information.")
+		else:
+			url = urllib.parse.urljoin(info['Server'], c4b_REGISTER_PATH)
+			values = {'uid':info['Name']}
 			data = urllib.parse.urlencode(values).encode('ascii')
 			response = c4bRequest(url,data)
 			if response is not None:
@@ -151,7 +167,7 @@ class c4bAbout(sublime_plugin.WindowCommand):
 			version = open(os.path.join(sublime.packages_path(), "C4BStudent", "VERSION")).read().strip()
 		except:
 			version = 'Unknown'
-		sublime.message_dialog("Code4Brownies (v%s)\nCopyright 2015-2016 Vinhthuy Phan" % version)
+		sublime.message_dialog("Code4Brownies (v%s)\nCopyright 2015-2017 Vinhthuy Phan" % version)
 
 # ------------------------------------------------------------------
 class c4bUpgrade(sublime_plugin.WindowCommand):

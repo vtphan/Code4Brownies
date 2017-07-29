@@ -14,6 +14,34 @@ import (
 )
 
 //-----------------------------------------------------------------
+func RegisterStudent(uid string) {
+	var err error
+	var outFile *os.File
+	if _, err = os.Stat(USER_DB); err == nil {
+		outFile, err = os.OpenFile(USER_DB, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+	} else {
+		outFile, err = os.Create(USER_DB)
+	}
+	if err != nil {
+		panic(err)
+	}
+	defer outFile.Close()
+
+	t := time.Now()
+	fmt.Println(t.Format("Mon Jan 2 15:04:05 MST 2006: write data to ") + USER_DB)
+	w := csv.NewWriter(outFile)
+	record := []string{uid, "0", "0", "Register", "Register",
+		time.Now().Format("Mon Jan 2 15:04:05 MST 2006")}
+	if err := w.Write(record); err != nil {
+		log.Fatalln("error writing record to csv:", err)
+	}
+	w.Flush()
+	if err := w.Error(); err != nil {
+		panic(err)
+	}
+}
+
+//-----------------------------------------------------------------
 func writeDB() {
 	var err error
 	var outFile *os.File
@@ -33,7 +61,6 @@ func writeDB() {
 	for _, sub := range ProcessedSubs {
 		record := []string{
 			sub.Uid,
-			sub.Pid,
 			strconv.Itoa(sub.Points),
 			strconv.Itoa(sub.Duration),
 			sub.Sid,
@@ -82,22 +109,24 @@ func loadDB() map[string]*Submission {
 			log.Fatal(err)
 		}
 		uid := record[0]
-		pid := record[1]
-		points, err := strconv.Atoi(record[2])
-		duration, err := strconv.Atoi(record[3])
-		sid := record[4]
-		des := record[5]
-		timestamp := record[6]
-		s := &Submission{
-			Uid:       uid,
-			Pid:       pid,
-			Points:    points,
-			Duration:  duration,
-			Sid:       sid,
-			Pdes:      des,
-			Timestamp: timestamp,
+		points, err := strconv.Atoi(record[1])
+		duration, err := strconv.Atoi(record[2])
+		sid := record[3]
+		des := record[4]
+		timestamp := record[5]
+		if sid == "Register" {
+			Boards[uid] = &Board{"", "", time.Now()}
+		} else {
+			s := &Submission{
+				Uid:       uid,
+				Points:    points,
+				Duration:  duration,
+				Sid:       sid,
+				Pdes:      des,
+				Timestamp: timestamp,
+			}
+			entries[sid] = s
 		}
-		entries[sid] = s
 	}
 	return entries
 }

@@ -1,28 +1,17 @@
 [
     {
-        "caption": "ShareCode",
+        "caption": "C4B",
         "id": "Code4Brownies",
         "children": [
             {
-                "caption": "Share this file",
+                "caption": "Share",
                 "id": "c4bShare",
                 "command": "c4b_share"
             },
             {
-                "caption": "Content from",
-                "id": "c4bGetContent",
-                "children": [
-                    {
-                        "caption": "Whiteboard",
-                        "id": "c4bReceivebroadcast",
-                        "command": "c4b_receivebroadcast"
-                    },
-                    {
-                        "caption": "My Board",
-                        "id": "c4bMyBoard",
-                        "command": "c4b_my_board"
-                    }
-                ]
+                "caption": "White Board",
+                "id": "c4bMyBoard",
+                "command": "c4b_my_board"
             },
             {
                 "caption": "My brownies",
@@ -36,6 +25,11 @@
                 "command": "c4b_set_info"
             },
             {"caption":"-", "id":"side-bar-separator"},
+            {
+                "caption": "Register",
+                "id": "c4bRegister",
+                "command": "c4b_register"
+            },
             {
                 "caption": "Upgrade",
                 "id": "c4bUpgrade",

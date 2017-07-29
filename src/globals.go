@@ -13,24 +13,18 @@ var PORT = "4030"
 var USER_DB string
 var SERVER = ""
 
-var Whiteboard string
+type Board struct {
+	Content      string
+	Description  string
+	StartingTime time.Time
+}
 
-// var WhiteboardExt string
-
-// Private board for each uid
-var Board = make(map[string]string)
-
-// var Feedback = make(map[string]string)
-
-var ProblemStartingTime time.Time
-var ProblemDescription string
-var ProblemID string
-var ProblemTestData = ""
+var Boards = make(map[string]*Board)
 
 type Submission struct {
-	Sid       string // submission id
-	Uid       string // user id
-	Pid       string // problem id
+	Sid string // submission id
+	Uid string // user id
+	// Pid       string // problem id
 	Body      string
 	Ext       string
 	Points    int
@@ -52,75 +46,47 @@ type TemplateData struct {
 var POLL_MODE = false
 var POLL_RESULT = make(map[string]int)
 var POLL_TEMPLATE = `
-<!DOCTYPE HTML>
 <html>
-<head>
-	<script type="text/javascript">
-	window.onload = function () {
+  <head>
+    <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  	 <script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript">
 		var updateInterval = 3000;
 		var maxUpdateTime = 300000;
 		var totalUpdateTime = 0;
-		var dps = [];
-		var poll_view_url = "http://{{.SERVER}}/query_poll";
-		var get_data = function() {
-			$.getJSON(poll_view_url, function( data ) {
-				$.each( data, function( key, val ) {
-					var new_key = true;
-					for (var i=0; i< dps.length; i++){
-						if (key == dps[i].label) {
-							dps[i].y = val;
-							new_key = false;
-						}
-					}
-					if (new_key == true) {
-						dps.push({"label": key, "y": val});
-					}
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+      function drawChart() {
+      	// console.log(totalUpdateTime);
+			var poll_view_url = "http://192.168.0.13:4030/query_poll";
+			$.getJSON(poll_view_url, function( result ) {
+				var data = new google.visualization.DataTable();
+				data.addColumn('string', 'Answer');
+				data.addColumn('number', 'Votes');
+				$.each( result, function( key, val ) {
+					data.addRow([key,val]);
 				});
-				totalUpdateTime += updateInterval;
-				if (totalUpdateTime > maxUpdateTime) {
-					clearInterval(updateInterval);
-				}
-			});
-		}
-		get_data();
-		var chart = new CanvasJS.Chart("chartContainer",{
-			theme: "theme2",
-			axisX:{
-			},
-			axisY: {
-				interval: 1,
-				gridThickness: 0,
-				title: ""
-			},
-			legend:{
-				verticalAlign: "top",
-				horizontalAlign: "centre",
-				fontSize: 18
-			},
-			data : [{
-				type: "bar",
-				showInLegend: true,
-				legendMarkerType: "none",
-				legendText: "Poll result",
-				indexLabel: "{y}",
-				dataPoints: dps
-			}]
-		});
-		chart.render();
-		var updateChart = function () {
-			get_data();
-			chart.render();
-			// console.log("updated", dps)
-		};
-		setInterval(updateChart, updateInterval);
-	}
-	</script>
-	<script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
-  	<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
-</head>
-<body>
-	<div id="chartContainer" style="height:600px; width:100%;">
-	</div>
-</body>
+		      var options = {
+		        	title: 'Poll Results',
+		     		chartArea: {width: 600, height: 400}, width: 1000, height: 600,
+		      };
+	         var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+	         chart.draw(data, options);
+	      });
+			totalUpdateTime += updateInterval;
+			if (totalUpdateTime > maxUpdateTime) {
+				clearInterval(handle);
+			}
+      }
+	   $(document).ready(function(){
+			handle = setInterval(drawChart, updateInterval);
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="chart_div"></div>
+  </body>
 </html>
 `

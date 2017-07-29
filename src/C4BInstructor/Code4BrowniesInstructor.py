@@ -13,7 +13,6 @@ import webbrowser
 
 SERVER_ADDR = "http://localhost:4030"
 c4bi_BROADCAST_PATH = "broadcast"
-c4bi_CLEAR_BOARD_PATH = "clear_board"
 c4bi_BROWNIE_PATH = "give_points"
 c4bi_PEEK_PATH = "peek"
 c4bi_POINTS_PATH = "points"
@@ -21,7 +20,6 @@ c4bi_REQUEST_ENTRY_PATH = "get_post"
 c4bi_REQUEST_ENTRIES_PATH = "get_posts"
 c4bi_START_POLL_PATH = "start_poll"
 c4bi_NEW_PROBLEM_PATH = "new_problem"
-# c4bi_GIVE_FEEDBACK_PATH = "give_feedback"
 TIMEOUT = 10
 
 POSTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Posts")
@@ -58,7 +56,7 @@ class c4biViewPollCommand(sublime_plugin.ApplicationCommand):
 		webbrowser.open(SERVER_ADDR + "/poll")
 
 # ------------------------------------------------------------------
-def _broadcast(self, sids=''):
+def _broadcast(self, sids='__all__'):
 	content = self.view.substr(sublime.Region(0, self.view.size()))
 	file_name = self.view.file_name()
 	url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
@@ -81,13 +79,6 @@ class c4biGiveFeedbackCommand(sublime_plugin.TextCommand):
 				_broadcast(self, sid)
 			else:
 				sublime.message_dialog("No student associated to this window.")
-			# content = self.view.substr(sublime.Region(0, self.view.size()))
-			# values = {'content':content, 'sid':sid}
-			# data = urllib.parse.urlencode(values).encode('ascii')
-			# url = urllib.parse.urljoin(SERVER_ADDR, c4bi_GIVE_FEEDBACK_PATH)
-			# response = c4biRequest(url,data)
-			# if response is not None:
-			# 	sublime.status_message(response)
 
 # ------------------------------------------------------------------
 # Instructor broadcasts content on group defined by current window
@@ -106,49 +97,6 @@ class c4biBroadcastGroupCommand(sublime_plugin.TextCommand):
 class c4biBroadcastCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		_broadcast(self)
-		# content = self.view.substr(sublime.Region(0, self.view.size()))
-		# pid = content.split('\n',1)[0]
-		# file_name = self.view.file_name()
-		# url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
-		# if file_name is not None:
-		# 	if '.' not in file_name:
-		# 		ext = ''
-		# 	else:
-		# 		ext = file_name.split('.')[-1]
-		# 	data = urllib.parse.urlencode({'content':content, 'ext':ext, 'pid':pid}).encode('ascii')
-		# 	response = c4biRequest(url,data)
-		# 	if response is not None:
-		# 		sublime.status_message(response)
-
-# ------------------------------------------------------------------
-# Instructor sends signal to clear whiteboard.
-# ------------------------------------------------------------------
-class c4biClearBoardCommand(sublime_plugin.TextCommand):
-	def run(self, edit):
-		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_CLEAR_BOARD_PATH)
-		data = urllib.parse.urlencode({}).encode('ascii')
-		response = c4biRequest(url, data)
-		if response is not None:
-			sublime.status_message(response)
-
-# ------------------------------------------------------------------
-# def broadcast_file(file_name, content, problem_id=''):
-# 	url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
-# 	if file_name is not None:
-# 		if '.' not in file_name:
-# 			ext = ''
-# 		else:
-# 			ext = file_name.split('.')[-1]
-# 		data = urllib.parse.urlencode({'content':content, 'ext':ext, 'pid':problem_id}).encode('ascii')
-# 		response = c4biRequest(url,data)
-# 		if response is not None:
-# 			sublime.status_message(response)
-
-# class c4biBroadcastChallengeCommand(sublime_plugin.TextCommand):
-# 	def run(self, edit):
-# 		content = self.view.substr(sublime.Region(0, self.view.size()))
-# 		pid = content.split('\n',1)[0]
-# 		broadcast_file(self.view.file_name(), content, pid)
 
 # ------------------------------------------------------------------
 # Instructor retrieves all current and past points of all users.
@@ -288,7 +236,7 @@ class c4biAboutCommand(sublime_plugin.WindowCommand):
 			version = open(os.path.join(sublime.packages_path(), "C4BInstructor", "VERSION")).read().strip()
 		except:
 			version = 'Unknown'
-		sublime.message_dialog("Code4Brownies (v%s)\nCopyright © 2015-2016 Vinhthuy Phan" % version)
+		sublime.message_dialog("Code4Brownies (v%s)\nCopyright © 2015-2017 Vinhthuy Phan" % version)
 
 # ------------------------------------------------------------------
 class c4biUpgrade(sublime_plugin.WindowCommand):
