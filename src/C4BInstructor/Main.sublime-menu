@@ -10,7 +10,7 @@
             },
             {
                 "caption": "Share with",
-                "id": "c4biCopyContent",
+                "id": "c4biBroadcastContent",
                 "children": [
                     {
                         "caption": "All",
@@ -61,19 +61,25 @@
                 ]
             },
             {
+                "caption": "Poll",
+                "id": "c4biPoll",
+                "children": [
+                    {
+                        "caption": "View Results",
+                        "id": "c4biViewPoll",
+                        "command": "c4bi_view_poll"
+                    },
+                    {
+                        "caption": "Give Answer",
+                        "id": "c4biAnswerPoll",
+                        "command": "c4bi_answer_poll"
+                    }
+                ]
+            },
+            {
                 "caption": "Peek",
                 "id": "c4biPeek",
                 "command": "c4bi_peek"
-            },
-            {
-                "caption": "Open/close poll",
-                "id": "c4biStartPoll",
-                "command": "c4bi_start_poll"
-            },
-            {
-                "caption": "View poll",
-                "id": "c4biViewPoll",
-                "command": "c4bi_view_poll"
             },
             {
                 "caption": "Points",

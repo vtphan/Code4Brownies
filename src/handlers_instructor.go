@@ -21,15 +21,13 @@ import (
 // Query poll results
 //-----------------------------------------------------------------
 func query_pollHandler(w http.ResponseWriter, r *http.Request) {
-	if POLL_MODE {
-		js, err := json.Marshal(POLL_RESULT)
-		if err != nil {
-			fmt.Println(err.Error())
-		} else {
-			w.Header().Set("Content-Type", "application/json")
-			w.Header().Set("Access-Control-Allow-Origin", "*")
-			w.Write(js)
-		}
+	js, err := json.Marshal(POLL_COUNT)
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Write(js)
 	}
 }
 
@@ -37,31 +35,31 @@ func query_pollHandler(w http.ResponseWriter, r *http.Request) {
 // View poll results
 //-----------------------------------------------------------------
 func view_pollHandler(w http.ResponseWriter, r *http.Request) {
-	if POLL_MODE {
-		// tmpl, err := template.ParseFiles("poll.html")
-		t := template.New("poll template")
-		t, err := t.Parse(POLL_TEMPLATE)
-		if err == nil {
-			w.Header().Set("Content-Type", "text/html")
-			t.Execute(w, &TemplateData{SERVER})
-		} else {
-			fmt.Println(err)
-		}
-		// fmt.Fprintf(w, "OK")
+	t := template.New("poll template")
+	t, err := t.Parse(POLL_TEMPLATE)
+	if err == nil {
+		w.Header().Set("Content-Type", "text/html")
+		t.Execute(w, &TemplateData{SERVER})
 	} else {
-		fmt.Fprintf(w, "There is no on-going poll.")
+		fmt.Println(err)
 	}
 }
 
 //-----------------------------------------------------------------
-// Collect poll answers from students
+// Answer poll
 //-----------------------------------------------------------------
-func start_pollHandler(w http.ResponseWriter, r *http.Request) {
-	POLL_MODE = !POLL_MODE
-	if !POLL_MODE {
-		POLL_RESULT = make(map[string]int)
+func answer_pollHandler(w http.ResponseWriter, r *http.Request) {
+	answer := r.FormValue("answer")
+	for k, v := range POLL_RESULT {
+		if v == answer {
+			ProcessPollResult(k, 2)
+		} else {
+			ProcessPollResult(k, 1)
+		}
 	}
-	fmt.Fprint(w, POLL_MODE)
+	POLL_RESULT = make(map[string]string)
+	POLL_COUNT = make(map[string]int)
+	fmt.Fprintf(w, "Complete poll.")
 }
 
 //-----------------------------------------------------------------
@@ -100,25 +98,6 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Fprintf(w, "Content copied.")
 }
-
-//-----------------------------------------------------------------
-// instructor sends test data
-//-----------------------------------------------------------------
-// func test_dataHandler(w http.ResponseWriter, r *http.Request) {
-// 	ProblemTestData = r.FormValue("content")
-// 	fmt.Fprintf(w, "Test data received.")
-// }
-
-//-----------------------------------------------------------------
-// instructor sends a signal to clear whiteboard
-//-----------------------------------------------------------------
-// func clear_boardHandler(w http.ResponseWriter, r *http.Request) {
-// 	ProblemStartingTime = time.Now()
-// 	ProblemDescription = "none"
-// 	ProblemID = "none"
-// 	Whiteboard = ""
-// 	fmt.Fprintf(w, "Whiteboard is clear.")
-// }
 
 //-----------------------------------------------------------------
 // return points of all users

@@ -83,13 +83,14 @@ func main() {
 	// teacher handlers
 	http.HandleFunc("/query_poll", Authorize(query_pollHandler))
 	http.HandleFunc("/view_poll", Authorize(view_pollHandler))
+	http.HandleFunc("/answer_poll", Authorize(answer_pollHandler))
+	// http.HandleFunc("/start_poll", Authorize(start_pollHandler))
 	http.HandleFunc("/points", Authorize(pointsHandler))
 	http.HandleFunc("/give_points", Authorize(give_pointsHandler))
 	http.HandleFunc("/peek", Authorize(peekHandler))
 	http.HandleFunc("/broadcast", Authorize(broadcastHandler))
 	http.HandleFunc("/get_post", Authorize(get_postHandler))
 	http.HandleFunc("/get_posts", Authorize(get_postsHandler))
-	http.HandleFunc("/start_poll", Authorize(start_pollHandler))
 
 	loadDB()
 	err := http.ListenAndServe("0.0.0.0:"+PORT, nil)

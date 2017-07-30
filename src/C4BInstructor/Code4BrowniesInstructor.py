@@ -18,8 +18,8 @@ c4bi_PEEK_PATH = "peek"
 c4bi_POINTS_PATH = "points"
 c4bi_REQUEST_ENTRY_PATH = "get_post"
 c4bi_REQUEST_ENTRIES_PATH = "get_posts"
-c4bi_START_POLL_PATH = "start_poll"
 c4bi_NEW_PROBLEM_PATH = "new_problem"
+c4bi_ANSWER_POLL_PATH = "answer_poll"
 TIMEOUT = 10
 
 POSTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Posts")
@@ -54,6 +54,27 @@ class c4biCleanCommand(sublime_plugin.ApplicationCommand):
 class c4biViewPollCommand(sublime_plugin.ApplicationCommand):
 	def run(self):
 		webbrowser.open(SERVER_ADDR + "/view_poll")
+
+# ------------------------------------------------------------------
+class c4biAnswerPoll(sublime_plugin.WindowCommand):
+	def run(self):
+		sublime.active_window().show_input_panel("Answer",
+			"",
+			self.send_answer,
+			None,
+			None)
+
+	def send_answer(self, answer):
+		answer = answer.strip()
+		if len(answer) > 0:
+			url = urllib.parse.urljoin(SERVER_ADDR, c4bi_ANSWER_POLL_PATH)
+			data = urllib.parse.urlencode({'answer': answer}).encode('ascii')
+			response = c4biRequest(url,data)
+			if response is not None:
+				sublime.message_dialog(response)
+		else:
+			sublime.message_dialog("Answer cannot be empty.")
+
 
 # ------------------------------------------------------------------
 def _broadcast(self, sids='__all__'):
@@ -144,17 +165,17 @@ class c4biGetAllCommand(sublime_plugin.TextCommand):
 # ------------------------------------------------------------------
 # Instructor starts poll mode
 # ------------------------------------------------------------------
-class c4biStartPollCommand(sublime_plugin.TextCommand):
-	def run(self, edit):
-		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_START_POLL_PATH)
-		data = urllib.parse.urlencode({}).encode('ascii')
-		response = c4biRequest(url, data)
-		if response == "true":
-			sublime.message_dialog("A new poll has started.")
-		elif response == "false":
-			sublime.message_dialog("Poll is now closed.")
-		else:
-			sublime.message_dialog(response)
+# class c4biStartPollCommand(sublime_plugin.TextCommand):
+# 	def run(self, edit):
+# 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_START_POLL_PATH)
+# 		data = urllib.parse.urlencode({}).encode('ascii')
+# 		response = c4biRequest(url, data)
+# 		if response == "true":
+# 			sublime.message_dialog("A new poll has started.")
+# 		elif response == "false":
+# 			sublime.message_dialog("Poll is now closed.")
+# 		else:
+# 			sublime.message_dialog(response)
 
 # ------------------------------------------------------------------
 # Instructor looks at new posts and is able to select one.

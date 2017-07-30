@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
+	// "strings"
 )
 
 //-----------------------------------------------------------------
@@ -48,21 +48,23 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 //-----------------------------------------------------------------
 func shareHandler(w http.ResponseWriter, r *http.Request) {
 	uid, body, ext := r.FormValue("uid"), r.FormValue("body"), r.FormValue("ext")
+	mode := r.FormValue("mode")
 
-	if POLL_MODE {
-		// fmt.Println(uid, body)
-		lines := strings.Split(body, "\n")
-		if len(lines) > 0 && len(strings.Trim(lines[0], " ")) > 0 {
-			POLL_RESULT[strings.Trim(lines[0], " ")]++
-			fmt.Fprintf(w, "poll submitted.")
-		} else {
-			fmt.Fprintf(w, "your poll was not submitted.")
-		}
-	} else {
+	if mode == "code" {
 		AddSubmission(uid, body, ext)
 		fmt.Println(uid, "submitted.")
-		fmt.Fprintf(w, uid+" submitted succesfully.")
+		fmt.Fprintf(w, uid+", thank you for sharing.")
 		// PrintState()
+	} else if mode == "poll" {
+		prev_answer, ok := POLL_RESULT[uid]
+		if ok {
+			POLL_COUNT[prev_answer]--
+		}
+		POLL_RESULT[uid] = body
+		POLL_COUNT[body]++
+		fmt.Fprintf(w, uid+", thank you for sharing.")
+	} else {
+		fmt.Fprint(w, "Unknown mode.")
 	}
 }
 

@@ -23,9 +23,8 @@ type Board struct {
 var Boards = make(map[string]*Board)
 
 type Submission struct {
-	Sid string // submission id
-	Uid string // user id
-	// Pid       string // problem id
+	Sid       string // submission id
+	Uid       string // user id
 	Body      string
 	Ext       string
 	Points    int
@@ -44,8 +43,8 @@ type TemplateData struct {
 	SERVER string
 }
 
-var POLL_MODE = false
-var POLL_RESULT = make(map[string]int)
+var POLL_RESULT = make(map[string]string)
+var POLL_COUNT = make(map[string]int)
 var POLL_TEMPLATE = `
 <html>
   <head>
