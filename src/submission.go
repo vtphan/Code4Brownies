@@ -71,7 +71,7 @@ func ProcessPollResult(uid string, brownies int) {
 	defer SEM.Unlock()
 	sid := RandStringRunes(10)
 	timestamp := time.Now().Format("Mon Jan 2 15:04:05 MST 2006")
-	ProcessedSubs[sid] = &Submission{sid, uid, "", "", brownies, 0, "", timestamp}
+	ProcessedSubs[sid] = &Submission{sid, uid, "", "", brownies, 0, "poll", timestamp}
 }
 
 // ------------------------------------------------------------------
