@@ -15,6 +15,10 @@ import (
 
 //-----------------------------------------------------------------
 func RegisterStudent(uid string) {
+	if _, ok := Boards[uid]; ok {
+		fmt.Println(uid + " is already registered.")
+		return
+	}
 	var err error
 	var outFile *os.File
 	if _, err = os.Stat(USER_DB); err == nil {
@@ -39,6 +43,9 @@ func RegisterStudent(uid string) {
 	if err := w.Error(); err != nil {
 		panic(err)
 	}
+
+	// Add a board for this new student
+	Boards[uid] = &Board{"", "", time.Now(), false}
 }
 
 //-----------------------------------------------------------------

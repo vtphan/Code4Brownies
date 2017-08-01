@@ -50,6 +50,8 @@ func prepareCleanup() {
 }
 
 //-----------------------------------------------------------------
+// Make sure teacher runs server on his own laptop.
+//-----------------------------------------------------------------
 func Authorize(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Host != "localhost:4030" {
@@ -58,6 +60,18 @@ func Authorize(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
 		} else {
 			fn(w, r)
 		}
+	}
+}
+
+//-----------------------------------------------------------------
+// Register automatically if a student is not yet registered.
+//-----------------------------------------------------------------
+func AutoRegister(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if _, ok := Boards[r.FormValue("uid")]; !ok {
+			registerHandler(w, r)
+		}
+		fn(w, r)
 	}
 }
 
@@ -74,11 +88,11 @@ func main() {
 	prepareCleanup()
 
 	// student handlers
-	http.HandleFunc("/share", shareHandler)
-	http.HandleFunc("/my_points", my_pointsHandler)
-	http.HandleFunc("/receive_broadcast", receive_broadcastHandler)
-	http.HandleFunc("/check_broadcast", check_broadcastHandler)
 	http.HandleFunc("/register", registerHandler)
+	http.HandleFunc("/share", AutoRegister(shareHandler))
+	http.HandleFunc("/my_points", AutoRegister(my_pointsHandler))
+	http.HandleFunc("/receive_broadcast", AutoRegister(receive_broadcastHandler))
+	http.HandleFunc("/check_broadcast", AutoRegister(check_broadcastHandler))
 
 	// teacher handlers
 	http.HandleFunc("/query_poll", Authorize(query_pollHandler))

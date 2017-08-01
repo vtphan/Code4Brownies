@@ -40,7 +40,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	SEM.Lock()
 	defer SEM.Unlock()
 	RegisterStudent(uid)
-	fmt.Fprint(w, uid+" registered.")
+	fmt.Fprint(w, uid+" registered.\n")
 }
 
 //-----------------------------------------------------------------
@@ -49,13 +49,11 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 func shareHandler(w http.ResponseWriter, r *http.Request) {
 	uid, body, ext := r.FormValue("uid"), r.FormValue("body"), r.FormValue("ext")
 	mode := r.FormValue("mode")
-
+	// PrintState()
 	if mode == "code" {
-		fmt.Println("here")
 		AddSubmission(uid, body, ext)
 		fmt.Println(uid, "submitted.")
 		fmt.Fprintf(w, uid+", thank you for sharing.")
-		// PrintState()
 	} else if mode == "poll" {
 		prev_answer, ok := POLL_RESULT[uid]
 		if ok {

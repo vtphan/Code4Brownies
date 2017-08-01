@@ -207,7 +207,7 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 			if json_obj is None:
 				sublime.status_message("Queue is empty.")
 			else:
-				users = [ '%s: %s, %s' % (entry['Uid'], entry['Pid'], entry['Sid']) for entry in json_obj ]
+				users = [ '%s: %s' % (entry['Uid'], entry['Sid']) for entry in json_obj ]
 				if users:
 					self.view.show_popup_menu(users, self.request_entry(users, edit))
 				else:
