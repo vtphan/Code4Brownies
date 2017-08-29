@@ -40,7 +40,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	SEM.Lock()
 	defer SEM.Unlock()
 	RegisterStudent(uid)
-	fmt.Fprint(w, uid+" registered.\n")
+	// fmt.Fprint(w, uid+" registered.\n")
 }
 
 //-----------------------------------------------------------------
@@ -80,6 +80,9 @@ func receive_broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		fmt.Println(err.Error())
+		js, err = json.Marshal(map[string]string{"content": ""})
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
 	} else {
 		board.Changed = false
 		w.Header().Set("Content-Type", "application/json")

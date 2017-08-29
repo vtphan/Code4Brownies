@@ -10,7 +10,7 @@ import threading
 import time
 
 c4b_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
-c4b_REGISTER_PATH = "register"
+# c4b_REGISTER_PATH = "register"
 c4b_SHARE_PATH = "share"
 c4b_MY_POINTS_PATH = "my_points"
 c4b_RECEIVE_BROADCAST_PATH = "receive_broadcast"
@@ -25,13 +25,13 @@ def c4b_get_attr():
 		with open(c4b_FILE, 'r') as f:
 			json_obj = json.loads(f.read())
 	except:
-		sublime.message_dialog("Please set information first.")
+		sublime.message_dialog("Please set server address and your name.")
 		return None
-	if 'Server' not in json_obj or 'Name' not in json_obj:
-		sublime.message_dialog("Please set information completely.")
+	if 'Name' not in json_obj or len(json_obj['Name']) < 2:
+		sublime.message_dialog("Please set your name.")
 		return None
-	if not json_obj['Server'].startswith("http://"):
-		sublime.message_dialog("Server must starts with http://\nReset information.")
+	if 'Server' not in json_obj or len(json_obj['Server']) < 4:
+		sublime.message_dialog("Please set server address.")
 		return None
 	return json_obj
 
@@ -61,7 +61,7 @@ def check_with_server():
 		try:
 			with urllib.request.urlopen(req, None, TIMEOUT) as r:
 				response = r.read().decode(encoding="utf-8")
-				print(response)
+				# print(response)
 				if response == "true":
 					sublime.status_message("Your whiteboard has been updated!")
 					# _receive_broadcast(self, edit, info['Name'])
@@ -174,18 +174,18 @@ class c4bVote(sublime_plugin.WindowCommand):
 			sublime.message_dialog("Answer cannot be empty.")
 
 # ------------------------------------------------------------------
-class c4bRegister(sublime_plugin.WindowCommand):
-	def run(self):
-		info = c4b_get_attr()
-		if info is None:
-			sublime.message_dialog("Please Set Information.")
-		else:
-			url = urllib.parse.urljoin(info['Server'], c4b_REGISTER_PATH)
-			values = {'uid':info['Name']}
-			data = urllib.parse.urlencode(values).encode('ascii')
-			response = c4bRequest(url,data)
-			if response is not None:
-				sublime.message_dialog(response)
+# class c4bRegister(sublime_plugin.WindowCommand):
+# 	def run(self):
+# 		info = c4b_get_attr()
+# 		if info is None:
+# 			sublime.message_dialog("Please Set Information.")
+# 		else:
+# 			url = urllib.parse.urljoin(info['Server'], c4b_REGISTER_PATH)
+# 			values = {'uid':info['Name']}
+# 			data = urllib.parse.urlencode(values).encode('ascii')
+# 			response = c4bRequest(url,data)
+# 			if response is not None:
+# 				sublime.message_dialog(response)
 
 # ------------------------------------------------------------------
 class c4bShowPoints(sublime_plugin.WindowCommand):
@@ -210,14 +210,76 @@ class c4bSetInfo(sublime_plugin.WindowCommand):
 			info = dict()
 
 		if 'Name' not in info:
-			info['Name'] = 'JohnSmith'
+			info['Name'] = ''
 		if 'Server' not in info:
-			info['Server'] = 'http://0.0.0.0:4030'
+			info['Server'] = ''
 
 		with open(c4b_FILE, 'w') as f:
 			f.write(json.dumps(info, indent=4))
 
 		sublime.active_window().open_file(c4b_FILE)
+
+# ------------------------------------------------------------------
+class c4bSetServer(sublime_plugin.WindowCommand):
+	def run(self):
+		try:
+			with open(c4b_FILE, 'r') as f:
+				info = json.loads(f.read())
+		except:
+			info = dict()
+		if 'Server' not in info:
+			info['Server'] = ''
+		sublime.active_window().show_input_panel("Server address:",
+			info['Server'],
+			self.set,
+			None,
+			None)
+
+	def set(self, addr):
+		addr = addr.strip()
+		if len(addr) > 0:
+			try:
+				with open(c4b_FILE, 'r') as f:
+					info = json.loads(f.read())
+			except:
+				info = dict()
+			if not addr.startswith('http://'):
+				addr = 'http://' + addr
+			info['Server'] = addr
+			with open(c4b_FILE, 'w') as f:
+				f.write(json.dumps(info, indent=4))
+		else:
+			sublime.message_dialog("Server address is empty.")
+
+# ------------------------------------------------------------------
+class c4bSetName(sublime_plugin.WindowCommand):
+	def run(self):
+		try:
+			with open(c4b_FILE, 'r') as f:
+				info = json.loads(f.read())
+		except:
+			info = dict()
+		if 'Name' not in info:
+			info['Name'] = ''
+		sublime.active_window().show_input_panel("Your Name:",
+			info['Name'],
+			self.set,
+			None,
+			None)
+
+	def set(self, name):
+		name = name.strip()
+		if len(name) > 0:
+			try:
+				with open(c4b_FILE, 'r') as f:
+					info = json.loads(f.read())
+			except:
+				info = dict()
+			info['Name'] = name
+			with open(c4b_FILE, 'w') as f:
+				f.write(json.dumps(info, indent=4))
+		else:
+			sublime.message_dialog("Server address cannot be empty.")
 
 # ------------------------------------------------------------------
 class c4bAbout(sublime_plugin.WindowCommand):

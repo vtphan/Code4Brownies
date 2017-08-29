@@ -29,17 +29,27 @@
                 "command": "c4b_vote"
             },
             {"caption":"-", "id":"side-bar-separator"},
+            // {
+            //     "caption": "Set information",
+            //     "id": "c4bSetInfo",
+            //     "command": "c4b_set_info"
+            // },
             {
-                "caption": "Set information",
-                "id": "c4bSetInfo",
-                "command": "c4b_set_info"
+                "caption": "Set server address",
+                "id": "c4bSetServer",
+                "command": "c4b_set_server"
+            },
+            {
+                "caption": "Set your name",
+                "id": "c4bSetName",
+                "command": "c4b_set_name"
             },
             {"caption":"-", "id":"side-bar-separator"},
-            {
-                "caption": "Register",
-                "id": "c4bRegister",
-                "command": "c4b_register"
-            },
+            // {
+            //     "caption": "Register",
+            //     "id": "c4bRegister",
+            //     "command": "c4b_register"
+            // },
             {
                 "caption": "Upgrade",
                 "id": "c4bUpgrade",

@@ -69,7 +69,9 @@ func Authorize(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
 func AutoRegister(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if _, ok := Boards[r.FormValue("uid")]; !ok {
-			registerHandler(w, r)
+			SEM.Lock()
+			defer SEM.Unlock()
+			RegisterStudent(r.FormValue("uid"))
 		}
 		fn(w, r)
 	}
@@ -88,7 +90,7 @@ func main() {
 	prepareCleanup()
 
 	// student handlers
-	http.HandleFunc("/register", registerHandler)
+	// http.HandleFunc("/register", registerHandler)
 	http.HandleFunc("/share", AutoRegister(shareHandler))
 	http.HandleFunc("/my_points", AutoRegister(my_pointsHandler))
 	http.HandleFunc("/receive_broadcast", AutoRegister(receive_broadcastHandler))
