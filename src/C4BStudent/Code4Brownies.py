@@ -16,7 +16,7 @@ c4b_MY_POINTS_PATH = "my_points"
 c4b_RECEIVE_BROADCAST_PATH = "receive_broadcast"
 c4b_CHECK_BROADCAST_PATH = "check_broadcast"
 
-TIMEOUT = 10
+TIMEOUT = 7
 RUNNING_BACKGROUND_TASK = False
 
 # ------------------------------------------------------------------
