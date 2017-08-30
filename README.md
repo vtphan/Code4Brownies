@@ -17,9 +17,8 @@ Code4Brownies is a  software that enables instructors and students share codes (
 + When instructor terminates the server, brownie points are saved to a local file.
 
 
-## Installation
+## [Installation](INSTALL.md)
 
-Click [HERE](INSTALL).
 
 
 
