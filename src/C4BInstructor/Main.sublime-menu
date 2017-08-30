@@ -88,9 +88,9 @@
             },
             {"caption":"-", "id":"side-bar-separator"},
             {
-                "caption": "Upgrade",
-                "id": "c4biUpgrade",
-                "command": "c4bi_upgrade"
+                "caption": "Update",
+                "id": "c4biUpdate",
+                "command": "c4bi_update"
             },
             {
                 "caption": "Clean local directory",

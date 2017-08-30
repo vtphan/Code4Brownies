@@ -260,9 +260,9 @@ class c4biAboutCommand(sublime_plugin.WindowCommand):
 		sublime.message_dialog("Code4Brownies (v%s)\nCopyright © 2015-2017 Vinhthuy Phan" % version)
 
 # ------------------------------------------------------------------
-class c4biUpgrade(sublime_plugin.WindowCommand):
+class c4biUpdate(sublime_plugin.WindowCommand):
 	def run(self):
-		if sublime.ok_cancel_dialog("Are you sure you want to upgrade Code4Brownies to the latest version?"):
+		if sublime.ok_cancel_dialog("Are you sure you want to update Code4Brownies to the latest version?"):
 			package_path = os.path.join(sublime.packages_path(), "C4BInstructor");
 			if not os.path.isdir(package_path):
 				os.mkdir(package_path)
@@ -274,8 +274,8 @@ class c4biUpgrade(sublime_plugin.WindowCommand):
 				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BInstructor/Main.sublime-menu", c4b_menu)
 				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/VERSION", c4b_version)
 				version = open(c4b_version).read().strip()
-				sublime.message_dialog("Code4Brownies has been upgraded to version %s.  Latest server is at https://github.com/vtphan/Code4Brownies" % version)
+				sublime.message_dialog("Code4Brownies has been updated to version %s.  Latest server is at https://github.com/vtphan/Code4Brownies" % version)
 			except:
-				sublime.message_dialog("A problem occurred during upgrade.")
+				sublime.message_dialog("A problem occurred during update.")
 
 
