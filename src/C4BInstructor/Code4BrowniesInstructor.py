@@ -37,7 +37,7 @@ def c4biRequest(url, data):
 	except urllib.error.HTTPError as err:
 		sublime.message_dialog("{0}".format(err))
 	except urllib.error.URLError as err:
-		sublime.message_dialog("{0}\nPossibly server not running or incorrect server address.".format(err))
+		sublime.message_dialog("{0}\nCannot connect to server.".format(err))
 	return None
 
 # ------------------------------------------------------------------

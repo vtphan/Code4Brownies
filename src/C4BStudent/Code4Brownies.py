@@ -41,9 +41,11 @@ def c4bRequest(url, data):
 	try:
 		with urllib.request.urlopen(req, None, TIMEOUT) as response:
 			return response.read().decode(encoding="utf-8")
+	except urllib.error.HTTPError as err:
+		sublime.message_dialog("{0}".format(err))
 	except urllib.error.URLError as err:
-		sublime.message_dialog("{0}\nPossibly server not running or incorrect server address.".format(err))
-		return None
+		sublime.message_dialog("{0}\nCannot connect to server.".format(err))
+	return None
 
 # ------------------------------------------------------------------
 def check_with_server():
@@ -91,7 +93,7 @@ def _receive_broadcast(edit, uid):
 	data = urllib.parse.urlencode({'uid':uid}).encode('ascii')
 	url = urllib.parse.urljoin(info['Server'], c4b_RECEIVE_BROADCAST_PATH)
 	response = c4bRequest(url, data)
-	if response != "":
+	if response != None:
 		json_obj = json.loads(response)
 		content = json_obj['content']
 		if len(content.strip()) > 0:
@@ -102,8 +104,6 @@ def _receive_broadcast(edit, uid):
 				sublime.message_dialog("Whiteboard is empty.")
 			else:
 				sublime.message_dialog("Your board is empty.")
-	else:
-		sublime.message_dialog("Register, if you have not done so.")
 
 # ------------------------------------------------------------------
 class c4bMyBoardCommand(sublime_plugin.TextCommand):
@@ -172,20 +172,6 @@ class c4bVote(sublime_plugin.WindowCommand):
 				sublime.message_dialog(response)
 		else:
 			sublime.message_dialog("Answer cannot be empty.")
-
-# ------------------------------------------------------------------
-# class c4bRegister(sublime_plugin.WindowCommand):
-# 	def run(self):
-# 		info = c4b_get_attr()
-# 		if info is None:
-# 			sublime.message_dialog("Please Set Information.")
-# 		else:
-# 			url = urllib.parse.urljoin(info['Server'], c4b_REGISTER_PATH)
-# 			values = {'uid':info['Name']}
-# 			data = urllib.parse.urlencode(values).encode('ascii')
-# 			response = c4bRequest(url,data)
-# 			if response is not None:
-# 				sublime.message_dialog(response)
 
 # ------------------------------------------------------------------
 class c4bShowPoints(sublime_plugin.WindowCommand):
