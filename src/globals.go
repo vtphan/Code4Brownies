@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+const VERSION = "0.27"
+
 var ADDR = ""
 var PORT = "4030"
 var USER_DB string

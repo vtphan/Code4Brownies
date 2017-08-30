@@ -78,9 +78,10 @@ func AutoRegister(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc 
 //-----------------------------------------------------------------
 func main() {
 	SERVER = informIPAddress()
-	fmt.Println("Server address:", "http://"+SERVER)
-	fmt.Println("Run server on the same machine with which code is shared.")
-
+	fmt.Println("*********************************************")
+	fmt.Printf("*   Code4Brownies (%s)\n", VERSION)
+	fmt.Printf("*   Server address: %s\n", SERVER)
+	fmt.Println("*********************************************\n")
 	rand.Seed(time.Now().UnixNano())
 	USER_DB = filepath.Join(".", "C4B_DB.csv")
 	flag.StringVar(&USER_DB, "db", USER_DB, "user database in csv format, which consists of UID,POINTS.")
