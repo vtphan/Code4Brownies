@@ -20,7 +20,7 @@ c4bi_REQUEST_ENTRY_PATH = "get_post"
 c4bi_REQUEST_ENTRIES_PATH = "get_posts"
 c4bi_NEW_PROBLEM_PATH = "new_problem"
 c4bi_ANSWER_POLL_PATH = "answer_poll"
-TIMEOUT = 10
+TIMEOUT = 7
 
 POSTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Posts")
 try:
