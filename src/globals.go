@@ -20,6 +20,7 @@ type Board struct {
 	Description  string
 	StartingTime time.Time
 	Changed      bool
+	Ext          string
 }
 
 var Boards = make(map[string]*Board)

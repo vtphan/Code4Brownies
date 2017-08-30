@@ -23,10 +23,6 @@ c4bi_ANSWER_POLL_PATH = "answer_poll"
 TIMEOUT = 7
 
 POSTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Posts")
-try:
-	os.mkdir(POSTS_DIR)
-except:
-	pass
 
 # ------------------------------------------------------------------
 def c4biRequest(url, data):
@@ -44,11 +40,12 @@ def c4biRequest(url, data):
 class c4biCleanCommand(sublime_plugin.ApplicationCommand):
 	def run(self):
 		if sublime.ok_cancel_dialog("Remove all student-submitted files."):
-			files = [ f for f in os.listdir(POSTS_DIR) if f.startswith('c4b_') ]
-			for f in files:
-				local_file = os.path.join(POSTS_DIR, f)
-				os.remove(local_file)
-				sublime.status_message("remove " + local_file)
+			if os.path.isdir(POSTS_DIR):
+				files = [ f for f in os.listdir(POSTS_DIR) if f.startswith('c4b_') ]
+				for f in files:
+					local_file = os.path.join(POSTS_DIR, f)
+					os.remove(local_file)
+					sublime.status_message("remove " + local_file)
 
 # ------------------------------------------------------------------
 class c4biViewPollCommand(sublime_plugin.ApplicationCommand):
@@ -68,7 +65,8 @@ class c4biAnswerPoll(sublime_plugin.WindowCommand):
 		answer = answer.strip()
 		if len(answer) > 0:
 			url = urllib.parse.urljoin(SERVER_ADDR, c4bi_ANSWER_POLL_PATH)
-			data = urllib.parse.urlencode({'answer': answer}).encode('ascii')
+			# data = urllib.parse.urlencode({'answer': answer}).encode('ascii')
+			data = urllib.parse.urlencode({'answer': answer}).encode('utf-8')
 			response = c4biRequest(url,data)
 			if response is not None:
 				sublime.message_dialog(response)
@@ -78,11 +76,28 @@ class c4biAnswerPoll(sublime_plugin.WindowCommand):
 
 # ------------------------------------------------------------------
 def _broadcast(self, sids='__all__'):
-	content = self.view.substr(sublime.Region(0, self.view.size()))
 	file_name = self.view.file_name()
+	ext = 'py' if file_name is None else file_name.rsplit('.',1)[-1]
+	header = ''
+	if file_name is not None:
+		lines = open(file_name, 'r', encoding='utf-8').readlines()
+		if len(lines)>0 and (lines[0].startswith('#') or lines[0].startswith('//')):
+			header = lines[0]
+
+	# Determine content
+	# content = self.view.substr(sublime.Region(0, self.view.size()))
+	content = ''.join([ self.view.substr(s) for s in self.view.sel() ])
+	if len(content) < 10:  # probably selected by mistake
+		content = self.view.substr(sublime.Region(0, self.view.size()))
+	else:
+		content = header + '\n' + content
+
 	url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
 	if file_name is not None:
-		data = urllib.parse.urlencode({'content':content, 'sids':sids}).encode('ascii')
+		# data = urllib.parse.urlencode(
+		# 	{'content':content, 'sids':sids, 'ext': ext}).encode('ascii')
+		data = urllib.parse.urlencode(
+			{'content':content, 'sids':sids, 'ext': ext}).encode('utf-8')
 		response = c4biRequest(url,data)
 		if response is not None:
 			sublime.status_message(response)
@@ -125,7 +140,8 @@ class c4biBroadcastCommand(sublime_plugin.TextCommand):
 class c4biPointsCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_POINTS_PATH)
-		data = urllib.parse.urlencode({}).encode('ascii')
+		# data = urllib.parse.urlencode({}).encode('ascii')
+		data = urllib.parse.urlencode({}).encode('utf-8')
 		response = c4biRequest(url,data)
 		if response is not None:
 			json_obj = json.loads(response)
@@ -146,7 +162,8 @@ class c4biPointsCommand(sublime_plugin.TextCommand):
 class c4biGetAllCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_REQUEST_ENTRIES_PATH)
-		data = urllib.parse.urlencode({}).encode('ascii')
+		# data = urllib.parse.urlencode({}).encode('ascii')
+		data = urllib.parse.urlencode({}).encode('utf-8')
 		response = c4biRequest(url,data)
 		if response is not None:
 			entries = json.loads(response)
@@ -155,6 +172,8 @@ class c4biGetAllCommand(sublime_plugin.TextCommand):
 				for entry in reversed(entries):
 					# print(entry)
 					ext = '' if entry['Ext']=='' else '.'+entry['Ext']
+					if not os.path.isdir(POSTS_DIR):
+						os.mkdir(POSTS_DIR)
 					userFile = os.path.join(POSTS_DIR, entry['Sid'] + ext)
 					with open(userFile, 'w', encoding='utf-8') as fp:
 						fp.write(entry['Body'])
@@ -186,12 +205,15 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 			if selected < 0:
 				return
 			url = urllib.parse.urljoin(SERVER_ADDR, c4bi_REQUEST_ENTRY_PATH)
-			data = urllib.parse.urlencode({'post':selected}).encode('ascii')
+			# data = urllib.parse.urlencode({'post':selected}).encode('ascii')
+			data = urllib.parse.urlencode({'post':selected}).encode('utf-8')
 			response = c4biRequest(url,data)
 			if response is not None:
 				json_obj = json.loads(response)
 				# print(json_obj)
 				ext = '' if json_obj['Ext']=='' else '.'+json_obj['Ext']
+				if not os.path.isdir(POSTS_DIR):
+					os.mkdir(POSTS_DIR)
 				userFile = os.path.join(POSTS_DIR, json_obj['Sid'] + ext)
 				with open(userFile, 'w', encoding='utf-8') as fp:
 					fp.write(json_obj['Body'])
@@ -200,7 +222,8 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 
 	def run(self, edit):
 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_PEEK_PATH)
-		data = urllib.parse.urlencode({}).encode('ascii')
+		# data = urllib.parse.urlencode({}).encode('ascii')
+		data = urllib.parse.urlencode({}).encode('utf-8')
 		response = c4biRequest(url,data)
 		if response is not None:
 			json_obj = json.loads(response)
@@ -242,7 +265,8 @@ def award_points(self, edit, points):
 		sid = this_file_name.rsplit('.',-1)[0]
 		sid = ntpath.basename(sid)
 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROWNIE_PATH)
-		data = urllib.parse.urlencode({'sid':sid, 'points':points}).encode('ascii')
+		# data = urllib.parse.urlencode({'sid':sid, 'points':points}).encode('ascii')
+		data = urllib.parse.urlencode({'sid':sid, 'points':points}).encode('utf-8')
 		response = c4biRequest(url,data)
 		if response:
 			sublime.status_message(response)

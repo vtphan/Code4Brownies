@@ -47,7 +47,7 @@ func RegisterStudent(uid string) {
 	}
 
 	// Add a board for this new student
-	Boards[uid] = &Board{"", "", time.Now(), false}
+	Boards[uid] = &Board{"", "", time.Now(), false, ""}
 }
 
 //-----------------------------------------------------------------
@@ -124,7 +124,7 @@ func loadDB() map[string]*Submission {
 		des := record[4]
 		timestamp := record[5]
 		if sid == "Register" {
-			Boards[uid] = &Board{"", "", time.Now(), false}
+			Boards[uid] = &Board{"", "", time.Now(), false, ""}
 		} else {
 			s := &Submission{
 				Uid:       uid,

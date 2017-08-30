@@ -8,6 +8,7 @@ import os
 import json
 import threading
 import time
+import random
 
 c4b_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
 # c4b_REGISTER_PATH = "register"
@@ -18,6 +19,8 @@ c4b_CHECK_BROADCAST_PATH = "check_broadcast"
 
 TIMEOUT = 7
 RUNNING_BACKGROUND_TASK = False
+
+c4b_WHITEBOARD_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Whiteboard")
 
 # ------------------------------------------------------------------
 def c4b_get_attr():
@@ -58,7 +61,8 @@ def check_with_server():
 			return
 		url = urllib.parse.urljoin(info['Server'], c4b_CHECK_BROADCAST_PATH)
 		values = {'uid':info['Name']}
-		data = urllib.parse.urlencode(values).encode('ascii')
+		# data = urllib.parse.urlencode(values).encode('ascii')
+		data = urllib.parse.urlencode(values).encode('utf-8')
 		req = urllib.request.Request(url, data)
 		try:
 			with urllib.request.urlopen(req, None, TIMEOUT) as r:
@@ -86,19 +90,35 @@ class c4bAutoUpdateBoardCommand(sublime_plugin.TextCommand):
 		background_task()
 
 # ------------------------------------------------------------------
+def new_whiteboard(ext):
+	new_id = random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+	new_id += random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+	if not os.path.isdir(c4b_WHITEBOARD_DIR):
+		os.mkdir(c4b_WHITEBOARD_DIR)
+	wb = os.path.join(c4b_WHITEBOARD_DIR, 'wb_'+new_id)
+	wb += '.'+ext if ext!='' else ''
+	return wb
+
+# ------------------------------------------------------------------
 def _receive_broadcast(edit, uid):
 	info = c4b_get_attr()
 	if info is None:
 		return
-	data = urllib.parse.urlencode({'uid':uid}).encode('ascii')
+	# data = urllib.parse.urlencode({'uid':uid}).encode('ascii')
+	data = urllib.parse.urlencode({'uid':uid}).encode('utf-8')
 	url = urllib.parse.urljoin(info['Server'], c4b_RECEIVE_BROADCAST_PATH)
 	response = c4bRequest(url, data)
 	if response != None:
 		json_obj = json.loads(response)
 		content = json_obj['content']
+		ext = json_obj['ext']
 		if len(content.strip()) > 0:
-			new_view = sublime.active_window().new_file()
-			new_view.insert(edit, 0, content)
+			wb = new_whiteboard(ext)
+			with open(wb, 'w', encoding='utf-8') as f:
+				f.write(content)
+			new_view = sublime.active_window().open_file(wb)
+			# new_view = sublime.active_window().new_file()
+			# new_view.insert(edit, 0, content)
 		else:
 			if uid=='':
 				sublime.message_dialog("Whiteboard is empty.")
@@ -123,17 +143,12 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 
 		# Guesstimate extension
 		this_file_name = self.view.file_name()
+		ext = 'py' if this_file_name is None else this_file_name.rsplit('.',1)[-1]
 		header = ''
 		if this_file_name is not None:
-			lines = open(this_file_name).readlines()
+			lines = open(this_file_name, 'r', encoding='utf-8').readlines()
 			if len(lines)>0 and (lines[0].startswith('#') or lines[0].startswith('//')):
 				header = lines[0]
-			if '.' not in this_file_name:
-				ext = ''
-			else:
-				ext = this_file_name.split('.')[-1]
-		else:
-			ext = 'py'
 
 		# Determine content
 		content = ''.join([ self.view.substr(s) for s in self.view.sel() ])
@@ -144,7 +159,8 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 
 		# Now send
 		values = {'uid':info['Name'], 'body':content, 'ext':ext, 'mode': 'code'}
-		data = urllib.parse.urlencode(values).encode('ascii')
+		# data = urllib.parse.urlencode(values).encode('ascii')
+		data = urllib.parse.urlencode(values).encode('utf-8')
 		response = c4bRequest(url,data)
 		if response is not None:
 			sublime.message_dialog(response)
@@ -166,7 +182,8 @@ class c4bVote(sublime_plugin.WindowCommand):
 				return
 			url = urllib.parse.urljoin(info['Server'], c4b_SHARE_PATH)
 			values = {'uid':info['Name'], 'body':answer, 'ext':'', 'mode': 'poll'}
-			data = urllib.parse.urlencode(values).encode('ascii')
+			# data = urllib.parse.urlencode(values).encode('ascii')
+			data = urllib.parse.urlencode(values).encode('utf-8')
 			response = c4bRequest(url,data)
 			if response is not None:
 				sublime.message_dialog(response)
@@ -181,7 +198,8 @@ class c4bShowPoints(sublime_plugin.WindowCommand):
 			return
 		url = urllib.parse.urljoin(info['Server'], c4b_MY_POINTS_PATH)
 		values = {'uid':info['Name']}
-		data = urllib.parse.urlencode(values).encode('ascii')
+		# data = urllib.parse.urlencode(values).encode('ascii')
+		data = urllib.parse.urlencode(values).encode('utf-8')
 		response = c4bRequest(url,data)
 		if response is not None:
 			sublime.message_dialog(response)
