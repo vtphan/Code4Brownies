@@ -37,9 +37,9 @@ import os; package_path = os.path.join(sublime.packages_path(), "C4BInstructor")
 
 Finally, donwload the server and run it on the instructor's machine.
 
-- [Windows 64bit](https://github.com/vtphan/Code4Brownies/raw/master/INSTALL/c4b_windows_amd64.exe)
-- [Mac 64bit](https://github.com/vtphan/Code4Brownies/raw/master/INSTALL/c4b_darwin_amd64).
-- [Linux 64bit](https://github.com/vtphan/Code4Brownies/raw/master/INSTALL/c4b_linux_amd64).
+- [Windows 64bit](https://umdrive.memphis.edu/vphan/public/C4B/c4b_windows_amd64.exe)
+- [Mac 64bit](https://umdrive.memphis.edu/vphan/public/C4B/c4b_darwin_amd64).
+- [Linux 64bit](https://umdrive.memphis.edu/vphan/public/C4B/c4b_linux_amd64).
 - Create a directory called "db" to store student records (in CSV format).
 
 ### Running the server on the instructor's laptop
