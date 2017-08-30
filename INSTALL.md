@@ -1,4 +1,5 @@
-# Install student's plug-in
+# For Students
+## Installation of Sublime Text plugin:
 
 First, install [Sublime Text 3](https://www.sublimetext.com/3).
 
@@ -10,7 +11,7 @@ import os; package_path = os.path.join(sublime.packages_path(), "C4BStudent"); o
 
 After installation, students can share codes using the menu "ShareCode".
 
-# Uninstall student's plugin
+## Uninstallation of Sublime Text plugin:
 
 Open Sublime Text, go to View, click Show Console, copy this code, paste to console and hit enter:
 
@@ -18,8 +19,11 @@ Open Sublime Text, go to View, click Show Console, copy this code, paste to cons
 import os; import shutil; package_path = os.path.join(sublime.packages_path(), "C4BStudent"); shutil.rmtree(package_path)
 ```
 
+_____
 
-# Install instructor's plug-in
+# For Teachers
+
+## Installation of Sublime Text plugin
 
 To use Code4Brownies as an instructor, you will need to install Sublime Text (ST3), a plug in to ST3, and the server to run on your laptop. Instructor and students communicate via the server.
 
@@ -64,7 +68,7 @@ If you want to run the server with the source code, you need to install Go.  To 
 db.csv is the student database, stored in comma-separated format.
 
 
-# Uninstall instructor's plugin
+## Uninstallation of Sublime Text plugin
 
 Open Sublime Text, go to View, click Show Console, copy this code, paste to console and hit enter:
 
