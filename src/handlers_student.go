@@ -33,17 +33,6 @@ func my_pointsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //-----------------------------------------------------------------
-// students register
-//-----------------------------------------------------------------
-func registerHandler(w http.ResponseWriter, r *http.Request) {
-	uid := r.FormValue("uid")
-	SEM.Lock()
-	defer SEM.Unlock()
-	RegisterStudent(uid)
-	// fmt.Fprint(w, uid+" registered.\n")
-}
-
-//-----------------------------------------------------------------
 // students share their codes
 //-----------------------------------------------------------------
 func shareHandler(w http.ResponseWriter, r *http.Request) {

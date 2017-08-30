@@ -69,8 +69,6 @@ func Authorize(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
 func AutoRegister(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if _, ok := Boards[r.FormValue("uid")]; !ok {
-			SEM.Lock()
-			defer SEM.Unlock()
 			RegisterStudent(r.FormValue("uid"))
 		}
 		fn(w, r)

@@ -15,6 +15,8 @@ import (
 
 //-----------------------------------------------------------------
 func RegisterStudent(uid string) {
+	SEM.Lock()
+	defer SEM.Unlock()
 	if _, ok := Boards[uid]; ok {
 		fmt.Println(uid + " is already registered.")
 		return
