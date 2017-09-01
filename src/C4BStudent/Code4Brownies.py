@@ -90,7 +90,7 @@ class c4bAutoUpdateBoardCommand(sublime_plugin.TextCommand):
 		background_task()
 
 # ------------------------------------------------------------------
-def new_whiteboard(ext):
+def new_whiteboard(ext, view):
 	new_id = random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
 	new_id += random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
 	if not os.path.isdir(c4b_WHITEBOARD_DIR):
@@ -100,38 +100,30 @@ def new_whiteboard(ext):
 	return wb
 
 # ------------------------------------------------------------------
-def _receive_broadcast(edit, uid):
-	info = c4b_get_attr()
-	if info is None:
-		return
-	# data = urllib.parse.urlencode({'uid':uid}).encode('ascii')
-	data = urllib.parse.urlencode({'uid':uid}).encode('utf-8')
-	url = urllib.parse.urljoin(info['Server'], c4b_RECEIVE_BROADCAST_PATH)
-	response = c4bRequest(url, data)
-	if response != None:
-		json_obj = json.loads(response)
-		content = json_obj['content']
-		ext = json_obj['ext']
-		if len(content.strip()) > 0:
-			wb = new_whiteboard(ext)
-			with open(wb, 'w', encoding='utf-8') as f:
-				f.write(content)
-			new_view = sublime.active_window().open_file(wb)
-			# new_view = sublime.active_window().new_file()
-			# new_view.insert(edit, 0, content)
-		else:
-			if uid=='':
-				sublime.message_dialog("Whiteboard is empty.")
-			else:
-				sublime.message_dialog("Your board is empty.")
-
-# ------------------------------------------------------------------
 class c4bMyBoardCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		info = c4b_get_attr()
 		if info is None:
 			return
-		_receive_broadcast(edit, info['Name'])
+		data = urllib.parse.urlencode({'uid':info['Name']}).encode('utf-8')
+		url = urllib.parse.urljoin(info['Server'], c4b_RECEIVE_BROADCAST_PATH)
+		response = c4bRequest(url, data)
+		if response != None:
+			json_obj = json.loads(response)
+			content = json_obj['content']
+			ext = json_obj['ext']
+			bid = json_obj['bid']
+			if len(content.strip()) > 0:
+				cwd = os.path.dirname(self.view.file_name())
+				wb = os.path.join(cwd, bid)
+				wb += '.'+ext if ext!='' else ''
+				with open(wb, 'w', encoding='utf-8') as f:
+					f.write(content)
+				new_view = sublime.active_window().open_file(wb)
+				# new_view = sublime.active_window().new_file()
+				# new_view.insert(edit, 0, content)
+			else:
+				sublime.message_dialog("Whiteboard is empty.")
 
 # ------------------------------------------------------------------
 class c4bShareCommand(sublime_plugin.TextCommand):

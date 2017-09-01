@@ -5,7 +5,6 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 	"strings"
 	"time"
 )
@@ -15,15 +14,6 @@ import (
 // Submitted asynchronously, submissions must be synchronized.
 //-----------------------------------------------------------------
 
-func RandStringRunes(n int) string {
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	return "c4b_" + string(b)
-}
-
-// ------------------------------------------------------------------
 func GetSubmission(sid string) *Submission {
 	if _, ok := ProcessedSubs[sid]; ok {
 		return ProcessedSubs[sid]
@@ -43,7 +33,7 @@ func AddSubmission(uid, body, ext string) {
 			des = ""
 		}
 		timestamp := time.Now().Format("Mon Jan 2 15:04:05 MST 2006")
-		NewSubs = append(NewSubs, &Submission{RandStringRunes(10), uid, body, ext, 0, dur, des, timestamp})
+		NewSubs = append(NewSubs, &Submission{RandStringRunes(6), uid, body, ext, 0, dur, des, timestamp})
 		if len(NewSubs) == 1 {
 			fmt.Print("\x07")
 		}
@@ -69,7 +59,7 @@ func ProcessSubmission(i int) *Submission {
 func ProcessPollResult(uid string, brownies int) {
 	SEM.Lock()
 	defer SEM.Unlock()
-	sid := RandStringRunes(10)
+	sid := RandStringRunes(6)
 	timestamp := time.Now().Format("Mon Jan 2 15:04:05 MST 2006")
 	ProcessedSubs[sid] = &Submission{sid, uid, "", "", brownies, 0, "poll", timestamp}
 }

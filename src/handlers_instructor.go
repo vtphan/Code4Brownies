@@ -71,6 +71,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 		for _, board := range Boards {
 			board.Content = r.FormValue("content")
 			board.Ext = r.FormValue("ext")
+			board.Bid = "wb_" + RandStringRunes(6)
 			board.Changed = true
 			des = strings.SplitN(board.Content, "\n", 2)[0]
 			if des != board.Description { // a new exercise/problem
@@ -86,6 +87,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 			if ok {
 				Boards[sub.Uid].Content = r.FormValue("content")
 				Boards[sub.Uid].Ext = r.FormValue("ext")
+				Boards[sub.Uid].Bid = "wb_" + RandStringRunes(6)
 				Boards[sub.Uid].Changed = true
 				des = strings.SplitN(Boards[sub.Uid].Content, "\n", 2)[0]
 				if des != Boards[sub.Uid].Description { // a new exercise/problem

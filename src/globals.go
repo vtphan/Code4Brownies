@@ -4,6 +4,7 @@
 package main
 
 import (
+	"math/rand"
 	"sync"
 	"time"
 )
@@ -21,6 +22,7 @@ type Board struct {
 	StartingTime time.Time
 	Changed      bool
 	Ext          string
+	Bid          string // id of current broadcast
 }
 
 var Boards = make(map[string]*Board)
@@ -36,7 +38,18 @@ type Submission struct {
 	Timestamp string
 }
 
-var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+// ------------------------------------------------------------------
+var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+
+func RandStringRunes(n int) string {
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	return string(b)
+}
+
+// ------------------------------------------------------------------
 
 var SEM sync.Mutex
 var NewSubs = make([]*Submission, 0)
