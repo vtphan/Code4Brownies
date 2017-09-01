@@ -22,7 +22,7 @@ func GetSubmission(sid string) *Submission {
 }
 
 // ------------------------------------------------------------------
-func AddSubmission(uid, body, ext string) {
+func AddSubmission(uid, bid, body, ext string) {
 	SEM.Lock()
 	defer SEM.Unlock()
 	board, ok := Boards[uid]
@@ -33,7 +33,17 @@ func AddSubmission(uid, body, ext string) {
 			des = ""
 		}
 		timestamp := time.Now().Format("Mon Jan 2 15:04:05 MST 2006")
-		NewSubs = append(NewSubs, &Submission{RandStringRunes(6), uid, body, ext, 0, dur, des, timestamp})
+		NewSubs = append(NewSubs, &Submission{
+			Sid:       RandStringRunes(6),
+			Bid:       bid,
+			Uid:       uid,
+			Body:      body,
+			Ext:       ext,
+			Points:    0,
+			Duration:  dur,
+			Pdes:      des,
+			Timestamp: timestamp,
+		})
 		if len(NewSubs) == 1 {
 			fmt.Print("\x07")
 		}
@@ -61,7 +71,18 @@ func ProcessPollResult(uid string, brownies int) {
 	defer SEM.Unlock()
 	sid := RandStringRunes(6)
 	timestamp := time.Now().Format("Mon Jan 2 15:04:05 MST 2006")
-	ProcessedSubs[sid] = &Submission{sid, uid, "", "", brownies, 0, "poll", timestamp}
+	ProcessedSubs[sid] = &Submission{
+		Sid:       sid,
+		Bid:       "",
+		Body:      "",
+		Ext:       "",
+		Uid:       uid,
+		Points:    brownies,
+		Duration:  0,
+		Pdes:      "poll",
+		Timestamp: timestamp,
+	}
+	//		sid, uid, "", "", brownies, 0, "poll", timestamp}
 }
 
 // ------------------------------------------------------------------

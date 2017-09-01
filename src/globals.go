@@ -29,6 +29,7 @@ var Boards = make(map[string]*Board)
 
 type Submission struct {
 	Sid       string // submission id
+	Bid       string // broadcast id
 	Uid       string // user id
 	Body      string
 	Ext       string

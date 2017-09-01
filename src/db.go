@@ -4,6 +4,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/csv"
 	"fmt"
 	"io"
@@ -36,7 +37,7 @@ func RegisterStudent(uid string) {
 	t := time.Now()
 	fmt.Println(t.Format("Mon Jan 2 15:04:05 MST 2006: write data to ") + USER_DB)
 	w := csv.NewWriter(outFile)
-	record := []string{uid, "0", "0", "Register", "Register",
+	record := []string{uid, "0", "0", "Register", "", "Register",
 		time.Now().Format("Mon Jan 2 15:04:05 MST 2006")}
 	if err := w.Write(record); err != nil {
 		log.Fatalln("error writing record to csv:", err)
@@ -73,6 +74,7 @@ func writeDB() {
 			strconv.Itoa(sub.Points),
 			strconv.Itoa(sub.Duration),
 			sub.Sid,
+			sub.Bid,
 			sub.Pdes,
 			sub.Timestamp,
 		}
@@ -87,9 +89,25 @@ func writeDB() {
 }
 
 //-----------------------------------------------------------------
-func loadDB() map[string]*Submission {
+func initDB() {
+	outFile, err := os.OpenFile(USER_DB, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+	defer outFile.Close()
+	if err != nil {
+		panic(err)
+	}
+	w := bufio.NewWriter(outFile)
+	_, err = w.WriteString("uid,points,duration,sid,bid,des,timestamp\n")
+	if err != nil {
+		panic(err)
+	}
+	w.Flush()
+}
+
+//-----------------------------------------------------------------
+func loadDB() (bool, map[string]*Submission) {
 	var userFile *os.File
 	var err error
+	entries := make(map[string]*Submission)
 
 	if _, err = os.Stat(USER_DB); os.IsNotExist(err) {
 		userFile, err = os.Create(USER_DB)
@@ -104,13 +122,15 @@ func loadDB() map[string]*Submission {
 	}
 	defer userFile.Close()
 	reader := csv.NewReader(userFile)
-	entries := make(map[string]*Submission)
 
 	// Skip header
-	reader.Read()
-
+	record, err := reader.Read()
+	empty_file := false
+	if len(record) == 0 {
+		empty_file = true
+	}
 	for {
-		record, err := reader.Read()
+		record, err = reader.Read()
 		if err == io.EOF {
 			break
 		}
@@ -118,24 +138,26 @@ func loadDB() map[string]*Submission {
 			log.Fatal(err)
 		}
 		uid := record[0]
-		points, err := strconv.Atoi(record[1])
-		duration, err := strconv.Atoi(record[2])
+		points, _ := strconv.Atoi(record[1])
+		duration, _ := strconv.Atoi(record[2])
 		sid := record[3]
-		des := record[4]
-		timestamp := record[5]
+		bid := record[4]
+		des := record[5]
+		timestamp := record[6]
 		if sid == "Register" {
 			Boards[uid] = &Board{"", "", time.Now(), false, "", ""}
 		} else {
 			s := &Submission{
+				Sid:       sid,
+				Bid:       bid,
 				Uid:       uid,
 				Points:    points,
 				Duration:  duration,
-				Sid:       sid,
 				Pdes:      des,
 				Timestamp: timestamp,
 			}
 			entries[sid] = s
 		}
 	}
-	return entries
+	return empty_file, entries
 }

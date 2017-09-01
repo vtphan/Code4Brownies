@@ -107,7 +107,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 // return points of all users
 //-----------------------------------------------------------------
 func pointsHandler(w http.ResponseWriter, r *http.Request) {
-	subs := loadDB()
+	_, subs := loadDB()
 	for k, v := range ProcessedSubs {
 		subs[k] = v
 	}

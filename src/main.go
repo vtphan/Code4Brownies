@@ -107,7 +107,10 @@ func main() {
 	http.HandleFunc("/get_post", Authorize(get_postHandler))
 	http.HandleFunc("/get_posts", Authorize(get_postsHandler))
 
-	loadDB()
+	empty_file, _ := loadDB()
+	if empty_file {
+		initDB()
+	}
 	err := http.ListenAndServe("0.0.0.0:"+PORT, nil)
 	if err != nil {
 		panic(err.Error() + "\n")

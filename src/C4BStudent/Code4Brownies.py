@@ -135,7 +135,13 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 
 		# Guesstimate extension
 		this_file_name = self.view.file_name()
-		ext = 'py' if this_file_name is None else this_file_name.rsplit('.',1)[-1]
+		if this_file_name is None:
+			return
+		fname = this_file_name.rsplit('/',1)[-1]
+		ext = 'py' if fname is None else fname.rsplit('.',1)[-1]
+		bid = fname.split('.')[0]
+		if not bid.startswith('wb_'):
+			bid = ""
 		header = ''
 		if this_file_name is not None:
 			lines = open(this_file_name, 'r', encoding='utf-8').readlines()
@@ -150,7 +156,7 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 			content = header + '\n' + content
 
 		# Now send
-		values = {'uid':info['Name'], 'body':content, 'ext':ext, 'mode': 'code'}
+		values = {'uid':info['Name'], 'body':content, 'ext':ext, 'mode':'code', 'bid':bid}
 		# data = urllib.parse.urlencode(values).encode('ascii')
 		data = urllib.parse.urlencode(values).encode('utf-8')
 		response = c4bRequest(url,data)
