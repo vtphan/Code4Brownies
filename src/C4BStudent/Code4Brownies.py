@@ -114,14 +114,16 @@ class c4bMyBoardCommand(sublime_plugin.TextCommand):
 			ext = json_obj['ext']
 			bid = json_obj['bid']
 			if len(content.strip()) > 0:
-				cwd = os.path.dirname(self.view.file_name())
-				wb = os.path.join(cwd, bid)
-				wb += '.'+ext if ext!='' else ''
-				with open(wb, 'w', encoding='utf-8') as f:
-					f.write(content)
-				new_view = sublime.active_window().open_file(wb)
-				# new_view = sublime.active_window().new_file()
-				# new_view.insert(edit, 0, content)
+				if self.view.file_name() is None:
+					new_view = sublime.active_window().new_file()
+					new_view.insert(edit, 0, content)
+				else:
+					cwd = os.path.dirname(self.view.file_name())
+					wb = os.path.join(cwd, bid)
+					wb += '.'+ext if ext!='' else ''
+					with open(wb, 'w', encoding='utf-8') as f:
+						f.write(content)
+					new_view = sublime.active_window().open_file(wb)
 			else:
 				sublime.message_dialog("Whiteboard is empty.")
 
