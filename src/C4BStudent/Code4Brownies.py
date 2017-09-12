@@ -9,6 +9,7 @@ import json
 import threading
 import time
 import random
+import sys
 
 c4b_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
 # c4b_REGISTER_PATH = "register"
@@ -157,9 +158,39 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 		else:
 			content = header + '\n' + content
 
+		# Run autocheck if applicable
+		check = 'failed'
+		//check if cases match bid else ignore
+		temp_fi = random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+		temp_fi += random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+		temp_fi += random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+		temp_fi += '.py'
+		with open(temp_fi, 'w') as file:
+    		file.write(content)
+		temp_path = os.path.dirname(temp_fi)
+		in_syspath = False
+		for path in sys.path:
+    		if path = temp_path:
+    			in_syspath = True
+		if in_syspath == False:
+			sys.path.append(temp_path)
+		//get corret bid cases
+		case_path = os.path.dirname(os.path.realpath(__file__) + 'cases'
+		if case_path is not None:
+			cases = open(case_path, 'r', encoding='utf-8').readlines()
+		func = getattr(temp_fi, "method", None)
+			if callable(func):
+				check = 'passed'
+				for c in cases[::2]:
+					if func(c[0]) != c[1]:
+						check = 'failed'
+			else:
+				check = 'failed'
+		//clean up sys.path
+
+
 		# Now send
-		values = {'uid':info['Name'], 'body':content, 'ext':ext, 'mode':'code', 'bid':bid}
-		# data = urllib.parse.urlencode(values).encode('ascii')
+		values = {'uid':info['Name'], 'body':content, 'ext':ext, 'mode':'code', 'bid':bid, 'check': check}
 		data = urllib.parse.urlencode(values).encode('utf-8')
 		response = c4bRequest(url,data)
 		if response is not None:
