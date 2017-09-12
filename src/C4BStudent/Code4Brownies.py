@@ -175,9 +175,10 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 		if in_syspath == False:
 			sys.path.append(temp_path)
 		//get corret bid cases
-		case_path = os.path.dirname(os.path.realpath(__file__) + 'cases'
+		//
+		case_path = os.path.dirname(os.path.realpath(__file__)
 		if case_path is not None:
-			cases = open(case_path, 'r', encoding='utf-8').readlines()
+			cases = open(os.path.join(case_path, "cases"), 'r', encoding='utf-8').readlines()
 		func = getattr(temp_fi, "method", None)
 			if callable(func):
 				check = 'passed'
