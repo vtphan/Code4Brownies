@@ -5,14 +5,25 @@ package main
 
 import (
 	"bufio"
+	"database/sql"
 	"encoding/csv"
 	"fmt"
+	_ "github.com/mattn/go-sqlite3"
 	"io"
 	"log"
 	"os"
 	"strconv"
 	"time"
 )
+
+//-----------------------------------------------------------------
+var database, _ = sql.Open("sqlite3", "./c4b.db")
+var CreateUserTable = "create table if not exists user (id integer primary key, uid text unique, points integer)"
+var CreateBroadcastTable = "create table if not exists broadcast (id integer primary key, bid text unique, content blob, date timestamp)"
+var CreateSubmissionTable = "create table if not exists submission (id integer primary key, sid text unique, uid text, bid text, points integer, duration float, description text, date timestamp, content blob)"
+var InsertBroadCastSQL, _ = database.Prepare("insert into broadcast (content, date) values (?, ?)")
+var InsertUserSQL, _ = database.Prepare("insert into user (uid, points) values (?, ?)")
+var InsertSubmissionSQL, _ = database.Prepare("insert into submission (sid, uid, bid, points, duration, description, date, content) values (?, ?, ?, ?, ?, ?, ?, ?)")
 
 //-----------------------------------------------------------------
 func RegisterStudent(uid string) {
@@ -49,6 +60,10 @@ func RegisterStudent(uid string) {
 
 	// Add a board for this new student
 	Boards[uid] = &Board{"", "", time.Now(), false, "", ""}
+	// TODO
+	// Initialize with content of Boards["*"]
+
+	InsertUserSQL.Exec(uid, 0)
 }
 
 //-----------------------------------------------------------------
