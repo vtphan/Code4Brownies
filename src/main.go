@@ -115,9 +115,6 @@ func main() {
 
 	// sql tables init
 	init_sqldb()
-	show_users()
-	show_broadcasts()
-	show_submissions()
 
 	// Start serving app
 	err := http.ListenAndServe("0.0.0.0:"+PORT, nil)

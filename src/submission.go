@@ -48,7 +48,7 @@ func AddSubmission(uid, bid, body, ext string) {
 		if len(NewSubs) == 1 {
 			fmt.Print("\x07")
 		}
-		InsertSubmissionSQL.Exec(sid, uid, bid, 0, dur, des, ext, timestamp, body)
+		InsertSubmissionSQL.Exec(sid, uid, bid, 0, dur, des, ext, time.Now(), body)
 	}
 }
 
@@ -84,7 +84,7 @@ func ProcessPollResult(uid string, brownies int) {
 		Pdes:      "poll",
 		Timestamp: timestamp,
 	}
-	//		sid, uid, "", "", brownies, 0, "poll", timestamp}
+	InsertPollSQL.Exec(uid, brownies, time.Now())
 }
 
 // ------------------------------------------------------------------

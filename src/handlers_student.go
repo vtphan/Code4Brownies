@@ -15,7 +15,7 @@ import (
 //-----------------------------------------------------------------
 
 //-----------------------------------------------------------------
-// users query to know their current points
+// return brownie points a user has received.
 //-----------------------------------------------------------------
 func my_pointsHandler(w http.ResponseWriter, r *http.Request) {
 	user := r.FormValue("uid")
@@ -28,7 +28,23 @@ func my_pointsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	mesg := fmt.Sprintf("%s: %d entries, %d points.\n", user, entries, points)
+	rows, _ := database.Query("select points from submission where uid=?", user)
+	defer rows.Close()
+	all_points := 0
+	for rows.Next() {
+		p := 0
+		rows.Scan(&p)
+		all_points += p
+	}
+	rows2, _ := database.Query("select points from poll where uid=?", user)
+	defer rows2.Close()
+	for rows2.Next() {
+		p := 0
+		rows2.Scan(&p)
+		all_points += p
+	}
+	str := "%s\nToday: %d points, %d submissions.\nAll-time: %d points.\n"
+	mesg := fmt.Sprintf(str, user, points, entries, all_points)
 	fmt.Fprintf(w, mesg)
 }
 

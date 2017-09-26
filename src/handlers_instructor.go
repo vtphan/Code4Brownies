@@ -112,6 +112,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 
 //-----------------------------------------------------------------
 // return points of all users
+// DEPRECATE.  Remove this functionality to external analyses.
 //-----------------------------------------------------------------
 func pointsHandler(w http.ResponseWriter, r *http.Request) {
 	_, subs := loadDB()
