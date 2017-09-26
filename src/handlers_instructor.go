@@ -68,6 +68,10 @@ func answer_pollHandler(w http.ResponseWriter, r *http.Request) {
 func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	var des string
 	bid := "wb_" + RandStringRunes(6)
+	_, err := InsertBroadCastSQL.Exec(bid, r.FormValue("content"), time.Now())
+	if err != nil {
+		fmt.Println("Error inserting into broadcast table.", err)
+	}
 	if r.FormValue("sids") == "__all__" {
 		for _, board := range Boards {
 			board.Content = r.FormValue("content")
@@ -134,6 +138,7 @@ func give_pointsHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 		} else {
 			sub.Points = points
+			UpdatePointsSQL.Exec(points, r.FormValue("sid"))
 			mesg := fmt.Sprintf("%s: %d points.\n", sub.Uid, points)
 			fmt.Fprintf(w, mesg)
 		}

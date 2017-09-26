@@ -32,9 +32,10 @@ func AddSubmission(uid, bid, body, ext string) {
 		if des != board.Description {
 			des = ""
 		}
+		sid := RandStringRunes(6)
 		timestamp := time.Now().Format("Mon Jan 2 15:04:05 MST 2006")
 		NewSubs = append(NewSubs, &Submission{
-			Sid:       RandStringRunes(6),
+			Sid:       sid,
 			Bid:       bid,
 			Uid:       uid,
 			Body:      body,
@@ -47,6 +48,7 @@ func AddSubmission(uid, bid, body, ext string) {
 		if len(NewSubs) == 1 {
 			fmt.Print("\x07")
 		}
+		InsertSubmissionSQL.Exec(sid, uid, bid, 0, dur, des, ext, timestamp, body)
 	}
 }
 

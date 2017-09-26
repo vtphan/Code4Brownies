@@ -17,13 +17,70 @@ import (
 )
 
 //-----------------------------------------------------------------
-var database, _ = sql.Open("sqlite3", "./c4b.db")
 var CreateUserTable = "create table if not exists user (id integer primary key, uid text unique, points integer)"
 var CreateBroadcastTable = "create table if not exists broadcast (id integer primary key, bid text unique, content blob, date timestamp)"
-var CreateSubmissionTable = "create table if not exists submission (id integer primary key, sid text unique, uid text, bid text, points integer, duration float, description text, date timestamp, content blob)"
-var InsertBroadCastSQL, _ = database.Prepare("insert into broadcast (content, date) values (?, ?)")
+var CreateSubmissionTable = "create table if not exists submission (id integer primary key, sid text unique, uid text, bid text, points integer, duration float, description text, language text, date timestamp, content blob)"
+var database, _ = sql.Open("sqlite3", "./c4b.db")
+var InsertBroadCastSQL, _ = database.Prepare("insert into broadcast (bid, content, date) values (?, ?, ?)")
 var InsertUserSQL, _ = database.Prepare("insert into user (uid, points) values (?, ?)")
-var InsertSubmissionSQL, _ = database.Prepare("insert into submission (sid, uid, bid, points, duration, description, date, content) values (?, ?, ?, ?, ?, ?, ?, ?)")
+var InsertSubmissionSQL, _ = database.Prepare("insert into submission (sid, uid, bid, points, duration, description, language, date, content) values (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+var UpdatePointsSQL, _ = database.Prepare("update submission set points=? where sid=?")
+
+//-----------------------------------------------------------------
+func init_sqldb() {
+	sql_stmt, _ := database.Prepare(CreateUserTable)
+	sql_stmt.Exec()
+	sql_stmt, _ = database.Prepare(CreateBroadcastTable)
+	sql_stmt.Exec()
+	sql_stmt, _ = database.Prepare(CreateSubmissionTable)
+	sql_stmt.Exec()
+}
+
+//-----------------------------------------------------------------
+func show_users() {
+	fmt.Println("begin user table")
+	rows, _ := database.Query("SELECT id, uid, points FROM user")
+	var id int
+	var uid string
+	var points int
+	for rows.Next() {
+		rows.Scan(&id, &uid, &points)
+		fmt.Println(id, ";", uid, ";", points)
+	}
+	fmt.Println("end user table")
+}
+
+//-----------------------------------------------------------------
+func show_broadcasts() {
+	fmt.Println("begin broadcast table")
+	rows, _ := database.Query("SELECT id, bid, content, date FROM broadcast")
+	var id int
+	var bid string
+	var t time.Time
+	var content []byte
+	for rows.Next() {
+		rows.Scan(&id, &bid, &content, &t)
+		fmt.Println(id, ";", bid, ";", t)
+		// fmt.Println(id, ";", bid, ";", t, ";", string(content))
+	}
+	fmt.Println("end broadcast table")
+}
+
+//-----------------------------------------------------------------
+func show_submissions() {
+	fmt.Println("begin submission table")
+	rows, _ := database.Query("SELECT id, sid, uid, bid, points, description FROM submission")
+	var id, points int
+	var bid string
+	var sid string
+	var uid string
+	var description string
+	for rows.Next() {
+		rows.Scan(&id, &sid, &uid, &bid, &points, &description)
+		fmt.Println(id, ";", sid, ";", uid, ";", bid, ";", points, ";", description)
+	}
+	fmt.Println("end submission table")
+}
 
 //-----------------------------------------------------------------
 func RegisterStudent(uid string) {
@@ -63,7 +120,13 @@ func RegisterStudent(uid string) {
 	// TODO
 	// Initialize with content of Boards["*"]
 
-	InsertUserSQL.Exec(uid, 0)
+	_, err = InsertUserSQL.Exec(uid, 0)
+	if err != nil {
+		fmt.Println("Error inserting into user table.", err)
+	} else {
+		fmt.Println(uid, "is inserted.")
+	}
+
 }
 
 //-----------------------------------------------------------------

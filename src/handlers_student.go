@@ -39,7 +39,6 @@ func shareHandler(w http.ResponseWriter, r *http.Request) {
 	uid, body, ext := r.FormValue("uid"), r.FormValue("body"), r.FormValue("ext")
 	mode := r.FormValue("mode")
 	bid := r.FormValue("bid")
-
 	// PrintState()
 	if mode == "code" {
 		AddSubmission(uid, bid, body, ext)

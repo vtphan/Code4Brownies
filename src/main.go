@@ -4,7 +4,6 @@
 package main
 
 import (
-	// "database/sql"
 	"flag"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
@@ -115,22 +114,10 @@ func main() {
 	}
 
 	// sql tables init
-	sql_stmt, _ := database.Prepare(CreateUserTable)
-	sql_stmt.Exec()
-	sql_stmt, _ = database.Prepare(CreateBroadcastTable)
-	sql_stmt.Exec()
-	sql_stmt, _ = database.Prepare(CreateSubmissionTable)
-	sql_stmt.Exec()
-	// InsertUserSQL.Exec("Vinhthuy Phan", 5)
-	// InsertUserSQL.Exec("Jason Phan", 5)
-	rows, _ := database.Query("SELECT id, uid, points FROM user")
-	var id int
-	var uid string
-	var points int
-	for rows.Next() {
-		rows.Scan(&id, &uid, &points)
-		fmt.Println(id, uid, points)
-	}
+	init_sqldb()
+	show_users()
+	show_broadcasts()
+	show_submissions()
 
 	// Start serving app
 	err := http.ListenAndServe("0.0.0.0:"+PORT, nil)
