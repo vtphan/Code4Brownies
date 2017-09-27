@@ -305,4 +305,3 @@ class c4biUpdate(sublime_plugin.WindowCommand):
 			except:
 				sublime.message_dialog("A problem occurred during update.")
 
-
