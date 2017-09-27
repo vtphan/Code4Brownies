@@ -84,8 +84,6 @@ def _broadcast(self, sids='__all__'):
 		if len(lines)>0 and (lines[0].startswith('#') or lines[0].startswith('//')):
 			header = lines[0]
 
-	# Determine content
-	# content = self.view.substr(sublime.Region(0, self.view.size()))
 	content = ''.join([ self.view.substr(s) for s in self.view.sel() ])
 	if len(content) < 10:  # probably selected by mistake
 		content = self.view.substr(sublime.Region(0, self.view.size()))
@@ -94,8 +92,6 @@ def _broadcast(self, sids='__all__'):
 
 	url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
 	if file_name is not None:
-		# data = urllib.parse.urlencode(
-		# 	{'content':content, 'sids':sids, 'ext': ext}).encode('ascii')
 		data = urllib.parse.urlencode(
 			{'content':content, 'sids':sids, 'ext': ext}).encode('utf-8')
 		response = c4biRequest(url,data)
@@ -112,6 +108,7 @@ class c4biGiveFeedbackCommand(sublime_plugin.TextCommand):
 			sid = this_file_name.rsplit('.',-1)[0]
 			sid = ntpath.basename(sid)
 			if sid.startswith('c4b_'):
+				sid = sid.split('c4b_')[-1]
 				_broadcast(self, sid)
 			else:
 				sublime.message_dialog("No student associated to this window.")
@@ -123,7 +120,8 @@ class c4biBroadcastGroupCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		fnames = [ v.file_name() for v in sublime.active_window().views() ]
 		names = [ ntpath.basename(n.rsplit('.',-1)[0]) for n in fnames ]
-		sids = ','.join([ n for n in names if n.startswith('c4b_') ])
+		# Remove c4b_ prefix from file name
+		sids = ','.join([ n.split('c4b_')[-1] for n in names if n.startswith('c4b_') ])
 		if sids != '':
 			_broadcast(self, sids)
 		else:
@@ -174,7 +172,9 @@ class c4biGetAllCommand(sublime_plugin.TextCommand):
 					ext = '' if entry['Ext']=='' else '.'+entry['Ext']
 					if not os.path.isdir(POSTS_DIR):
 						os.mkdir(POSTS_DIR)
-					userFile = os.path.join(POSTS_DIR, entry['Sid'] + ext)
+					# Prefix c4b_ to file name
+					userFile_name = 'c4b_' + entry['Sid'] + ext
+					userFile = os.path.join(POSTS_DIR, userFile_name)
 					with open(userFile, 'w', encoding='utf-8') as fp:
 						fp.write(entry['Body'])
 					new_view = self.view.window().open_file(userFile)
@@ -214,7 +214,9 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 				ext = '' if json_obj['Ext']=='' else '.'+json_obj['Ext']
 				if not os.path.isdir(POSTS_DIR):
 					os.mkdir(POSTS_DIR)
-				userFile = os.path.join(POSTS_DIR, json_obj['Sid'] + ext)
+				# Prefix c4b_ to file name
+				userFile_name = 'c4b_' + json_obj['Sid'] + ext
+				userFile = os.path.join(POSTS_DIR, userFile_name)
 				with open(userFile, 'w', encoding='utf-8') as fp:
 					fp.write(json_obj['Body'])
 				new_view = self.view.window().open_file(userFile)
@@ -264,8 +266,9 @@ def award_points(self, edit, points):
 	if this_file_name:
 		sid = this_file_name.rsplit('.',-1)[0]
 		sid = ntpath.basename(sid)
+		# Remove c4b_ prefix from file name
+		sid = sid.split('c4b_')[-1]
 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROWNIE_PATH)
-		# data = urllib.parse.urlencode({'sid':sid, 'points':points}).encode('ascii')
 		data = urllib.parse.urlencode({'sid':sid, 'points':points}).encode('utf-8')
 		response = c4biRequest(url,data)
 		if response:
