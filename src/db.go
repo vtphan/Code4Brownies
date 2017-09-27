@@ -11,29 +11,52 @@ import (
 )
 
 //-----------------------------------------------------------------
-var database, _ = sql.Open("sqlite3", "./c4b.db")
-var InsertBroadCastSQL, _ = database.Prepare("insert into broadcast (bid, content, language, date) values (?, ?, ?, ?)")
-var InsertUserSQL, _ = database.Prepare("insert into user (uid) values (?)")
-var InsertSubmissionSQL, _ = database.Prepare("insert into submission (sid, uid, bid, points, duration, description, language, date, content) values (?, ?, ?, ?, ?, ?, ?, ?, ?)")
-var InsertPollSQL, _ = database.Prepare("insert into poll (uid, is_correct, points, date) values (?, ?, ?, ?)")
-var UpdatePointsSQL, _ = database.Prepare("update submission set points=? where sid=?")
+var database *sql.DB
+var InsertBroadCastSQL *sql.Stmt
+var InsertUserSQL *sql.Stmt
+var InsertSubmissionSQL *sql.Stmt
+var InsertPollSQL *sql.Stmt
+var UpdatePointsSQL *sql.Stmt
 
 //-----------------------------------------------------------------
-func exec_sql(s string) {
-	sql_stmt, err := database.Prepare(s)
+func init_db() {
+	var err error
+	prepare := func(s string) *sql.Stmt {
+		stmt, err := database.Prepare(s)
+		if err != nil {
+			panic(err)
+		}
+		return stmt
+	}
+
+	database, err = sql.Open("sqlite3", USER_DB)
 	if err != nil {
 		panic(err)
 	}
-	sql_stmt.Exec()
+
+	create_tables()
+
+	InsertBroadCastSQL = prepare("insert into broadcast (bid, content, language, date) values (?, ?, ?, ?)")
+	InsertUserSQL = prepare("insert into user (uid) values (?)")
+	InsertSubmissionSQL = prepare("insert into submission (sid, uid, bid, points, duration, description, language, date, content) values (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	InsertPollSQL = prepare("insert into poll (uid, is_correct, points, date) values (?, ?, ?, ?)")
+	UpdatePointsSQL = prepare("update submission set points=? where sid=?")
 }
 
 //-----------------------------------------------------------------
 
-func init_sqldb() {
-	exec_sql("create table if not exists user (id integer primary key, uid text unique)")
-	exec_sql("create table if not exists broadcast (id integer primary key, bid text unique, content blob, language text, date timestamp)")
-	exec_sql("create table if not exists submission (id integer primary key, sid text unique, uid text, bid text, points integer, duration float, description text, language text, date timestamp, content blob)")
-	exec_sql("create table if not exists poll (id integer primary key, uid text, is_correct integer, points integer, date timestamp)")
+func create_tables() {
+	execSQL := func(s string) {
+		sql_stmt, err := database.Prepare(s)
+		if err != nil {
+			panic(err)
+		}
+		sql_stmt.Exec()
+	}
+	execSQL("create table if not exists user (id integer primary key, uid text unique)")
+	execSQL("create table if not exists broadcast (id integer primary key, bid text unique, content blob, language text, date timestamp)")
+	execSQL("create table if not exists submission (id integer primary key, sid text unique, uid text, bid text, points integer, duration float, description text, language text, date timestamp, content blob)")
+	execSQL("create table if not exists poll (id integer primary key, uid text, is_correct integer, points integer, date timestamp)")
 }
 
 //-----------------------------------------------------------------

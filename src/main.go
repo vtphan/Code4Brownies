@@ -82,7 +82,7 @@ func main() {
 	http.HandleFunc("/get_post", Authorize(get_postHandler))
 	http.HandleFunc("/get_posts", Authorize(get_postsHandler))
 
-	init_sqldb()
+	init_db()
 	loadWhiteboards()
 
 	// Start serving app
