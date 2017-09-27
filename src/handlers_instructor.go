@@ -49,12 +49,12 @@ func view_pollHandler(w http.ResponseWriter, r *http.Request) {
 // Answer poll
 //-----------------------------------------------------------------
 func answer_pollHandler(w http.ResponseWriter, r *http.Request) {
-	answer := r.FormValue("answer")
+	answer := strings.ToLower(r.FormValue("answer"))
 	for k, v := range POLL_RESULT {
 		if v == answer {
-			ProcessPollResult(k, 2)
-		} else {
 			ProcessPollResult(k, 1)
+		} else {
+			ProcessPollResult(k, 0)
 		}
 	}
 	POLL_RESULT = make(map[string]string)
@@ -68,15 +68,15 @@ func answer_pollHandler(w http.ResponseWriter, r *http.Request) {
 func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	var des string
 	bid := "wb_" + RandStringRunes(6)
-	_, err := InsertBroadCastSQL.Exec(bid, r.FormValue("content"), time.Now())
+	content, ext := r.FormValue("content"), r.FormValue("ext")
+	_, err := InsertBroadCastSQL.Exec(bid, content, ext, time.Now())
 	if err != nil {
 		fmt.Println("Error inserting into broadcast table.", err)
 	}
 	if r.FormValue("sids") == "__all__" {
 		for _, board := range Boards {
-			board.Content = r.FormValue("content")
-			board.Ext = r.FormValue("ext")
-			// board.Bid = "wb_" + RandStringRunes(6) // Is this right?
+			board.Content = content
+			board.Ext = ext
 			board.Bid = bid
 			board.Changed = true
 			des = strings.SplitN(board.Content, "\n", 2)[0]
@@ -91,9 +91,8 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 			sid := string(sids[i])
 			sub, ok := ProcessedSubs[sid]
 			if ok {
-				Boards[sub.Uid].Content = r.FormValue("content")
-				Boards[sub.Uid].Ext = r.FormValue("ext")
-				// Boards[sub.Uid].Bid = "wb_" + RandStringRunes(6)
+				Boards[sub.Uid].Content = content
+				Boards[sub.Uid].Ext = ext
 				Boards[sub.Uid].Bid = bid
 				Boards[sub.Uid].Changed = true
 				des = strings.SplitN(Boards[sub.Uid].Content, "\n", 2)[0]
@@ -111,29 +110,10 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //-----------------------------------------------------------------
-// return points of all users
-// DEPRECATE.  Remove this functionality to external analyses.
-//-----------------------------------------------------------------
-func pointsHandler(w http.ResponseWriter, r *http.Request) {
-	_, subs := loadDB()
-	for k, v := range ProcessedSubs {
-		subs[k] = v
-	}
-	js, err := json.Marshal(subs)
-	if err != nil {
-		fmt.Println(err.Error())
-	} else {
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
-	}
-}
-
-//-----------------------------------------------------------------
 // give one brownie point to a user
 //-----------------------------------------------------------------
 func give_pointsHandler(w http.ResponseWriter, r *http.Request) {
-	sub := GetSubmission(r.FormValue("sid"))
-	if sub != nil {
+	if sub, ok := ProcessedSubs[r.FormValue("sid")]; ok {
 		points, err := strconv.Atoi(r.FormValue("points"))
 		if err != nil {
 			fmt.Println(err)

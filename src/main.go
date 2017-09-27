@@ -10,10 +10,7 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
-	"os"
-	"os/signal"
 	"path/filepath"
-	"syscall"
 	"time"
 )
 
@@ -29,25 +26,6 @@ func informIPAddress() string {
 		}
 	}
 	return ""
-}
-
-//-----------------------------------------------------------------
-
-func prepareCleanup() {
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt)
-	signal.Notify(quit, syscall.SIGTERM)
-
-	go func() {
-		for {
-			select {
-			case <-quit:
-				fmt.Println("Preparing to stop server...")
-				writeDB()
-				os.Exit(1)
-			}
-		}
-	}()
 }
 
 //-----------------------------------------------------------------
@@ -84,13 +62,11 @@ func main() {
 	fmt.Printf("*   Server address: %s\n", SERVER)
 	fmt.Println("*********************************************\n")
 	rand.Seed(time.Now().UnixNano())
-	USER_DB = filepath.Join(".", "C4B_DB.csv")
-	flag.StringVar(&USER_DB, "db", USER_DB, "user database in csv format, which consists of UID,POINTS.")
+	USER_DB = filepath.Join(".", "c4b.db")
+	flag.StringVar(&USER_DB, "db", USER_DB, "user database.")
 	flag.Parse()
-	prepareCleanup()
 
 	// student handlers
-	// http.HandleFunc("/register", registerHandler)
 	http.HandleFunc("/share", AutoRegister(shareHandler))
 	http.HandleFunc("/my_points", AutoRegister(my_pointsHandler))
 	http.HandleFunc("/receive_broadcast", AutoRegister(receive_broadcastHandler))
@@ -100,21 +76,14 @@ func main() {
 	http.HandleFunc("/query_poll", Authorize(query_pollHandler))
 	http.HandleFunc("/view_poll", Authorize(view_pollHandler))
 	http.HandleFunc("/answer_poll", Authorize(answer_pollHandler))
-	// http.HandleFunc("/start_poll", Authorize(start_pollHandler))
-	http.HandleFunc("/points", Authorize(pointsHandler))
 	http.HandleFunc("/give_points", Authorize(give_pointsHandler))
 	http.HandleFunc("/peek", Authorize(peekHandler))
 	http.HandleFunc("/broadcast", Authorize(broadcastHandler))
 	http.HandleFunc("/get_post", Authorize(get_postHandler))
 	http.HandleFunc("/get_posts", Authorize(get_postsHandler))
 
-	empty_file, _ := loadDB()
-	if empty_file {
-		initDB()
-	}
-
-	// sql tables init
 	init_sqldb()
+	loadWhiteboards()
 
 	// Start serving app
 	err := http.ListenAndServe("0.0.0.0:"+PORT, nil)

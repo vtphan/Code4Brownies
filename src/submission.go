@@ -9,18 +9,6 @@ import (
 	"time"
 )
 
-//-----------------------------------------------------------------
-// ProcessedSubs of students' submissions.
-// Submitted asynchronously, submissions must be synchronized.
-//-----------------------------------------------------------------
-
-func GetSubmission(sid string) *Submission {
-	if _, ok := ProcessedSubs[sid]; ok {
-		return ProcessedSubs[sid]
-	}
-	return nil
-}
-
 // ------------------------------------------------------------------
 func AddSubmission(uid, bid, body, ext string) {
 	SEM.Lock()
@@ -68,36 +56,12 @@ func ProcessSubmission(i int) *Submission {
 }
 
 // ------------------------------------------------------------------
-func ProcessPollResult(uid string, brownies int) {
-	SEM.Lock()
-	defer SEM.Unlock()
-	sid := RandStringRunes(6)
-	timestamp := time.Now().Format("Mon Jan 2 15:04:05 MST 2006")
-	ProcessedSubs[sid] = &Submission{
-		Sid:       sid,
-		Bid:       "",
-		Body:      "",
-		Ext:       "",
-		Uid:       uid,
-		Points:    brownies,
-		Duration:  0,
-		Pdes:      "poll",
-		Timestamp: timestamp,
+func ProcessPollResult(uid string, is_correct int) {
+	brownies := 1
+	if is_correct == 1 {
+		brownies = 2
 	}
-	InsertPollSQL.Exec(uid, brownies, time.Now())
+	InsertPollSQL.Exec(uid, is_correct, brownies, time.Now())
 }
 
 // ------------------------------------------------------------------
-func PrintState() {
-	fmt.Println("------\n\tNewSubs:")
-	for _, s := range NewSubs {
-		fmt.Printf("Sid: %s\nUid: %s\nExt: %s\nBody length: %d\nPoints: %d\nDuration: %d\n\n",
-			s.Sid, s.Uid, s.Ext, len(s.Body), s.Points, s.Duration)
-	}
-	fmt.Println("\n\tProcessedSubs:")
-	for _, s := range ProcessedSubs {
-		fmt.Printf("Sid: %s\nUid: %s\nExt: %s\nBody length: %d\nPoints: %d\nDuration: %d\n\n",
-			s.Sid, s.Uid, s.Ext, len(s.Body), s.Points, s.Duration)
-	}
-	fmt.Println("------")
-}

@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	// "strings"
+	"strings"
 )
 
 //-----------------------------------------------------------------
@@ -19,18 +19,16 @@ import (
 //-----------------------------------------------------------------
 func my_pointsHandler(w http.ResponseWriter, r *http.Request) {
 	user := r.FormValue("uid")
-	entries, points := 0, 0
+	all_points, today_points := 0, 0
 	for _, s := range ProcessedSubs {
 		if user == s.Uid {
 			if s.Points > 0 {
-				points += s.Points
-				entries += 1
+				today_points += s.Points
 			}
 		}
 	}
 	rows, _ := database.Query("select points from submission where uid=?", user)
 	defer rows.Close()
-	all_points := 0
 	for rows.Next() {
 		p := 0
 		rows.Scan(&p)
@@ -43,8 +41,8 @@ func my_pointsHandler(w http.ResponseWriter, r *http.Request) {
 		rows2.Scan(&p)
 		all_points += p
 	}
-	str := "%s\nToday: %d points, %d submissions.\nAll-time: %d points.\n"
-	mesg := fmt.Sprintf(str, user, points, entries, all_points)
+	str := "%s\nToday: %d points.\nAll-time: %d points.\n"
+	mesg := fmt.Sprintf(str, user, today_points, all_points)
 	fmt.Fprintf(w, mesg)
 }
 
@@ -55,7 +53,6 @@ func shareHandler(w http.ResponseWriter, r *http.Request) {
 	uid, body, ext := r.FormValue("uid"), r.FormValue("body"), r.FormValue("ext")
 	mode := r.FormValue("mode")
 	bid := r.FormValue("bid")
-	// PrintState()
 	if mode == "code" {
 		AddSubmission(uid, bid, body, ext)
 		fmt.Println(uid, "submitted.")
@@ -65,9 +62,9 @@ func shareHandler(w http.ResponseWriter, r *http.Request) {
 		if ok {
 			POLL_COUNT[prev_answer]--
 		}
-		POLL_RESULT[uid] = body
+		POLL_RESULT[uid] = strings.ToLower(body)
 		POLL_COUNT[body]++
-		fmt.Fprintf(w, uid+", thank you for sharing.")
+		fmt.Fprintf(w, uid+", thank you for voting.")
 	} else {
 		fmt.Fprint(w, "Unknown mode.")
 	}
