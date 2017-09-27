@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 )
 
 //-----------------------------------------------------------------
@@ -20,25 +21,26 @@ import (
 func my_pointsHandler(w http.ResponseWriter, r *http.Request) {
 	user := r.FormValue("uid")
 	all_points, today_points := 0, 0
-	for _, s := range ProcessedSubs {
-		if user == s.Uid {
-			if s.Points > 0 {
-				today_points += s.Points
-			}
-		}
-	}
-	rows, _ := database.Query("select points from submission where uid=?", user)
+	var date time.Time
+	today := time.Now().Day()
+	rows, _ := database.Query("select points, date from submission where uid=?", user)
 	defer rows.Close()
 	for rows.Next() {
 		p := 0
-		rows.Scan(&p)
+		rows.Scan(&p, &date)
+		if date.Day() == today {
+			today_points += p
+		}
 		all_points += p
 	}
-	rows2, _ := database.Query("select points from poll where uid=?", user)
+	rows2, _ := database.Query("select points, date from poll where uid=?", user)
 	defer rows2.Close()
 	for rows2.Next() {
 		p := 0
-		rows2.Scan(&p)
+		rows2.Scan(&p, &date)
+		if date.Day() == today {
+			today_points += p
+		}
 		all_points += p
 	}
 	str := "%s\nToday: %d points.\nAll-time: %d points.\n"
