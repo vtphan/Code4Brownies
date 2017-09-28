@@ -81,11 +81,6 @@
                 "id": "c4biPeek",
                 "command": "c4bi_peek"
             },
-            {
-                "caption": "Points",
-                "id": "c4biPoints",
-                "command": "c4bi_points"
-            },
             {"caption":"-", "id":"side-bar-separator"},
             {
                 "caption": "Update",
