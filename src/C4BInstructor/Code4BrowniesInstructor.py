@@ -15,7 +15,6 @@ SERVER_ADDR = "http://localhost:4030"
 c4bi_BROADCAST_PATH = "broadcast"
 c4bi_BROWNIE_PATH = "give_points"
 c4bi_PEEK_PATH = "peek"
-c4bi_POINTS_PATH = "points"
 c4bi_REQUEST_ENTRY_PATH = "get_post"
 c4bi_REQUEST_ENTRIES_PATH = "get_posts"
 c4bi_NEW_PROBLEM_PATH = "new_problem"
@@ -135,24 +134,24 @@ class c4biBroadcastCommand(sublime_plugin.TextCommand):
 # ------------------------------------------------------------------
 # Instructor retrieves all current and past points of all users.
 # ------------------------------------------------------------------
-class c4biPointsCommand(sublime_plugin.TextCommand):
-	def run(self, edit):
-		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_POINTS_PATH)
-		# data = urllib.parse.urlencode({}).encode('ascii')
-		data = urllib.parse.urlencode({}).encode('utf-8')
-		response = c4biRequest(url,data)
-		if response is not None:
-			json_obj = json.loads(response)
-			points, entries = {}, {}
-			for k,v in json_obj.items():
-				if v['Uid'] not in points:
-					points[v['Uid']] = 0
-					entries[v['Uid']] = 0
-				points[v['Uid']] += v['Points']
-				entries[v['Uid']] += 1
-			new_view = self.view.window().new_file()
-			users = [ "%s,%s,%s" % (k,entries[k],points[k]) for k,v in sorted(points.items()) ]
-			new_view.insert(edit, 0, "\n".join(users))
+# class c4biPointsCommand(sublime_plugin.TextCommand):
+# 	def run(self, edit):
+# 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_POINTS_PATH)
+# 		# data = urllib.parse.urlencode({}).encode('ascii')
+# 		data = urllib.parse.urlencode({}).encode('utf-8')
+# 		response = c4biRequest(url,data)
+# 		if response is not None:
+# 			json_obj = json.loads(response)
+# 			points, entries = {}, {}
+# 			for k,v in json_obj.items():
+# 				if v['Uid'] not in points:
+# 					points[v['Uid']] = 0
+# 					entries[v['Uid']] = 0
+# 				points[v['Uid']] += v['Points']
+# 				entries[v['Uid']] += 1
+# 			new_view = self.view.window().new_file()
+# 			users = [ "%s,%s,%s" % (k,entries[k],points[k]) for k,v in sorted(points.items()) ]
+# 			new_view.insert(edit, 0, "\n".join(users))
 
 # ------------------------------------------------------------------
 # Instructor retrieves all posts.
@@ -304,4 +303,5 @@ class c4biUpdate(sublime_plugin.WindowCommand):
 				sublime.message_dialog("Code4Brownies has been updated to version %s.  Latest server is at https://github.com/vtphan/Code4Brownies" % version)
 			except:
 				sublime.message_dialog("A problem occurred during update.")
+
 
