@@ -22,7 +22,7 @@ func AddSubmission(uid, bid, body, ext string) {
 		}
 		sid := RandStringRunes(6)
 		timestamp := time.Now().Format("Mon Jan 2 15:04:05 MST 2006")
-		NewSubs = append(NewSubs, &Submission{
+		sub := &Submission{
 			Sid:       sid,
 			Bid:       bid,
 			Uid:       uid,
@@ -32,7 +32,9 @@ func AddSubmission(uid, bid, body, ext string) {
 			Duration:  dur,
 			Pdes:      des,
 			Timestamp: timestamp,
-		})
+		}
+		AllSubs[sid] = sub
+		NewSubs = append(NewSubs, sub)
 		if len(NewSubs) == 1 {
 			fmt.Print("\x07")
 		}
@@ -41,8 +43,8 @@ func AddSubmission(uid, bid, body, ext string) {
 }
 
 // ------------------------------------------------------------------
-// Remove from NewSubs and add to ProcessedSubs
-func ProcessSubmission(i int) *Submission {
+// Remove a submission from NewSubs
+func RemoveSubmission(i int) *Submission {
 	if i < 0 || len(NewSubs) == 0 || i > len(NewSubs) {
 		return &Submission{}
 	} else {
@@ -50,7 +52,6 @@ func ProcessSubmission(i int) *Submission {
 		defer SEM.Unlock()
 		s := NewSubs[i]
 		NewSubs = append(NewSubs[:i], NewSubs[i+1:]...)
-		ProcessedSubs[s.Sid] = s
 		return s
 	}
 }

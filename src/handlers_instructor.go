@@ -89,7 +89,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 		sids := strings.Split(r.FormValue("sids"), ",")
 		for i := 0; i < len(sids); i++ {
 			sid := string(sids[i])
-			sub, ok := ProcessedSubs[sid]
+			sub, ok := AllSubs[sid]
 			if ok {
 				Boards[sub.Uid].Content = content
 				Boards[sub.Uid].Ext = ext
@@ -113,7 +113,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 // give one brownie point to a user
 //-----------------------------------------------------------------
 func give_pointsHandler(w http.ResponseWriter, r *http.Request) {
-	if sub, ok := ProcessedSubs[r.FormValue("sid")]; ok {
+	if sub, ok := AllSubs[r.FormValue("sid")]; ok {
 		points, err := strconv.Atoi(r.FormValue("points"))
 		if err != nil {
 			fmt.Println(err)
@@ -147,7 +147,7 @@ func get_postHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err.Error)
 	} else {
-		js, err := json.Marshal(ProcessSubmission(e))
+		js, err := json.Marshal(RemoveSubmission(e))
 		if err != nil {
 			fmt.Println(err.Error())
 		} else {
@@ -165,9 +165,7 @@ func get_postsHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
-		for len(NewSubs) > 0 {
-			ProcessSubmission(0)
-		}
+		NewSubs = make([]*Submission, 0)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
 	}

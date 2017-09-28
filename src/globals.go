@@ -57,7 +57,7 @@ func RandStringRunes(n int) string {
 
 var SEM sync.Mutex
 var NewSubs = make([]*Submission, 0)
-var ProcessedSubs = make(map[string]*Submission)
+var AllSubs = make(map[string]*Submission)
 
 type TemplateData struct {
 	SERVER string
