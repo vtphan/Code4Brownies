@@ -233,7 +233,7 @@ class c4bSetServer(sublime_plugin.WindowCommand):
 			info = dict()
 		if 'Server' not in info:
 			info['Server'] = ''
-		sublime.active_window().show_input_panel("Server address:",
+		sublime.active_window().show_input_panel("Set server address.  Press Enter:",
 			info['Server'],
 			self.set,
 			None,
@@ -265,7 +265,7 @@ class c4bSetName(sublime_plugin.WindowCommand):
 			info = dict()
 		if 'Name' not in info:
 			info['Name'] = ''
-		sublime.active_window().show_input_panel("Your Name:",
+		sublime.active_window().show_input_panel("Set your name.  Press Enter:",
 			info['Name'],
 			self.set,
 			None,
