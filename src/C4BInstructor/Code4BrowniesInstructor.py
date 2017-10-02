@@ -85,7 +85,6 @@ def _broadcast(self, sids='__all__'):
 			header = lines[0]
 
 	# Determine content
-	# content = self.view.substr(sublime.Region(0, self.view.size()))
 	content = ''.join([ self.view.substr(s) for s in self.view.sel() ])
 	if len(content) < 10:  # probably selected by mistake
 		content = self.view.substr(sublime.Region(0, self.view.size()))
@@ -94,8 +93,6 @@ def _broadcast(self, sids='__all__'):
 
 	url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
 	if file_name is not None:
-		# data = urllib.parse.urlencode(
-		# 	{'content':content, 'sids':sids, 'ext': ext}).encode('ascii')
 		data = urllib.parse.urlencode(
 			{'content':content, 'sids':sids, 'ext': ext}).encode('utf-8')
 		response = c4biRequest(url,data)
@@ -104,23 +101,23 @@ def _broadcast(self, sids='__all__'):
 
 	#Send testcases if applicable
 	test_file_name = file_name[:-3] + "_test.py"
-	test_path = os.path.abspath(test_file_name)
-    test_path = os.path.join(test_path, test_file_name)
 	try:
-      lines = open(test_path, "r", encoding='utf-8').readlines()
-      content = ''.join([ self.view.substr(s) for s in self.view.sel() ])
-	if len(content) < 10:  # probably selected by mistake
-		content = self.view.substr(sublime.Region(0, self.view.size()))
-	else:
-		content = header + '\n' + content
+		test_path = os.path.abspath(test_file_name)
+    	test_path = os.path.join(test_path, test_file_name)
+    	lines = open(test_path, "r", encoding='utf-8').readlines()
+    	content = ''.join([ self.view.substr(s) for s in self.view.sel() ])
+		if len(content) < 10:  # probably selected by mistake
+			content = self.view.substr(sublime.Region(0, self.view.size()))
+		else:
+			content = header + '\n' + content
 
-	url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
-	if file_name is not None:
-		data = urllib.parse.urlencode(
-			{'content':content, 'sids':sids, 'ext': ext}).encode('utf-8')
-		response = c4biRequest(url,data)
-		if response is not None:
-			sublime.status_message(response)
+		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
+		if file_name is not None:
+			data = urllib.parse.urlencode(
+				{'content':content, 'sids':sids, 'ext': ext}).encode('utf-8')
+			response = c4biRequest(url,data)
+			if response is not None:
+				sublime.status_message(response)
     except IOError:
       print "No testcase to send."
 
