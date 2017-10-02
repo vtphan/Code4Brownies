@@ -62,17 +62,13 @@ def check_with_server():
 			return
 		url = urllib.parse.urljoin(info['Server'], c4b_CHECK_BROADCAST_PATH)
 		values = {'uid':info['Name']}
-		# data = urllib.parse.urlencode(values).encode('ascii')
 		data = urllib.parse.urlencode(values).encode('utf-8')
 		req = urllib.request.Request(url, data)
 		try:
 			with urllib.request.urlopen(req, None, TIMEOUT) as r:
 				response = r.read().decode(encoding="utf-8")
-				# print(response)
 				if response == "true":
 					sublime.status_message("Your whiteboard has been updated!")
-					# _receive_broadcast(self, edit, info['Name'])
-					# sublime.run_command('c4b_my_board')
 		except urllib.error.URLError as err:
 			print("Cannot connect with server. Stop polling.")
 			break
@@ -112,21 +108,29 @@ class c4bMyBoardCommand(sublime_plugin.TextCommand):
 		if response != None:
 			json_obj = json.loads(response)
 			content = json_obj['content']
-			ext = json_obj['ext']
-			bid = json_obj['bid']
-			if len(content.strip()) > 0:
-				if self.view.file_name() is None:
-					new_view = sublime.active_window().new_file()
-					new_view.insert(edit, 0, content)
-				else:
-					cwd = os.path.dirname(self.view.file_name())
-					wb = os.path.join(cwd, bid)
-					wb += '.'+ext if ext!='' else ''
-					with open(wb, 'w', encoding='utf-8') as f:
-						f.write(content)
-					new_view = sublime.active_window().open_file(wb)
+				ext = json_obj['ext']
+				bid = json_obj['bid']
+			if content[:1] = '('	#test file
+				//write to C4BStudent
+				tc = os.path.join(c4b_FILE, bid)
+				tc += '_test.'+ext if ext!='' else ''
+				with open(tc, 'w', encoding='utf-8') as f:
+					f.write(content)
+				f.close()
 			else:
-				sublime.message_dialog("Whiteboard is empty.")
+				if len(content.strip()) > 0:
+					if self.view.file_name() is None:
+						new_view = sublime.active_window().new_file()
+						new_view.insert(edit, 0, content)
+					else:
+						cwd = os.path.dirname(self.view.file_name())
+						wb = os.path.join(cwd, bid)
+						wb += '.'+ext if ext!='' else ''
+						with open(wb, 'w', encoding='utf-8') as f:
+							f.write(content)
+						new_view = sublime.active_window().open_file(wb)
+				else:
+					sublime.message_dialog("Whiteboard is empty.")
 
 # ------------------------------------------------------------------
 class c4bShareCommand(sublime_plugin.TextCommand):
