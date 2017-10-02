@@ -159,36 +159,38 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 			content = header + '\n' + content
 
 		# Run autocheck if applicable
-		check = 'failed'
-		//check if cases match bid else ignore
-		temp_fi = random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-		temp_fi += random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-		temp_fi += random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-		temp_fi += '.py'
-		with open(temp_fi, 'w') as file:
-    		file.write(content)
-		temp_path = os.path.dirname(temp_fi)
-		in_syspath = False
-		for path in sys.path:
-    		if path = temp_path:
-    			in_syspath = True
-		if in_syspath == False:
-			sys.path.append(temp_path)
-		//get corret bid cases
-		//
-		case_path = os.path.dirname(os.path.realpath(__file__)
-		if case_path is not None:
-			cases = open(os.path.join(case_path, "cases"), 'r', encoding='utf-8').readlines()
-		func = getattr(temp_fi, "method", None)
-			if callable(func):
-				check = 'passed'
-				for c in cases[::2]:
-					if func(c[0]) != c[1]:
-						check = 'failed'
-			else:
-				check = 'failed'
-		//clean up sys.path
+		check = 'unchecked'
+		try:
+			test_cases = bid + "_test.py"
+			test_path = os.path.abspath(test_cases)
+			temp_fi = random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+			temp_fi += random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+			temp_fi += random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+			temp_fi += '.py'
+			with open(temp_fi, 'w') as file:
+    			file.write(content)
+			temp_path = os.path.dirname(temp_fi)
+			in_syspath = False
+			for path in sys.path:
+    			if path = temp_path:
+    				in_syspath = True
+			if in_syspath == False:
+				sys.path.append(temp_path)
 
+			case_path = os.path.join(os.path.dirname(os.path.realpath(__file__), test_cases)
+			if case_path is not None:
+				cases = open(os.path.join(case_path, "cases"), 'r', encoding='utf-8').readlines()
+			func = getattr(temp_fi, "method", None)
+				if callable(func):
+					check = 'passed'
+					for c in cases[::2]:
+						if func(c[0]) != c[1]:
+							check = 'failed'
+				else:
+					check = 'failed'
+			//clean up sys.path
+		except IOError:
+			print "Submitted."
 
 		# Now send
 		values = {'uid':info['Name'], 'body':content, 'ext':ext, 'mode':'code', 'bid':bid, 'check': check}
