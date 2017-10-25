@@ -78,7 +78,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 			board.Content = content
 			board.Ext = ext
 			board.Bid = bid
-			board.Changed = true
+			// board.Changed = true
 			des = strings.SplitN(board.Content, "\n", 2)[0]
 			if des != board.Description { // a new exercise/problem
 				board.Description = des
@@ -94,7 +94,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 				Boards[sub.Uid].Content = content
 				Boards[sub.Uid].Ext = ext
 				Boards[sub.Uid].Bid = bid
-				Boards[sub.Uid].Changed = true
+				// Boards[sub.Uid].Changed = true
 				des = strings.SplitN(Boards[sub.Uid].Content, "\n", 2)[0]
 				if des != Boards[sub.Uid].Description { // a new exercise/problem
 					Boards[sub.Uid].Description = des

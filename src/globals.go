@@ -20,14 +20,14 @@ type Board struct {
 	Content      string
 	Description  string
 	StartingTime time.Time
-	Changed      bool
-	Ext          string
-	Bid          string // id of current broadcast
+	// Changed      bool
+	Ext string
+	Bid string // id of current broadcast
 }
 
 var Boards = make(map[string]*Board)
 
-// TODO
+// TODO; allow a student to have multiple boards (or pages of a board)
 // var Boards = make(map[string][]*Board)
 
 type Submission struct {

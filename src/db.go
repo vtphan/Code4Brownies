@@ -71,9 +71,9 @@ func RegisterStudent(uid string) {
 		Content:      Boards["__all__"].Content,
 		Description:  Boards["__all__"].Description,
 		StartingTime: time.Now(),
-		Changed:      false,
 		Ext:          Boards["__all__"].Ext,
 		Bid:          Boards["__all__"].Bid,
+		// Changed:      false,
 	}
 	_, err := InsertUserSQL.Exec(uid)
 	if err != nil {
@@ -90,7 +90,7 @@ func loadWhiteboards() {
 	var uid string
 	for rows.Next() {
 		rows.Scan(&uid)
-		Boards[uid] = &Board{"", "", time.Now(), false, "", ""}
+		Boards[uid] = &Board{"", "", time.Now(), "", ""}
 	}
-	Boards["__all__"] = &Board{"", "", time.Now(), false, "", ""}
+	Boards["__all__"] = &Board{"", "", time.Now(), "", ""}
 }
