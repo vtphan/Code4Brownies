@@ -55,6 +55,8 @@ def c4bRequest(url, data):
 # ------------------------------------------------------------------
 def get_hints(str):
 	s = str.strip()
+	if s=='':
+		return []
 	first_line = s.split('\n', 1)[0]
 	break_pattern = first_line.rsplit(' ', 1)[0].strip()
 	hints = s.split(break_pattern)
@@ -101,6 +103,9 @@ class c4bHintCommand(sublime_plugin.TextCommand):
 			if prefix in Hints:
 				CUR_BID = prefix
 		if CUR_BID in Hints:
+			if Hints[CUR_BID][1] == []:
+				sublime.message_dialog("There is no hint.")
+				return
 			i = Hints[CUR_BID][0]
 			if i >= len(Hints[CUR_BID][1]):
 				sublime.message_dialog("There is no more hint.")
@@ -110,7 +115,7 @@ class c4bHintCommand(sublime_plugin.TextCommand):
 				new_view = sublime.active_window().new_file()
 				new_view.insert(edit, 0, help_content)
 		else:
-			sublime.message_dialog("No hints are associated with this file.")
+			sublime.message_dialog("No hints associated with this file.")
 
 # ------------------------------------------------------------------
 class c4bShareCommand(sublime_plugin.TextCommand):
