@@ -73,7 +73,6 @@ func RegisterStudent(uid string) {
 		StartingTime: time.Now(),
 		Ext:          Boards["__all__"].Ext,
 		Bid:          Boards["__all__"].Bid,
-		// Changed:      false,
 	}
 	_, err := InsertUserSQL.Exec(uid)
 	if err != nil {

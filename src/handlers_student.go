@@ -93,22 +93,7 @@ func receive_broadcastHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
 	} else {
-		// board.Changed = false
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
 	}
 }
-
-//-----------------------------------------------------------------
-// student checks to see if there is something new on his/her board
-//-----------------------------------------------------------------
-// func check_broadcastHandler(w http.ResponseWriter, r *http.Request) {
-// 	uid := r.FormValue("uid")
-// 	var err error
-// 	board, ok := Boards[uid]
-// 	if ok {
-// 		fmt.Fprintf(w, "%t", board.Changed)
-// 	} else {
-// 		fmt.Println(err.Error())
-// 	}
-// }
