@@ -22,6 +22,8 @@ RUNNING_BACKGROUND_TASK = False
 
 c4b_WHITEBOARD_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Whiteboard")
 
+Hints = {}
+CUR_BID = None
 # ------------------------------------------------------------------
 def c4b_get_attr():
 	try:
@@ -51,53 +53,13 @@ def c4bRequest(url, data):
 	return None
 
 # ------------------------------------------------------------------
-def check_with_server():
-	MAX_POLLING_TIME = 2700  # 90 minutes
-	SLEEP_TIME, TOTAL_SLEEP_TIME = 120, 0
-	RUNNING_BACKGROUND_TASK = True
-	while TOTAL_SLEEP_TIME < MAX_POLLING_TIME:
-		info = c4b_get_attr()
-		if info is None:
-			return
-		url = urllib.parse.urljoin(info['Server'], c4b_CHECK_BROADCAST_PATH)
-		values = {'uid':info['Name']}
-		# data = urllib.parse.urlencode(values).encode('ascii')
-		data = urllib.parse.urlencode(values).encode('utf-8')
-		req = urllib.request.Request(url, data)
-		try:
-			with urllib.request.urlopen(req, None, TIMEOUT) as r:
-				response = r.read().decode(encoding="utf-8")
-				# print(response)
-				if response == "true":
-					sublime.status_message("Your whiteboard has been updated!")
-					# _receive_broadcast(self, edit, info['Name'])
-					# sublime.run_command('c4b_my_board')
-		except urllib.error.URLError as err:
-			print("Cannot connect with server. Stop polling.")
-			break
-		TOTAL_SLEEP_TIME += SLEEP_TIME
-		time.sleep(SLEEP_TIME)
-	RUNNING_BACKGROUND_TASK = False
-
-# ------------------------------------------------------------------
-def background_task():
-	bg_thread = threading.Thread(target=check_with_server)
-	bg_thread.start()
-
-# ------------------------------------------------------------------
-class c4bAutoUpdateBoardCommand(sublime_plugin.TextCommand):
-	def run(self, edit):
-		background_task()
-
-# ------------------------------------------------------------------
-def new_whiteboard(ext, view):
-	new_id = random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-	new_id += random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-	if not os.path.isdir(c4b_WHITEBOARD_DIR):
-		os.mkdir(c4b_WHITEBOARD_DIR)
-	wb = os.path.join(c4b_WHITEBOARD_DIR, 'wb_'+new_id)
-	wb += '.'+ext if ext!='' else ''
-	return wb
+def get_hints(str):
+	s = str.strip()
+	first_line = s.split('\n', 1)[0]
+	break_pattern = first_line.rsplit(' ', 1)[0].strip()
+	hints = s.split(break_pattern)
+	hints.pop(0)
+	return [ break_pattern + h for h in hints ]
 
 # ------------------------------------------------------------------
 class c4bMyBoardCommand(sublime_plugin.TextCommand):
@@ -113,6 +75,7 @@ class c4bMyBoardCommand(sublime_plugin.TextCommand):
 			content = json_obj['content']
 			ext = json_obj['ext']
 			bid = json_obj['bid']
+			Hints[bid] = [0, get_hints(json_obj['help_content'])]
 			if len(content.strip()) > 0:
 				if self.view.file_name() is None:
 					new_view = sublime.active_window().new_file()
@@ -126,6 +89,28 @@ class c4bMyBoardCommand(sublime_plugin.TextCommand):
 					new_view = sublime.active_window().open_file(wb)
 			else:
 				sublime.message_dialog("Whiteboard is empty.")
+
+# ------------------------------------------------------------------
+class c4bHintCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		global CUR_BID, Hints
+		file_name = self.view.file_name()
+		if file_name is not None:
+			basename = os.path.basename(file_name)
+			prefix = basename.rsplit('.py')[0]
+			if prefix in Hints:
+				CUR_BID = prefix
+		if CUR_BID in Hints:
+			i = Hints[CUR_BID][0]
+			if i >= len(Hints[CUR_BID][1]):
+				sublime.message_dialog("There is no more hint.")
+			else:
+				help_content = Hints[CUR_BID][1][i]
+				Hints[CUR_BID][0] = i+1
+				new_view = sublime.active_window().new_file()
+				new_view.insert(edit, 0, help_content)
+		else:
+			sublime.message_dialog("No hints are associated with this file.")
 
 # ------------------------------------------------------------------
 class c4bShareCommand(sublime_plugin.TextCommand):

@@ -19,6 +19,7 @@ var SERVER = ""
 // TODO; allow a student to have multiple boards (or pages of a board)
 type Board struct {
 	Content      string
+	HelpContent  string
 	Description  string
 	StartingTime time.Time
 	Ext          string

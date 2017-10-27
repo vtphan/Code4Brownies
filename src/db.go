@@ -69,6 +69,7 @@ func RegisterStudent(uid string) {
 	}
 	Boards[uid] = &Board{
 		Content:      Boards["__all__"].Content,
+		HelpContent:  Boards["__all__"].HelpContent,
 		Description:  Boards["__all__"].Description,
 		StartingTime: time.Now(),
 		Ext:          Boards["__all__"].Ext,
@@ -89,7 +90,7 @@ func loadWhiteboards() {
 	var uid string
 	for rows.Next() {
 		rows.Scan(&uid)
-		Boards[uid] = &Board{"", "", time.Now(), "", ""}
+		Boards[uid] = &Board{StartingTime: time.Now()}
 	}
-	Boards["__all__"] = &Board{"", "", time.Now(), "", ""}
+	Boards["__all__"] = &Board{StartingTime: time.Now()}
 }

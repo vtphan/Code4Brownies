@@ -43,7 +43,7 @@ func my_pointsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		all_points += p
 	}
-	str := "%s\nToday: %d points.\nAll-time: %d points.\n"
+	str := "%s\nToday: %d brownie points.\nAll-time: %d brownie points.\n"
 	mesg := fmt.Sprintf(str, user, today_points, all_points)
 	fmt.Fprintf(w, mesg)
 }
@@ -82,9 +82,10 @@ func receive_broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	board, ok := Boards[uid]
 	if ok {
 		js, err = json.Marshal(map[string]string{
-			"content": board.Content,
-			"ext":     board.Ext,
-			"bid":     board.Bid,
+			"content":      board.Content,
+			"help_content": board.HelpContent,
+			"ext":          board.Ext,
+			"bid":          board.Bid,
 		})
 	}
 	if err != nil {

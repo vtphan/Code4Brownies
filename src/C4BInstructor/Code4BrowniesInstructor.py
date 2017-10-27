@@ -8,7 +8,7 @@ import urllib.request
 import os
 import json
 import socket
-import ntpath
+# import ntpath
 import webbrowser
 
 SERVER_ADDR = "http://localhost:4030"
@@ -91,8 +91,20 @@ def _broadcast(self, sids='__all__'):
 
 	url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
 	if file_name is not None:
-		data = urllib.parse.urlencode(
-			{'content':content, 'sids':sids, 'ext': ext}).encode('utf-8')
+		basename = os.path.basename(file_name)
+		dirname = os.path.dirname(file_name)
+		help_content, test_content = '', ''
+		if basename.endswith('.py'):
+			prefix = basename.rsplit('.py')[0]
+			help_file = os.path.join(dirname, prefix+'_help.py')
+			if os.path.exists(help_file):
+				help_content = open(help_file).read()
+		data = urllib.parse.urlencode({
+			'content':content,
+			'sids':sids,
+			'ext': ext,
+			'help_content':help_content,
+		}).encode('utf-8')
 		response = c4biRequest(url,data)
 		if response is not None:
 			sublime.status_message(response)
@@ -105,7 +117,7 @@ class c4biGiveFeedbackCommand(sublime_plugin.TextCommand):
 		this_file_name = self.view.file_name()
 		if this_file_name is not None:
 			sid = this_file_name.rsplit('.',-1)[0]
-			sid = ntpath.basename(sid)
+			sid = os.path.basename(sid)
 			if sid.startswith('c4b_'):
 				sid = sid.split('c4b_')[-1]
 				_broadcast(self, sid)
@@ -118,7 +130,7 @@ class c4biGiveFeedbackCommand(sublime_plugin.TextCommand):
 class c4biBroadcastGroupCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		fnames = [ v.file_name() for v in sublime.active_window().views() ]
-		names = [ ntpath.basename(n.rsplit('.',-1)[0]) for n in fnames ]
+		names = [ os.path.basename(n.rsplit('.',-1)[0]) for n in fnames ]
 		# Remove c4b_ prefix from file name
 		sids = ','.join([ n.split('c4b_')[-1] for n in names if n.startswith('c4b_') ])
 		if sids != '':
@@ -130,28 +142,6 @@ class c4biBroadcastGroupCommand(sublime_plugin.TextCommand):
 class c4biBroadcastCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		_broadcast(self)
-
-# ------------------------------------------------------------------
-# Instructor retrieves all current and past points of all users.
-# ------------------------------------------------------------------
-# class c4biPointsCommand(sublime_plugin.TextCommand):
-# 	def run(self, edit):
-# 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_POINTS_PATH)
-# 		# data = urllib.parse.urlencode({}).encode('ascii')
-# 		data = urllib.parse.urlencode({}).encode('utf-8')
-# 		response = c4biRequest(url,data)
-# 		if response is not None:
-# 			json_obj = json.loads(response)
-# 			points, entries = {}, {}
-# 			for k,v in json_obj.items():
-# 				if v['Uid'] not in points:
-# 					points[v['Uid']] = 0
-# 					entries[v['Uid']] = 0
-# 				points[v['Uid']] += v['Points']
-# 				entries[v['Uid']] += 1
-# 			new_view = self.view.window().new_file()
-# 			users = [ "%s,%s,%s" % (k,entries[k],points[k]) for k,v in sorted(points.items()) ]
-# 			new_view.insert(edit, 0, "\n".join(users))
 
 # ------------------------------------------------------------------
 # Instructor retrieves all posts.
@@ -179,21 +169,6 @@ class c4biGetAllCommand(sublime_plugin.TextCommand):
 					new_view = self.view.window().open_file(userFile)
 			else:
 				sublime.status_message("Queue is empty.")
-
-# ------------------------------------------------------------------
-# Instructor starts poll mode
-# ------------------------------------------------------------------
-# class c4biStartPollCommand(sublime_plugin.TextCommand):
-# 	def run(self, edit):
-# 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_START_POLL_PATH)
-# 		data = urllib.parse.urlencode({}).encode('ascii')
-# 		response = c4biRequest(url, data)
-# 		if response == "true":
-# 			sublime.message_dialog("A new poll has started.")
-# 		elif response == "false":
-# 			sublime.message_dialog("Poll is now closed.")
-# 		else:
-# 			sublime.message_dialog(response)
 
 # ------------------------------------------------------------------
 # Instructor looks at new posts and is able to select one.
@@ -264,7 +239,7 @@ def award_points(self, edit, points):
 	this_file_name = self.view.file_name()
 	if this_file_name:
 		sid = this_file_name.rsplit('.',-1)[0]
-		sid = ntpath.basename(sid)
+		sid = os.path.basename(sid)
 		# Remove c4b_ prefix from file name
 		sid = sid.split('c4b_')[-1]
 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROWNIE_PATH)

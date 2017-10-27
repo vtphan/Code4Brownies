@@ -69,6 +69,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	var des string
 	bid := "wb_" + RandStringRunes(6)
 	content, ext := r.FormValue("content"), r.FormValue("ext")
+	help_content := r.FormValue("help_content")
 	_, err := InsertBroadCastSQL.Exec(bid, content, ext, time.Now())
 	if err != nil {
 		fmt.Println("Error inserting into broadcast table.", err)
@@ -76,6 +77,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	if r.FormValue("sids") == "__all__" {
 		for _, board := range Boards {
 			board.Content = content
+			board.HelpContent = help_content
 			board.Ext = ext
 			board.Bid = bid
 			des = strings.SplitN(board.Content, "\n", 2)[0]
@@ -91,6 +93,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 			sub, ok := AllSubs[sid]
 			if ok {
 				Boards[sub.Uid].Content = content
+				Boards[sub.Uid].HelpContent = help_content
 				Boards[sub.Uid].Ext = ext
 				Boards[sub.Uid].Bid = bid
 				des = strings.SplitN(Boards[sub.Uid].Content, "\n", 2)[0]
