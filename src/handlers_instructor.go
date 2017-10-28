@@ -18,6 +18,14 @@ import (
 //-----------------------------------------------------------------
 
 //-----------------------------------------------------------------
+// Clear questions
+//-----------------------------------------------------------------
+func clear_questionsHandler(w http.ResponseWriter, r *http.Request) {
+	Questions = []string{}
+	fmt.Fprintf(w, "Questions cleared.")
+}
+
+//-----------------------------------------------------------------
 // Query poll results
 //-----------------------------------------------------------------
 func query_pollHandler(w http.ResponseWriter, r *http.Request) {
@@ -39,7 +47,7 @@ func view_pollHandler(w http.ResponseWriter, r *http.Request) {
 	t, err := t.Parse(POLL_TEMPLATE)
 	if err == nil {
 		w.Header().Set("Content-Type", "text/html")
-		t.Execute(w, &TemplateData{SERVER})
+		t.Execute(w, &TemplateData{})
 	} else {
 		fmt.Println(err)
 	}

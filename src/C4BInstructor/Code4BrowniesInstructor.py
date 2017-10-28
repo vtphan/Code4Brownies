@@ -47,6 +47,20 @@ class c4biCleanCommand(sublime_plugin.ApplicationCommand):
 					sublime.status_message("remove " + local_file)
 
 # ------------------------------------------------------------------
+class c4biViewQuestionsCommand(sublime_plugin.ApplicationCommand):
+	def run(self):
+		webbrowser.open(SERVER_ADDR + "/view_questions")
+
+# ------------------------------------------------------------------
+class c4biClearQuestionsCommand(sublime_plugin.ApplicationCommand):
+	def run(self):
+		url = urllib.parse.urljoin(SERVER_ADDR, "clear_questions")
+		data = urllib.parse.urlencode({}).encode('utf-8')
+		response = c4biRequest(url,data)
+		if response is not None:
+			sublime.message_dialog(response)
+
+# ------------------------------------------------------------------
 class c4biViewPollCommand(sublime_plugin.ApplicationCommand):
 	def run(self):
 		webbrowser.open(SERVER_ADDR + "/view_poll")
@@ -179,7 +193,6 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 			if selected < 0:
 				return
 			url = urllib.parse.urljoin(SERVER_ADDR, c4bi_REQUEST_ENTRY_PATH)
-			# data = urllib.parse.urlencode({'post':selected}).encode('ascii')
 			data = urllib.parse.urlencode({'post':selected}).encode('utf-8')
 			response = c4biRequest(url,data)
 			if response is not None:

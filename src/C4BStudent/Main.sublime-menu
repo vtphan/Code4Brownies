@@ -19,14 +19,20 @@
                 "command": "c4b_hint"
             },
             {
-                "caption": "Brownies",
-                "id": "c4bShowPoints",
-                "command": "c4b_show_points"
+                "caption": "Ask",
+                "id": "c4bAsk",
+                "command": "c4b_ask"
             },
             {
                 "caption": "Vote",
                 "id": "c4bVote",
                 "command": "c4b_vote"
+            },
+            {"caption":"-", "id":"side-bar-separator"},
+            {
+                "caption": "Brownie Points",
+                "id": "c4bShowPoints",
+                "command": "c4b_show_points"
             },
             {"caption":"-", "id":"side-bar-separator"},
             {

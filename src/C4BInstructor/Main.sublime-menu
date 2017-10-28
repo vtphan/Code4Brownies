@@ -77,6 +77,22 @@
                 ]
             },
             {
+                "caption": "Questions",
+                "id": "c4biQuestions",
+                "children": [
+                    {
+                        "caption": "View Questions",
+                        "id": "c4biViewQuestions",
+                        "command": "c4bi_view_questions"
+                    },
+                    {
+                        "caption": "Clear Questions",
+                        "id": "c4biClearQuestions",
+                        "command": "c4bi_clear_questions"
+                    }
+                ]
+            },
+            {
                 "caption": "Peek",
                 "id": "c4biPeek",
                 "command": "c4bi_peek"

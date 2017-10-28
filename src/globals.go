@@ -28,6 +28,8 @@ type Board struct {
 
 var Boards = make(map[string]*Board)
 
+var Questions []string
+
 type Submission struct {
 	Sid       string // submission id
 	Bid       string // broadcast id
@@ -58,8 +60,43 @@ var NewSubs = make([]*Submission, 0)
 var AllSubs = make(map[string]*Submission)
 
 type TemplateData struct {
-	SERVER string
+	SERVER    string
+	Questions []string
 }
+
+var QUESTIONS_TEMPLATE = `
+<html>
+	<head>
+  		<title>Questions</title>
+  		<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+	    <script type="text/javascript">
+			var updateInterval = 5000;		// 5 sec update interval
+			var maxUpdateTime =  1800000;   // no longer update after 30 min.
+			var totalUpdateTime = 0;
+			function getQuestions() {
+				var url = "http://localhost:4030/get_questions";
+				$.getJSON(url, function( questions ) {
+					$("#content").html("");
+					$.each(questions, function(key, value) {
+						// console.log(key, value);
+						$("#content").append("<li>" + value + "</li>");
+					});
+				});
+			}
+			$(document).ready(function(){
+				getQuestions();
+				handle = setInterval(getQuestions, updateInterval);
+			});
+	    </script>
+	</head>
+	<body>
+	<h1>Questions</h1>
+	<ol>
+		<div id="content"></div>
+	</ol>
+	</body>
+</html>
+`
 
 var POLL_RESULT = make(map[string]string)
 var POLL_COUNT = make(map[string]int)
@@ -68,7 +105,7 @@ var POLL_TEMPLATE = `
   <head>
     <!--Load the AJAX API-->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-  	 <script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+  	<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script type="text/javascript">
 		var updateInterval = 3000;
 		var maxUpdateTime = 300000;

@@ -73,6 +73,7 @@ func main() {
 	// http.HandleFunc("/check_broadcast", AutoRegister(check_broadcastHandler))
 
 	// teacher handlers
+	http.HandleFunc("/clear_questions", Authorize(clear_questionsHandler))
 	http.HandleFunc("/query_poll", Authorize(query_pollHandler))
 	http.HandleFunc("/view_poll", Authorize(view_pollHandler))
 	http.HandleFunc("/answer_poll", Authorize(answer_pollHandler))
@@ -81,6 +82,10 @@ func main() {
 	http.HandleFunc("/broadcast", Authorize(broadcastHandler))
 	http.HandleFunc("/get_post", Authorize(get_postHandler))
 	http.HandleFunc("/get_posts", Authorize(get_postsHandler))
+
+	// public handlers
+	http.HandleFunc("/view_questions", view_questionsHandler)
+	http.HandleFunc("/get_questions", get_questionsHandler)
 
 	init_db()
 	loadWhiteboards()

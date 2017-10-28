@@ -156,6 +156,32 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 			sublime.message_dialog(response)
 
 # ------------------------------------------------------------------
+class c4bAsk(sublime_plugin.WindowCommand):
+	def run(self):
+		sublime.active_window().show_input_panel(
+			"Type your question. Press Enter.",
+			"",
+			self.send_question,
+			None,
+			None
+		)
+
+	def send_question(self, question):
+		question = question.strip()
+		if len(question) > 0:
+			info = c4b_get_attr()
+			if info is None:
+				return
+			url = urllib.parse.urljoin(info['Server'], c4b_SHARE_PATH)
+			values = {'uid':info['Name'], 'body':question, 'ext':'', 'mode': 'ask'}
+			data = urllib.parse.urlencode(values).encode('utf-8')
+			response = c4bRequest(url,data)
+			if response is not None:
+				sublime.message_dialog(response)
+		else:
+			sublime.message_dialog("Question cannot be empty.")
+
+# ------------------------------------------------------------------
 class c4bVote(sublime_plugin.WindowCommand):
 	def run(self):
 		sublime.active_window().show_input_panel("ENTER to Vote or ESC to Cancel.",
@@ -172,7 +198,6 @@ class c4bVote(sublime_plugin.WindowCommand):
 				return
 			url = urllib.parse.urljoin(info['Server'], c4b_SHARE_PATH)
 			values = {'uid':info['Name'], 'body':answer, 'ext':'', 'mode': 'poll'}
-			# data = urllib.parse.urlencode(values).encode('ascii')
 			data = urllib.parse.urlencode(values).encode('utf-8')
 			response = c4bRequest(url,data)
 			if response is not None:

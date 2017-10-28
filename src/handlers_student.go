@@ -67,6 +67,9 @@ func shareHandler(w http.ResponseWriter, r *http.Request) {
 		POLL_RESULT[uid] = strings.ToLower(body)
 		POLL_COUNT[body]++
 		fmt.Fprintf(w, uid+", thank you for voting.")
+	} else if mode == "ask" {
+		Questions = append(Questions, body)
+		fmt.Fprint(w, "Your question will be addressed soon.")
 	} else {
 		fmt.Fprint(w, "Unknown mode.")
 	}
