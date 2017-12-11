@@ -84,16 +84,19 @@ func receive_broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	board, ok := Boards[uid]
 	if ok {
-		js, err = json.Marshal(map[string]string{
-			"content":      board.Content,
-			"help_content": board.HelpContent,
-			"ext":          board.Ext,
-			"bid":          board.Bid,
-		})
+		// js, err = json.Marshal(map[string]string{
+		// 	"content":      board.Content,
+		// 	"help_content": board.HelpContent,
+		// 	"ext":          board.Ext,
+		// 	"bid":          board.Bid,
+		// })
+		js, err = json.Marshal(board)
+		Boards[uid] = []*Board{}
 	}
 	if err != nil {
 		fmt.Println(err.Error())
-		js, err = json.Marshal(map[string]string{"content": "", "ext": ""})
+		js, err = json.Marshal([]*Board{})
+		// js, err = json.Marshal(map[string]string{"content": "", "ext": ""})
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
 	} else {

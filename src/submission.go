@@ -13,12 +13,12 @@ import (
 func AddSubmission(uid, bid, body, ext string) {
 	SEM.Lock()
 	defer SEM.Unlock()
-	board, ok := Boards[uid]
+	_, ok := Boards[uid]
 	if ok {
-		dur := int(time.Since(board.StartingTime).Seconds())
-		des := strings.SplitN(body, "\n", 2)[0]
-		if des != board.Description {
-			des = ""
+		// dur := int(time.Since(board.StartingTime).Seconds())
+		des := ""
+		if strings.HasPrefix(body, "#") || strings.HasPrefix(body, "//") {
+			des = strings.SplitN(body, "\n", 2)[0]
 		}
 		sid := RandStringRunes(6)
 		timestamp := time.Now().Format("Mon Jan 2 15:04:05 MST 2006")
@@ -29,16 +29,17 @@ func AddSubmission(uid, bid, body, ext string) {
 			Body:      body,
 			Ext:       ext,
 			Points:    0,
-			Duration:  dur,
 			Pdes:      des,
 			Timestamp: timestamp,
+			// Duration:  dur,
 		}
 		AllSubs[sid] = sub
 		NewSubs = append(NewSubs, sub)
 		if len(NewSubs) == 1 {
 			fmt.Print("\x07")
 		}
-		InsertSubmissionSQL.Exec(sid, uid, bid, 0, dur, des, ext, time.Now(), body)
+		InsertSubmissionSQL.Exec(sid, uid, bid, 0, des, ext, time.Now(), body)
+		// InsertSubmissionSQL.Exec(sid, uid, bid, 0, dur, des, ext, time.Now(), body)
 	}
 }
 

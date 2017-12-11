@@ -26,7 +26,7 @@ type Board struct {
 	Bid          string // id of current broadcast
 }
 
-var Boards = make(map[string]*Board)
+var Boards = make(map[string][]*Board)
 
 var Questions []string
 
@@ -37,9 +37,9 @@ type Submission struct {
 	Body      string
 	Ext       string
 	Points    int
-	Duration  int    // in seconds
 	Pdes      string // problem description
 	Timestamp string
+	// Duration  int    // in seconds
 }
 
 // ------------------------------------------------------------------

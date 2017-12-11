@@ -74,23 +74,25 @@ class c4bMyBoardCommand(sublime_plugin.TextCommand):
 		response = c4bRequest(url, data)
 		if response != None:
 			json_obj = json.loads(response)
-			content = json_obj['content']
-			ext = json_obj['ext']
-			bid = json_obj['bid']
-			Hints[bid] = [0, get_hints(json_obj['help_content'])]
-			if len(content.strip()) > 0:
-				if self.view.file_name() is None:
-					new_view = sublime.active_window().new_file()
-					new_view.insert(edit, 0, content)
-				else:
-					cwd = os.path.dirname(self.view.file_name())
-					wb = os.path.join(cwd, bid)
-					wb += '.'+ext if ext!='' else ''
-					with open(wb, 'w', encoding='utf-8') as f:
-						f.write(content)
-					new_view = sublime.active_window().open_file(wb)
-			else:
+			if json_obj == []:
 				sublime.message_dialog("Whiteboard is empty.")
+			else:
+				for board in json_obj:
+					content = board['Content']
+					ext = board['Ext']
+					bid = board['Bid']
+					Hints[bid] = [0, get_hints(board['HelpContent'])]
+					if len(content.strip()) > 0:
+						if self.view.file_name() is None:
+							new_view = sublime.active_window().new_file()
+							new_view.insert(edit, 0, content)
+						else:
+							cwd = os.path.dirname(self.view.file_name())
+							wb = os.path.join(cwd, bid)
+							wb += '.'+ext if ext!='' else ''
+							with open(wb, 'w', encoding='utf-8') as f:
+								f.write(content)
+							new_view = sublime.active_window().open_file(wb)
 
 # ------------------------------------------------------------------
 class c4bHintCommand(sublime_plugin.TextCommand):
@@ -104,11 +106,11 @@ class c4bHintCommand(sublime_plugin.TextCommand):
 				CUR_BID = prefix
 		if CUR_BID in Hints:
 			if Hints[CUR_BID][1] == []:
-				sublime.message_dialog("There is no hint.")
+				sublime.message_dialog("There is no hint associated to this exercise.")
 				return
 			i = Hints[CUR_BID][0]
 			if i >= len(Hints[CUR_BID][1]):
-				sublime.message_dialog("There is no more hint.")
+				sublime.message_dialog("No more hint.")
 			else:
 				help_content = Hints[CUR_BID][1][i]
 				Hints[CUR_BID][0] = i+1

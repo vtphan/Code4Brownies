@@ -83,32 +83,57 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error inserting into broadcast table.", err)
 	}
 	if r.FormValue("sids") == "__all__" {
-		for _, board := range Boards {
-			board.Content = content
-			board.HelpContent = help_content
-			board.Ext = ext
-			board.Bid = bid
-			des = strings.SplitN(board.Content, "\n", 2)[0]
-			if des != board.Description { // a new exercise/problem
-				board.Description = des
-				board.StartingTime = time.Now()
+		// for _, board := range Boards {
+		for uid, _ := range Boards {
+			des = strings.SplitN(content, "\n", 2)[0]
+			b := &Board{
+				Content:      content,
+				HelpContent:  help_content,
+				Ext:          ext,
+				Bid:          bid,
+				Description:  des,
+				StartingTime: time.Now(),
 			}
+			Boards[uid] = append(Boards[uid], b)
+			// board.Content = content
+			// board.HelpContent = help_content
+			// board.Ext = ext
+			// board.Bid = bid
+			// des = strings.SplitN(board.Content, "\n", 2)[0]
+			// if des != board.Description { // a new exercise/problem
+			// 	board.Description = des
+			// 	board.StartingTime = time.Now()
+			// }
 		}
+		// fmt.Println(">")
+		// for uid, b := range Boards {
+		// 	fmt.Println(uid, b)
+		// }
 	} else {
 		sids := strings.Split(r.FormValue("sids"), ",")
 		for i := 0; i < len(sids); i++ {
 			sid := string(sids[i])
 			sub, ok := AllSubs[sid]
 			if ok {
-				Boards[sub.Uid].Content = content
-				Boards[sub.Uid].HelpContent = help_content
-				Boards[sub.Uid].Ext = ext
-				Boards[sub.Uid].Bid = bid
-				des = strings.SplitN(Boards[sub.Uid].Content, "\n", 2)[0]
-				if des != Boards[sub.Uid].Description { // a new exercise/problem
-					Boards[sub.Uid].Description = des
-					Boards[sub.Uid].StartingTime = time.Now()
+				des = strings.SplitN(content, "\n", 2)[0]
+				b := &Board{
+					Content:      content,
+					HelpContent:  help_content,
+					Ext:          ext,
+					Bid:          bid,
+					Description:  des,
+					StartingTime: time.Now(),
 				}
+				Boards[sub.Uid] = append(Boards[sub.Uid], b)
+				// Boards[sub.Uid].Content = content
+				// Boards[sub.Uid].HelpContent = help_content
+				// Boards[sub.Uid].Ext = ext
+				// Boards[sub.Uid].Bid = bid
+				// des = strings.SplitN(Boards[sub.Uid].Content, "\n", 2)[0]
+				// if des != Boards[sub.Uid].Description { // a new exercise/problem
+				// 	Boards[sub.Uid].Description = des
+				// 	Boards[sub.Uid].StartingTime = time.Now()
+				// }
 			} else {
 				fmt.Fprintf(w, "sid "+sid+" is not found.")
 				return
