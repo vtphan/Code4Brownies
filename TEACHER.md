@@ -16,7 +16,7 @@ import os; package_path = os.path.join(sublime.packages_path(), "C4BInstructor")
 
 First, download the server and run it on the instructor's machine.
 
-- [Mac 64bit](https://umdrive.memphis.edu/vphan/public/C4B/c4b_darwin_v032).
+- [Mac OS 64bit](https://umdrive.memphis.edu/vphan/public/C4B/c4b_darwin_0.32).
 
 The server will automatically create a database to store teacher's and students' shared code, brownie points, and other information.
 
