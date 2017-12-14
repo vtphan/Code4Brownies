@@ -1,7 +1,8 @@
 #!/bin/bash
-echo "Compiling c4b_darwin_amd64"
-env GOOS=darwin GOARCH=amd64 go build -o c4b_darwin_amd64
-echo "Compiling c4b_windows_amd64"
-env GOOS=windows GOARCH=amd64 go build -o c4b_windows_amd64.exe
-echo "Compiling c4b_linux_amd64"
-env GOOS=linux GOARCH=amd64 go build -o c4b_linux_amd64
+version=`cat VERSION`
+echo "Compile c4b binaries for version $version."
+echo "Compiling c4b_darwin_$version"
+env GOOS=darwin GOARCH=amd64 go build -o c4b_darwin_$version
+
+# echo "Compiling c4b_windows_$version"
+# env GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CC=gcc go build -o c4b_windows_$version.exe

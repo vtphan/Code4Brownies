@@ -16,9 +16,7 @@ import os; package_path = os.path.join(sublime.packages_path(), "C4BInstructor")
 
 First, download the server and run it on the instructor's machine.
 
-- [Windows 64bit](https://umdrive.memphis.edu/vphan/public/C4B/c4b_windows_v032.exe)
 - [Mac 64bit](https://umdrive.memphis.edu/vphan/public/C4B/c4b_darwin_v032).
-- [Linux 64bit](https://umdrive.memphis.edu/vphan/public/C4B/c4b_linux_v032).
 
 The server will automatically create a database to store teacher's and students' shared code, brownie points, and other information.
 
@@ -26,19 +24,9 @@ The server will automatically create a database to store teacher's and students'
 
 Students and the instructor communicate by sending messages to a server.  The server should be run on the the instructor's computer.
 
-Windows: run the server in a Powershell terminal
-```
-    .\c4b_windows_v032.exe
-````
-
 OS X: run the server in a terminal
 ```
-    ./c4b_darwin_v032 
-````
-
-Linux: run the server in a terminal
-```
-    ./c4b_linux_v032
+    ./c4b_darwin_vXXX 
 ````
 
 If you want to run the server with the source code, you need to install Go.  To run the server:
