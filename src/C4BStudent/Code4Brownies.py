@@ -57,8 +57,7 @@ def get_hints(str):
 	s = str.strip()
 	if s=='':
 		return []
-	first_line = s.split('\n', 1)[0]
-	break_pattern = first_line.rsplit(' ', 1)[0].strip()
+	break_pattern = s.split('\n', 1)[0]
 	hints = s.split(break_pattern)
 	hints.pop(0)
 	return [ break_pattern + h for h in hints ]
@@ -97,25 +96,33 @@ class c4bMyBoardCommand(sublime_plugin.TextCommand):
 # ------------------------------------------------------------------
 class c4bHintCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
-		global CUR_BID, Hints
+		global Hints
+		bid = None
 		file_name = self.view.file_name()
 		if file_name is not None:
 			basename = os.path.basename(file_name)
-			prefix = basename.rsplit('.py')[0]
+			prefix = basename.rsplit('.', 1)[0]
 			if prefix in Hints:
-				CUR_BID = prefix
-		if CUR_BID in Hints:
-			if Hints[CUR_BID][1] == []:
+				bid = prefix
+		if bid in Hints:
+			if Hints[bid][1] == []:
 				sublime.message_dialog("There is no hint associated to this exercise.")
 				return
-			i = Hints[CUR_BID][0]
-			if i >= len(Hints[CUR_BID][1]):
+			i = Hints[bid][0]
+			if i >= len(Hints[bid][1]):
 				sublime.message_dialog("No more hint.")
 			else:
-				help_content = Hints[CUR_BID][1][i]
-				Hints[CUR_BID][0] = i+1
-				new_view = sublime.active_window().new_file()
-				new_view.insert(edit, 0, help_content)
+				help_content = Hints[bid][1][i]
+				Hints[bid][0] = i+1
+
+				# new_view = sublime.active_window().new_file()
+				# new_view.insert(edit, 0, help_content)
+
+				cwd = os.path.dirname(file_name)
+				hint_file = os.path.join(cwd, bid) + '.' + str(Hints[bid][0])
+				with open(hint_file, 'w', encoding='utf-8') as f:
+					f.write(help_content)
+				new_view = sublime.active_window().open_file(hint_file)
 		else:
 			sublime.message_dialog("No hints associated with this file.")
 
