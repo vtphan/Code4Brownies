@@ -4,29 +4,35 @@
         "id": "Code4Brownies",
         "children": [
             {
+                "caption": "White Board",
+                "id": "c4bMyBoard",
+                "command": "c4b_my_board"
+            },
+            {
                 "caption": "Share",
                 "id": "c4bShare",
                 "command": "c4b_share"
             },
             {
-                "caption": "White Board",
-                "id": "c4bMyBoard",
-                "command": "c4b_my_board"
+                "caption": "Get hints",
+                "id": "c4bHint",
+                "command": "c4b_hint"
             },
-            // {
-            //     "caption": "Auto-update Board",
-            //     "id": "c4bAutoUpdateBoard",
-            //     "command": "c4b_auto_update_board"
-            // },
             {
-                "caption": "My brownies",
-                "id": "c4bShowPoints",
-                "command": "c4b_show_points"
+                "caption": "Ask",
+                "id": "c4bAsk",
+                "command": "c4b_ask"
             },
             {
                 "caption": "Vote",
                 "id": "c4bVote",
                 "command": "c4b_vote"
+            },
+            {"caption":"-", "id":"side-bar-separator"},
+            {
+                "caption": "Brownie Points",
+                "id": "c4bShowPoints",
+                "command": "c4b_show_points"
             },
             {"caption":"-", "id":"side-bar-separator"},
             {

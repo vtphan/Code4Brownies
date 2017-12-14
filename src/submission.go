@@ -9,50 +9,43 @@ import (
 	"time"
 )
 
-//-----------------------------------------------------------------
-// ProcessedSubs of students' submissions.
-// Submitted asynchronously, submissions must be synchronized.
-//-----------------------------------------------------------------
-
-func GetSubmission(sid string) *Submission {
-	if _, ok := ProcessedSubs[sid]; ok {
-		return ProcessedSubs[sid]
-	}
-	return nil
-}
-
 // ------------------------------------------------------------------
 func AddSubmission(uid, bid, body, ext string) {
 	SEM.Lock()
 	defer SEM.Unlock()
-	board, ok := Boards[uid]
+	_, ok := Boards[uid]
 	if ok {
-		dur := int(time.Since(board.StartingTime).Seconds())
-		des := strings.SplitN(body, "\n", 2)[0]
-		if des != board.Description {
-			des = ""
+		// dur := int(time.Since(board.StartingTime).Seconds())
+		des := ""
+		if strings.HasPrefix(body, "#") || strings.HasPrefix(body, "//") {
+			des = strings.SplitN(body, "\n", 2)[0]
 		}
+		sid := RandStringRunes(6)
 		timestamp := time.Now().Format("Mon Jan 2 15:04:05 MST 2006")
-		NewSubs = append(NewSubs, &Submission{
-			Sid:       RandStringRunes(6),
+		sub := &Submission{
+			Sid:       sid,
 			Bid:       bid,
 			Uid:       uid,
 			Body:      body,
 			Ext:       ext,
 			Points:    0,
-			Duration:  dur,
 			Pdes:      des,
 			Timestamp: timestamp,
-		})
+			// Duration:  dur,
+		}
+		AllSubs[sid] = sub
+		NewSubs = append(NewSubs, sub)
 		if len(NewSubs) == 1 {
 			fmt.Print("\x07")
 		}
+		InsertSubmissionSQL.Exec(sid, uid, bid, 0, des, ext, time.Now(), body)
+		// InsertSubmissionSQL.Exec(sid, uid, bid, 0, dur, des, ext, time.Now(), body)
 	}
 }
 
 // ------------------------------------------------------------------
-// Remove from NewSubs and add to ProcessedSubs
-func ProcessSubmission(i int) *Submission {
+// Remove a submission from NewSubs
+func RemoveSubmission(i int) *Submission {
 	if i < 0 || len(NewSubs) == 0 || i > len(NewSubs) {
 		return &Submission{}
 	} else {
@@ -60,42 +53,17 @@ func ProcessSubmission(i int) *Submission {
 		defer SEM.Unlock()
 		s := NewSubs[i]
 		NewSubs = append(NewSubs[:i], NewSubs[i+1:]...)
-		ProcessedSubs[s.Sid] = s
 		return s
 	}
 }
 
 // ------------------------------------------------------------------
-func ProcessPollResult(uid string, brownies int) {
-	SEM.Lock()
-	defer SEM.Unlock()
-	sid := RandStringRunes(6)
-	timestamp := time.Now().Format("Mon Jan 2 15:04:05 MST 2006")
-	ProcessedSubs[sid] = &Submission{
-		Sid:       sid,
-		Bid:       "",
-		Body:      "",
-		Ext:       "",
-		Uid:       uid,
-		Points:    brownies,
-		Duration:  0,
-		Pdes:      "poll",
-		Timestamp: timestamp,
+func ProcessPollResult(uid string, is_correct int) {
+	brownies := 1
+	if is_correct == 1 {
+		brownies = 2
 	}
-	//		sid, uid, "", "", brownies, 0, "poll", timestamp}
+	InsertPollSQL.Exec(uid, is_correct, brownies, time.Now())
 }
 
 // ------------------------------------------------------------------
-func PrintState() {
-	fmt.Println("------\n\tNewSubs:")
-	for _, s := range NewSubs {
-		fmt.Printf("Sid: %s\nUid: %s\nExt: %s\nBody length: %d\nPoints: %d\nDuration: %d\n\n",
-			s.Sid, s.Uid, s.Ext, len(s.Body), s.Points, s.Duration)
-	}
-	fmt.Println("\n\tProcessedSubs:")
-	for _, s := range ProcessedSubs {
-		fmt.Printf("Sid: %s\nUid: %s\nExt: %s\nBody length: %d\nPoints: %d\nDuration: %d\n\n",
-			s.Sid, s.Uid, s.Ext, len(s.Body), s.Points, s.Duration)
-	}
-	fmt.Println("------")
-}

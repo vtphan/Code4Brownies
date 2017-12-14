@@ -16,16 +16,19 @@ var PORT = "4030"
 var USER_DB string
 var SERVER = ""
 
+// TODO; allow a student to have multiple boards (or pages of a board)
 type Board struct {
 	Content      string
+	HelpContent  string
 	Description  string
 	StartingTime time.Time
-	Changed      bool
 	Ext          string
 	Bid          string // id of current broadcast
 }
 
-var Boards = make(map[string]*Board)
+var Boards = make(map[string][]*Board)
+
+var Questions []string
 
 type Submission struct {
 	Sid       string // submission id
@@ -34,9 +37,9 @@ type Submission struct {
 	Body      string
 	Ext       string
 	Points    int
-	Duration  int    // in seconds
 	Pdes      string // problem description
 	Timestamp string
+	// Duration  int    // in seconds
 }
 
 // ------------------------------------------------------------------
@@ -54,11 +57,46 @@ func RandStringRunes(n int) string {
 
 var SEM sync.Mutex
 var NewSubs = make([]*Submission, 0)
-var ProcessedSubs = make(map[string]*Submission)
+var AllSubs = make(map[string]*Submission)
 
 type TemplateData struct {
-	SERVER string
+	SERVER    string
+	Questions []string
 }
+
+var QUESTIONS_TEMPLATE = `
+<html>
+	<head>
+  		<title>Questions</title>
+  		<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+	    <script type="text/javascript">
+			var updateInterval = 5000;		// 5 sec update interval
+			var maxUpdateTime =  1800000;   // no longer update after 30 min.
+			var totalUpdateTime = 0;
+			function getQuestions() {
+				var url = "http://localhost:4030/get_questions";
+				$.getJSON(url, function( questions ) {
+					$("#content").html("");
+					$.each(questions, function(key, value) {
+						// console.log(key, value);
+						$("#content").append("<li>" + value + "</li>");
+					});
+				});
+			}
+			$(document).ready(function(){
+				getQuestions();
+				handle = setInterval(getQuestions, updateInterval);
+			});
+	    </script>
+	</head>
+	<body>
+	<h1>Questions</h1>
+	<ol>
+		<div id="content"></div>
+	</ol>
+	</body>
+</html>
+`
 
 var POLL_RESULT = make(map[string]string)
 var POLL_COUNT = make(map[string]int)
@@ -67,7 +105,7 @@ var POLL_TEMPLATE = `
   <head>
     <!--Load the AJAX API-->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-  	 <script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+  	<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script type="text/javascript">
 		var updateInterval = 3000;
 		var maxUpdateTime = 300000;

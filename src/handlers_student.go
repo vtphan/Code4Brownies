@@ -7,7 +7,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	// "strings"
+	"strings"
+	"time"
 )
 
 //-----------------------------------------------------------------
@@ -15,20 +16,35 @@ import (
 //-----------------------------------------------------------------
 
 //-----------------------------------------------------------------
-// users query to know their current points
+// return brownie points a user has received.
 //-----------------------------------------------------------------
 func my_pointsHandler(w http.ResponseWriter, r *http.Request) {
 	user := r.FormValue("uid")
-	entries, points := 0, 0
-	for _, s := range ProcessedSubs {
-		if user == s.Uid {
-			if s.Points > 0 {
-				points += s.Points
-				entries += 1
-			}
+	all_points, today_points := 0, 0
+	var date time.Time
+	today := time.Now().Day()
+	rows, _ := database.Query("select points, date from submission where uid=?", user)
+	defer rows.Close()
+	for rows.Next() {
+		p := 0
+		rows.Scan(&p, &date)
+		if date.Day() == today {
+			today_points += p
 		}
+		all_points += p
 	}
-	mesg := fmt.Sprintf("%s: %d entries, %d points.\n", user, entries, points)
+	rows2, _ := database.Query("select points, date from poll where uid=?", user)
+	defer rows2.Close()
+	for rows2.Next() {
+		p := 0
+		rows2.Scan(&p, &date)
+		if date.Day() == today {
+			today_points += p
+		}
+		all_points += p
+	}
+	str := "%s\nToday: %d brownie points.\nAll-time: %d brownie points.\n"
+	mesg := fmt.Sprintf(str, user, today_points, all_points)
 	fmt.Fprintf(w, mesg)
 }
 
@@ -39,8 +55,6 @@ func shareHandler(w http.ResponseWriter, r *http.Request) {
 	uid, body, ext := r.FormValue("uid"), r.FormValue("body"), r.FormValue("ext")
 	mode := r.FormValue("mode")
 	bid := r.FormValue("bid")
-
-	// PrintState()
 	if mode == "code" {
 		AddSubmission(uid, bid, body, ext)
 		fmt.Println(uid, "submitted.")
@@ -50,9 +64,12 @@ func shareHandler(w http.ResponseWriter, r *http.Request) {
 		if ok {
 			POLL_COUNT[prev_answer]--
 		}
-		POLL_RESULT[uid] = body
+		POLL_RESULT[uid] = strings.ToLower(body)
 		POLL_COUNT[body]++
-		fmt.Fprintf(w, uid+", thank you for sharing.")
+		fmt.Fprintf(w, uid+", thank you for voting.")
+	} else if mode == "ask" {
+		Questions = append(Questions, body)
+		fmt.Fprint(w, "Your question will be addressed soon.")
 	} else {
 		fmt.Fprint(w, "Unknown mode.")
 	}
@@ -67,34 +84,23 @@ func receive_broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	board, ok := Boards[uid]
 	if ok {
-		js, err = json.Marshal(map[string]string{
-			"content": board.Content,
-			"ext":     board.Ext,
-			"bid":     board.Bid,
-		})
+		// js, err = json.Marshal(map[string]string{
+		// 	"content":      board.Content,
+		// 	"help_content": board.HelpContent,
+		// 	"ext":          board.Ext,
+		// 	"bid":          board.Bid,
+		// })
+		js, err = json.Marshal(board)
+		Boards[uid] = []*Board{}
 	}
 	if err != nil {
 		fmt.Println(err.Error())
-		js, err = json.Marshal(map[string]string{"content": "", "ext": ""})
+		js, err = json.Marshal([]*Board{})
+		// js, err = json.Marshal(map[string]string{"content": "", "ext": ""})
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
 	} else {
-		board.Changed = false
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
-	}
-}
-
-//-----------------------------------------------------------------
-// student checks to see if there is something new on his/her board
-//-----------------------------------------------------------------
-func check_broadcastHandler(w http.ResponseWriter, r *http.Request) {
-	uid := r.FormValue("uid")
-	var err error
-	board, ok := Boards[uid]
-	if ok {
-		fmt.Fprintf(w, "%t", board.Changed)
-	} else {
-		fmt.Println(err.Error())
 	}
 }

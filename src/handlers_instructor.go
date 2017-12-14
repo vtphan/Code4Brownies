@@ -18,6 +18,14 @@ import (
 //-----------------------------------------------------------------
 
 //-----------------------------------------------------------------
+// Clear questions
+//-----------------------------------------------------------------
+func clear_questionsHandler(w http.ResponseWriter, r *http.Request) {
+	Questions = []string{}
+	fmt.Fprintf(w, "Questions cleared.")
+}
+
+//-----------------------------------------------------------------
 // Query poll results
 //-----------------------------------------------------------------
 func query_pollHandler(w http.ResponseWriter, r *http.Request) {
@@ -39,7 +47,7 @@ func view_pollHandler(w http.ResponseWriter, r *http.Request) {
 	t, err := t.Parse(POLL_TEMPLATE)
 	if err == nil {
 		w.Header().Set("Content-Type", "text/html")
-		t.Execute(w, &TemplateData{SERVER})
+		t.Execute(w, &TemplateData{})
 	} else {
 		fmt.Println(err)
 	}
@@ -49,12 +57,12 @@ func view_pollHandler(w http.ResponseWriter, r *http.Request) {
 // Answer poll
 //-----------------------------------------------------------------
 func answer_pollHandler(w http.ResponseWriter, r *http.Request) {
-	answer := r.FormValue("answer")
+	answer := strings.ToLower(r.FormValue("answer"))
 	for k, v := range POLL_RESULT {
 		if v == answer {
-			ProcessPollResult(k, 2)
-		} else {
 			ProcessPollResult(k, 1)
+		} else {
+			ProcessPollResult(k, 0)
 		}
 	}
 	POLL_RESULT = make(map[string]string)
@@ -67,33 +75,65 @@ func answer_pollHandler(w http.ResponseWriter, r *http.Request) {
 //-----------------------------------------------------------------
 func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	var des string
+	bid := "wb_" + RandStringRunes(6)
+	content, ext := r.FormValue("content"), r.FormValue("ext")
+	help_content := r.FormValue("help_content")
+	_, err := InsertBroadCastSQL.Exec(bid, content, ext, time.Now())
+	if err != nil {
+		fmt.Println("Error inserting into broadcast table.", err)
+	}
 	if r.FormValue("sids") == "__all__" {
-		for _, board := range Boards {
-			board.Content = r.FormValue("content")
-			board.Ext = r.FormValue("ext")
-			board.Bid = "wb_" + RandStringRunes(6)
-			board.Changed = true
-			des = strings.SplitN(board.Content, "\n", 2)[0]
-			if des != board.Description { // a new exercise/problem
-				board.Description = des
-				board.StartingTime = time.Now()
+		// for _, board := range Boards {
+		for uid, _ := range Boards {
+			des = strings.SplitN(content, "\n", 2)[0]
+			b := &Board{
+				Content:      content,
+				HelpContent:  help_content,
+				Ext:          ext,
+				Bid:          bid,
+				Description:  des,
+				StartingTime: time.Now(),
 			}
+			Boards[uid] = append(Boards[uid], b)
+			// board.Content = content
+			// board.HelpContent = help_content
+			// board.Ext = ext
+			// board.Bid = bid
+			// des = strings.SplitN(board.Content, "\n", 2)[0]
+			// if des != board.Description { // a new exercise/problem
+			// 	board.Description = des
+			// 	board.StartingTime = time.Now()
+			// }
 		}
+		// fmt.Println(">")
+		// for uid, b := range Boards {
+		// 	fmt.Println(uid, b)
+		// }
 	} else {
 		sids := strings.Split(r.FormValue("sids"), ",")
 		for i := 0; i < len(sids); i++ {
 			sid := string(sids[i])
-			sub, ok := ProcessedSubs[sid]
+			sub, ok := AllSubs[sid]
 			if ok {
-				Boards[sub.Uid].Content = r.FormValue("content")
-				Boards[sub.Uid].Ext = r.FormValue("ext")
-				Boards[sub.Uid].Bid = "wb_" + RandStringRunes(6)
-				Boards[sub.Uid].Changed = true
-				des = strings.SplitN(Boards[sub.Uid].Content, "\n", 2)[0]
-				if des != Boards[sub.Uid].Description { // a new exercise/problem
-					Boards[sub.Uid].Description = des
-					Boards[sub.Uid].StartingTime = time.Now()
+				des = strings.SplitN(content, "\n", 2)[0]
+				b := &Board{
+					Content:      content,
+					HelpContent:  help_content,
+					Ext:          ext,
+					Bid:          bid,
+					Description:  des,
+					StartingTime: time.Now(),
 				}
+				Boards[sub.Uid] = append(Boards[sub.Uid], b)
+				// Boards[sub.Uid].Content = content
+				// Boards[sub.Uid].HelpContent = help_content
+				// Boards[sub.Uid].Ext = ext
+				// Boards[sub.Uid].Bid = bid
+				// des = strings.SplitN(Boards[sub.Uid].Content, "\n", 2)[0]
+				// if des != Boards[sub.Uid].Description { // a new exercise/problem
+				// 	Boards[sub.Uid].Description = des
+				// 	Boards[sub.Uid].StartingTime = time.Now()
+				// }
 			} else {
 				fmt.Fprintf(w, "sid "+sid+" is not found.")
 				return
@@ -104,33 +144,16 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //-----------------------------------------------------------------
-// return points of all users
-//-----------------------------------------------------------------
-func pointsHandler(w http.ResponseWriter, r *http.Request) {
-	_, subs := loadDB()
-	for k, v := range ProcessedSubs {
-		subs[k] = v
-	}
-	js, err := json.Marshal(subs)
-	if err != nil {
-		fmt.Println(err.Error())
-	} else {
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
-	}
-}
-
-//-----------------------------------------------------------------
 // give one brownie point to a user
 //-----------------------------------------------------------------
 func give_pointsHandler(w http.ResponseWriter, r *http.Request) {
-	sub := GetSubmission(r.FormValue("sid"))
-	if sub != nil {
+	if sub, ok := AllSubs[r.FormValue("sid")]; ok {
 		points, err := strconv.Atoi(r.FormValue("points"))
 		if err != nil {
 			fmt.Println(err)
 		} else {
 			sub.Points = points
+			UpdatePointsSQL.Exec(points, r.FormValue("sid"))
 			mesg := fmt.Sprintf("%s: %d points.\n", sub.Uid, points)
 			fmt.Fprintf(w, mesg)
 		}
@@ -158,7 +181,7 @@ func get_postHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err.Error)
 	} else {
-		js, err := json.Marshal(ProcessSubmission(e))
+		js, err := json.Marshal(RemoveSubmission(e))
 		if err != nil {
 			fmt.Println(err.Error())
 		} else {
@@ -176,9 +199,7 @@ func get_postsHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
-		for len(NewSubs) > 0 {
-			ProcessSubmission(0)
-		}
+		NewSubs = make([]*Submission, 0)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
 	}
