@@ -2,22 +2,14 @@ Code4Brownies is a  software that enables instructors and students share codes (
 
 <img src="diagram.png" width=70% align="middle">
 
-## Basic Workflow
+## Student Guide
 
-+ Instructor runs the server on his/her laptop in class. The server provides the IP address.
+[Click here](STUDENT.md)
 
-+ Students and instructor set the IP address in Sublime Text 3 (ST3).
+## Teacher Guide
 
-+ To share codes in a current ST3 window, instructor selects "Broadcast" on the ST3 menu.  To get the instructor's broadcast content, a student selects "Whiteboard" on the ST3 menu.
+[Click here](TEACHER.md)
 
-+ To share codes in a current ST3 window, a student selects "Share" on the ST3 menu.  Instructor gets codes from students by selecting "Get All" on the ST3 menu.
-
-+ Instructor can give a brownie point to a student based on his/her submission.
-
-+ When instructor terminates the server, brownie points are saved to a local file.
-
-
-## [Installation](INSTALL.md)
 
 
 
