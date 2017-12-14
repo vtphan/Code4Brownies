@@ -90,7 +90,7 @@ class c4biAnswerPoll(sublime_plugin.WindowCommand):
 # ------------------------------------------------------------------
 def _broadcast(self, sids='__all__'):
 	file_name = self.view.file_name()
-	ext = 'py' if file_name is None else file_name.rsplit('.',1)[-1]
+	ext = '' if file_name is None else file_name.rsplit('.',1)[-1]
 	header = ''
 	if file_name is not None:
 		lines = open(file_name, 'r', encoding='utf-8').readlines()
@@ -108,9 +108,9 @@ def _broadcast(self, sids='__all__'):
 		basename = os.path.basename(file_name)
 		dirname = os.path.dirname(file_name)
 		help_content, test_content = '', ''
-		if basename.endswith('.py'):
-			prefix = basename.rsplit('.py')[0]
-			help_file = os.path.join(dirname, prefix+'_help.py')
+		if ext in ['py', 'go', 'java', 'c', 'pl', 'rb', 'txt', 'md']:
+			prefix = basename.rsplit('.', 1)[0]
+			help_file = os.path.join(dirname, prefix+'_help.'+ext)
 			if os.path.exists(help_file):
 				help_content = open(help_file).read()
 		data = urllib.parse.urlencode({
