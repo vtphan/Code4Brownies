@@ -20,6 +20,8 @@ First, download the server and run it on the instructor's machine.
 
 The server will automatically create a database to store teacher's and students' shared code, brownie points, and other information.
 
+Change the permission of the file to executable.
+
 ### Running the server on the instructor's laptop
 
 Students and the instructor communicate by sending messages to a server.  The server should be run on the the instructor's computer.
