@@ -106,6 +106,9 @@ class c4bMyBoardCommand(sublime_plugin.TextCommand):
 class c4bHintCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		global Hints
+		info = c4b_get_attr()
+		if info is None:
+			return
 		bid = None
 		file_name = self.view.file_name()
 		if file_name is not None:
@@ -123,12 +126,8 @@ class c4bHintCommand(sublime_plugin.TextCommand):
 			else:
 				help_content = Hints[bid][1][i]
 				Hints[bid][0] = i+1
-
-				# new_view = sublime.active_window().new_file()
-				# new_view.insert(edit, 0, help_content)
-
-				cwd = os.path.dirname(file_name)
-				hint_file = os.path.join(cwd, bid) + '.' + str(Hints[bid][0])
+				# cwd = os.path.dirname(file_name)
+				hint_file = os.path.join(info['Folder'], bid) + '.' + str(Hints[bid][0])
 				with open(hint_file, 'w', encoding='utf-8') as f:
 					f.write(help_content)
 				new_view = sublime.active_window().open_file(hint_file)
