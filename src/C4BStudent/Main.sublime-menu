@@ -45,6 +45,11 @@
                 "id": "c4bSetName",
                 "command": "c4b_set_name"
             },
+            {
+                "caption": "Set folder",
+                "id": "c4bSetFolder",
+                "command": "c4b_set_folder"
+            },
             {"caption":"-", "id":"side-bar-separator"},
             {
                 "caption": "Update",

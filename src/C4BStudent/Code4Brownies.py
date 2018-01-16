@@ -16,7 +16,7 @@ c4b_SHARE_PATH = "share"
 c4b_MY_POINTS_PATH = "my_points"
 c4b_RECEIVE_BROADCAST_PATH = "receive_broadcast"
 c4b_CHECK_BROADCAST_PATH = "check_broadcast"
-
+c4b_DEFAULT_FOLDER = os.path.join(os.path.expanduser('~'), 'C4B')
 TIMEOUT = 7
 RUNNING_BACKGROUND_TASK = False
 
@@ -37,6 +37,9 @@ def c4b_get_attr():
 		return None
 	if 'Server' not in json_obj or len(json_obj['Server']) < 4:
 		sublime.message_dialog("Please set server address.")
+		return None
+	if 'Folder' not in json_obj:
+		sublime.message_dialog("Please set course folder.")
 		return None
 	return json_obj
 
@@ -82,16 +85,22 @@ class c4bMyBoardCommand(sublime_plugin.TextCommand):
 					bid = board['Bid']
 					Hints[bid] = [0, get_hints(board['HelpContent'])]
 					if len(content.strip()) > 0:
-						if self.view.file_name() is None:
-							new_view = sublime.active_window().new_file()
-							new_view.insert(edit, 0, content)
-						else:
-							cwd = os.path.dirname(self.view.file_name())
-							wb = os.path.join(cwd, bid)
-							wb += '.'+ext if ext!='' else ''
-							with open(wb, 'w', encoding='utf-8') as f:
-								f.write(content)
-							new_view = sublime.active_window().open_file(wb)
+						wb = os.path.join(info['Folder'], bid)
+						wb += '.'+ext if ext!='' else ''
+						with open(wb, 'w', encoding='utf-8') as f:
+							f.write(content)
+						new_view = sublime.active_window().open_file(wb)
+
+						# if self.view.file_name() is None:
+						# 	new_view = sublime.active_window().new_file()
+						# 	new_view.insert(edit, 0, content)
+						# else:
+						# 	cwd = os.path.dirname(self.view.file_name())
+						# 	wb = os.path.join(cwd, bid)
+						# 	wb += '.'+ext if ext!='' else ''
+						# 	with open(wb, 'w', encoding='utf-8') as f:
+						# 		f.write(content)
+						# 	new_view = sublime.active_window().open_file(wb)
 
 # ------------------------------------------------------------------
 class c4bHintCommand(sublime_plugin.TextCommand):
@@ -308,6 +317,44 @@ class c4bSetName(sublime_plugin.WindowCommand):
 				f.write(json.dumps(info, indent=4))
 		else:
 			sublime.message_dialog("Server address cannot be empty.")
+
+# ------------------------------------------------------------------
+class c4bSetFolder(sublime_plugin.WindowCommand):
+	def run(self):
+		try:
+			with open(c4b_FILE, 'r') as f:
+				info = json.loads(f.read())
+		except:
+			info = dict()
+		if 'Folder' not in info:
+			info['Folder'] = c4b_DEFAULT_FOLDER
+		sublime.active_window().show_input_panel("Set your course folder name.  Press Enter:",
+			info['Folder'],
+			self.set,
+			None,
+			None)
+
+	def set(self, name):
+		name = name.strip()
+		if len(name) > 0:
+			try:
+				with open(c4b_FILE, 'r') as f:
+					info = json.loads(f.read())
+			except:
+				info = dict()
+			info['Folder'] = name
+			if not os.path.exists(name):
+				try:
+					os.mkdir(name)
+				except:
+					sublime.message_dialog('Error creating directory {}, defaulting to {}.'.format(name, c4b_DEFAULT_FOLDER))
+					info['Folder'] = c4b_DEFAULT_FOLDER
+					os.mkdir(c4b_DEFAULT_FOLDER)
+
+			with open(c4b_FILE, 'w') as f:
+				f.write(json.dumps(info, indent=4))
+		else:
+			sublime.message_dialog("Folder is empty.")
 
 # ------------------------------------------------------------------
 class c4bAbout(sublime_plugin.WindowCommand):
