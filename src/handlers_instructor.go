@@ -18,6 +18,16 @@ import (
 //-----------------------------------------------------------------
 
 //-----------------------------------------------------------------
+// Clear whiteboards
+//-----------------------------------------------------------------
+func clear_whiteboardsHandler(w http.ResponseWriter, r *http.Request) {
+	for uid, _ := range Boards {
+		Boards[uid] = make([]*Board, 0)
+	}
+	fmt.Fprintf(w, "Whiteboards cleared.")
+}
+
+//-----------------------------------------------------------------
 // Clear questions
 //-----------------------------------------------------------------
 func clear_questionsHandler(w http.ResponseWriter, r *http.Request) {

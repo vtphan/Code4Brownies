@@ -52,6 +52,15 @@ class c4biViewQuestionsCommand(sublime_plugin.ApplicationCommand):
 		webbrowser.open(SERVER_ADDR + "/view_questions")
 
 # ------------------------------------------------------------------
+class c4biClearWhiteboardsCommand(sublime_plugin.ApplicationCommand):
+	def run(self):
+		url = urllib.parse.urljoin(SERVER_ADDR, "clear_whiteboards")
+		data = urllib.parse.urlencode({}).encode('utf-8')
+		response = c4biRequest(url,data)
+		if response is not None:
+			sublime.message_dialog(response)
+
+# ------------------------------------------------------------------
 class c4biClearQuestionsCommand(sublime_plugin.ApplicationCommand):
 	def run(self):
 		url = urllib.parse.urljoin(SERVER_ADDR, "clear_questions")

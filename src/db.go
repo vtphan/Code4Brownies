@@ -67,6 +67,7 @@ func RegisterStudent(uid string) {
 		fmt.Println(uid + " is already registered.")
 		return
 	}
+	Boards[uid] = make([]*Board, 0)
 	for i := 0; i < len(Boards["__all__"]); i++ {
 		b := &Board{
 			Content:      Boards["__all__"][i].Content,
