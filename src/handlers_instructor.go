@@ -88,11 +88,13 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	bid := "wb_" + RandStringRunes(6)
 	content, ext := r.FormValue("content"), r.FormValue("ext")
 	help_content := r.FormValue("help_content")
-	hints := r.FormValue("hints")
+	hints, err := strconv.Atoi(r.FormValue("hints"))
+	if err != nil {
+		fmt.Fprint(w, "Error converting number of hints.")
+		return
+	}
 
-	fmt.Println("broadcast", bid, hints)
-
-	_, err := InsertBroadCastSQL.Exec(bid, content, ext, time.Now())
+	_, err = InsertBroadCastSQL.Exec(bid, content, ext, time.Now(), hints)
 	if err != nil {
 		fmt.Println("Error inserting into broadcast table.", err)
 	}

@@ -10,7 +10,7 @@ import (
 )
 
 // ------------------------------------------------------------------
-func AddSubmission(uid, bid, body, ext string) {
+func AddSubmission(uid, bid, body, ext string, hints_used int) {
 	SEM.Lock()
 	defer SEM.Unlock()
 	_, ok := Boards[uid]
@@ -38,7 +38,7 @@ func AddSubmission(uid, bid, body, ext string) {
 		if len(NewSubs) == 1 {
 			fmt.Print("\x07")
 		}
-		InsertSubmissionSQL.Exec(sid, uid, bid, 0, des, ext, time.Now(), body)
+		InsertSubmissionSQL.Exec(sid, uid, bid, 0, des, ext, time.Now(), body, hints_used)
 		// InsertSubmissionSQL.Exec(sid, uid, bid, 0, dur, des, ext, time.Now(), body)
 	}
 }

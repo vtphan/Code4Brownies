@@ -36,9 +36,9 @@ func init_db() {
 
 	create_tables()
 
-	InsertBroadCastSQL = prepare("insert into broadcast (bid, content, language, date) values (?, ?, ?, ?)")
+	InsertBroadCastSQL = prepare("insert into broadcast (bid, content, language, date, hints) values (?, ?, ?, ?, ?)")
 	InsertUserSQL = prepare("insert into user (uid) values (?)")
-	InsertSubmissionSQL = prepare("insert into submission (sid, uid, bid, points, description, language, date, content) values (?, ?, ?, ?, ?, ?, ?, ?)")
+	InsertSubmissionSQL = prepare("insert into submission (sid, uid, bid, points, description, language, date, content, hints_used) values (?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	InsertPollSQL = prepare("insert into poll (uid, is_correct, points, date) values (?, ?, ?, ?)")
 	UpdatePointsSQL = prepare("update submission set points=? where sid=?")
 }
@@ -54,8 +54,8 @@ func create_tables() {
 		sql_stmt.Exec()
 	}
 	execSQL("create table if not exists user (id integer primary key, uid text unique)")
-	execSQL("create table if not exists broadcast (id integer primary key, bid text unique, content blob, language text, date timestamp)")
-	execSQL("create table if not exists submission (id integer primary key, sid text unique, uid text, bid text, points integer, description text, language text, date timestamp, content blob)")
+	execSQL("create table if not exists broadcast (id integer primary key, bid text unique, content blob, language text, date timestamp, hints integer)")
+	execSQL("create table if not exists submission (id integer primary key, sid text unique, uid text, bid text, points integer, description text, language text, date timestamp, content blob, hints_used integer)")
 	execSQL("create table if not exists poll (id integer primary key, uid text, is_correct integer, points integer, date timestamp)")
 }
 

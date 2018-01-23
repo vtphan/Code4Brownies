@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -55,12 +56,14 @@ func shareHandler(w http.ResponseWriter, r *http.Request) {
 	uid, body, ext := r.FormValue("uid"), r.FormValue("body"), r.FormValue("ext")
 	mode := r.FormValue("mode")
 	bid := r.FormValue("bid")
-	hints_used := r.FormValue("hints_used")
-
-	fmt.Println("share", bid, hints_used)
+	hints_used, err := strconv.Atoi(r.FormValue("hints_used"))
+	if err != nil {
+		fmt.Fprint(w, "Error converting number of hints used.")
+		return
+	}
 
 	if mode == "code" {
-		AddSubmission(uid, bid, body, ext)
+		AddSubmission(uid, bid, body, ext, hints_used)
 		fmt.Println(uid, "submitted.")
 		fmt.Fprintf(w, uid+", thank you for sharing.")
 	} else if mode == "poll" {
