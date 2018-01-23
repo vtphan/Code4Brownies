@@ -63,7 +63,8 @@ def get_hints(str):
 	break_pattern = s.split('\n', 1)[0]
 	hints = s.split(break_pattern)
 	hints.pop(0)
-	return [ break_pattern + h for h in hints ]
+	# return [ break_pattern + h for h in hints ]
+	return hints
 
 # ------------------------------------------------------------------
 class c4bMyBoardCommand(sublime_plugin.TextCommand):
@@ -165,7 +166,15 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 			content = header + '\n' + content
 
 		# Now send
-		values = {'uid':info['Name'], 'body':content, 'ext':ext, 'mode':'code', 'bid':bid}
+		hints_used = -1 if bid not in Hints else Hints[bid][0]
+		values = {
+			'uid':			info['Name'], 
+			'body':			content, 
+			'ext':			ext, 
+			'mode':			'code', 
+			'bid':			bid,
+			'hints_used':	hints_used,
+		}
 		# data = urllib.parse.urlencode(values).encode('ascii')
 		data = urllib.parse.urlencode(values).encode('utf-8')
 		response = c4bRequest(url,data)

@@ -97,6 +97,16 @@ class c4biAnswerPoll(sublime_plugin.WindowCommand):
 
 
 # ------------------------------------------------------------------
+def count_hints(str):
+	s = str.strip()
+	if s=='':
+		return 0
+	break_pattern = s.split('\n', 1)[0]
+	hints = s.split(break_pattern)
+	hints.pop(0)
+	return len(hints)
+
+# ------------------------------------------------------------------
 def _broadcast(self, sids='__all__'):
 	file_name = self.view.file_name()
 	ext = '' if file_name is None else file_name.rsplit('.',1)[-1]
@@ -123,10 +133,11 @@ def _broadcast(self, sids='__all__'):
 			if os.path.exists(help_file):
 				help_content = open(help_file).read()
 		data = urllib.parse.urlencode({
-			'content':content,
-			'sids':sids,
-			'ext': ext,
-			'help_content':help_content,
+			'content': 		content,
+			'sids':			sids,
+			'ext': 			ext,
+			'help_content':	help_content,
+			'hints':		count_hints(help_content),
 		}).encode('utf-8')
 		response = c4biRequest(url,data)
 		if response is not None:
