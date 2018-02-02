@@ -168,10 +168,10 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 		# Now send
 		hints_used = -1 if bid not in Hints else Hints[bid][0]
 		values = {
-			'uid':			info['Name'], 
-			'body':			content, 
-			'ext':			ext, 
-			'mode':			'code', 
+			'uid':			info['Name'],
+			'body':			content,
+			'ext':			ext,
+			'mode':			'code',
 			'bid':			bid,
 			'hints_used':	hints_used,
 		}
@@ -199,7 +199,13 @@ class c4bAsk(sublime_plugin.WindowCommand):
 			if info is None:
 				return
 			url = urllib.parse.urljoin(info['Server'], c4b_SHARE_PATH)
-			values = {'uid':info['Name'], 'body':question, 'ext':'', 'mode': 'ask'}
+			values = {
+				'uid':info['Name'],
+				'body':question,
+				'ext':'',
+				'mode': 'ask',
+				'hints_used': -1,
+			}
 			data = urllib.parse.urlencode(values).encode('utf-8')
 			response = c4bRequest(url,data)
 			if response is not None:
@@ -223,7 +229,13 @@ class c4bVote(sublime_plugin.WindowCommand):
 			if info is None:
 				return
 			url = urllib.parse.urljoin(info['Server'], c4b_SHARE_PATH)
-			values = {'uid':info['Name'], 'body':answer, 'ext':'', 'mode': 'poll'}
+			values = {
+				'uid':info['Name'],
+				'body':answer,
+				'ext':'',
+				'mode': 'poll',
+				'hints_used': -1,
+			}
 			data = urllib.parse.urlencode(values).encode('utf-8')
 			response = c4bRequest(url,data)
 			if response is not None:

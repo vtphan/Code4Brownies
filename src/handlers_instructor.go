@@ -39,7 +39,13 @@ func clear_questionsHandler(w http.ResponseWriter, r *http.Request) {
 // Query poll results
 //-----------------------------------------------------------------
 func query_pollHandler(w http.ResponseWriter, r *http.Request) {
-	js, err := json.Marshal(POLL_COUNT)
+	counts := make(map[string]int)
+	for k, v := range POLL_COUNT {
+		if v > 0 {
+			counts[k] = v
+		}
+	}
+	js, err := json.Marshal(counts)
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {

@@ -67,11 +67,12 @@ func shareHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(uid, "submitted.")
 		fmt.Fprintf(w, uid+", thank you for sharing.")
 	} else if mode == "poll" {
+		body = strings.ToLower(body)
 		prev_answer, ok := POLL_RESULT[uid]
 		if ok {
 			POLL_COUNT[prev_answer]--
 		}
-		POLL_RESULT[uid] = strings.ToLower(body)
+		POLL_RESULT[uid] = body
 		POLL_COUNT[body]++
 		fmt.Fprintf(w, uid+", thank you for voting.")
 	} else if mode == "ask" {
