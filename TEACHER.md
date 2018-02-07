@@ -27,9 +27,14 @@ Change the permission of the file to executable.
 
 Students and the instructor communicate by sending messages to a server.  The server should be run on the the instructor's computer.
 
-OS X: run the server in a terminal
+OSX: run the server in a terminal
 ```
-    ./c4b_darwin_vXXX
+    ./c4b_osx_0.34
+````
+
+Windows: run the server in a terminal
+```
+    ./c4b_win_0.34.exe
 ````
 
 If you want to run the server with the source code, you need to install Go.  To run the server:
