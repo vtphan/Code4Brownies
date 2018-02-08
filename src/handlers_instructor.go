@@ -117,20 +117,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 				StartingTime: time.Now(),
 			}
 			Boards[uid] = append(Boards[uid], b)
-			// board.Content = content
-			// board.HelpContent = help_content
-			// board.Ext = ext
-			// board.Bid = bid
-			// des = strings.SplitN(board.Content, "\n", 2)[0]
-			// if des != board.Description { // a new exercise/problem
-			// 	board.Description = des
-			// 	board.StartingTime = time.Now()
-			// }
 		}
-		// fmt.Println(">")
-		// for uid, b := range Boards {
-		// 	fmt.Println(uid, b)
-		// }
 	} else {
 		sids := strings.Split(r.FormValue("sids"), ",")
 		for i := 0; i < len(sids); i++ {
@@ -147,15 +134,6 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 					StartingTime: time.Now(),
 				}
 				Boards[sub.Uid] = append(Boards[sub.Uid], b)
-				// Boards[sub.Uid].Content = content
-				// Boards[sub.Uid].HelpContent = help_content
-				// Boards[sub.Uid].Ext = ext
-				// Boards[sub.Uid].Bid = bid
-				// des = strings.SplitN(Boards[sub.Uid].Content, "\n", 2)[0]
-				// if des != Boards[sub.Uid].Description { // a new exercise/problem
-				// 	Boards[sub.Uid].Description = des
-				// 	Boards[sub.Uid].StartingTime = time.Now()
-				// }
 			} else {
 				fmt.Fprintf(w, "sid "+sid+" is not found.")
 				return

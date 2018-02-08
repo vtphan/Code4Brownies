@@ -9,14 +9,13 @@ import (
 	"time"
 )
 
-const VERSION = "0.34"
+const VERSION = "0.35"
 
 var ADDR = ""
 var PORT = "4030"
 var USER_DB string
 var SERVER = ""
 
-// TODO; allow a student to have multiple boards (or pages of a board)
 type Board struct {
 	Content      string
 	HelpContent  string

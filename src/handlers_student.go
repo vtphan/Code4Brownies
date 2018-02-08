@@ -17,6 +17,19 @@ import (
 //-----------------------------------------------------------------
 
 //-----------------------------------------------------------------
+// students check in (e.g. for attendance purposes)
+//-----------------------------------------------------------------
+func checkinHandler(w http.ResponseWriter, r *http.Request) {
+	uid := r.FormValue("uid")
+	_, err := InsertAttendanceSQL.Exec(uid, time.Now())
+	if err != nil {
+		fmt.Fprint(w, "Problem checking in.")
+	} else {
+		fmt.Fprint(w, "Hi "+uid+". You are now checked in.")
+	}
+}
+
+//-----------------------------------------------------------------
 // return brownie points a user has received.
 //-----------------------------------------------------------------
 func my_pointsHandler(w http.ResponseWriter, r *http.Request) {
@@ -92,12 +105,6 @@ func receive_broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	board, ok := Boards[uid]
 	if ok {
-		// js, err = json.Marshal(map[string]string{
-		// 	"content":      board.Content,
-		// 	"help_content": board.HelpContent,
-		// 	"ext":          board.Ext,
-		// 	"bid":          board.Bid,
-		// })
 		js, err = json.Marshal(board)
 		Boards[uid] = []*Board{}
 	}

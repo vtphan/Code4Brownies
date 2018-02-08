@@ -9,16 +9,17 @@ import json
 import threading
 import time
 import random
+import datetime
 
 c4b_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
-# c4b_REGISTER_PATH = "register"
+c4b_CHECKIN_PATH = "checkin"
 c4b_SHARE_PATH = "share"
 c4b_MY_POINTS_PATH = "my_points"
 c4b_RECEIVE_BROADCAST_PATH = "receive_broadcast"
 c4b_CHECK_BROADCAST_PATH = "check_broadcast"
 c4b_DEFAULT_FOLDER = os.path.join(os.path.expanduser('~'), 'C4B')
 TIMEOUT = 7
-RUNNING_BACKGROUND_TASK = False
+CHECKED_IN = ''
 
 c4b_WHITEBOARD_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Whiteboard")
 
@@ -63,8 +64,25 @@ def get_hints(str):
 	break_pattern = s.split('\n', 1)[0]
 	hints = s.split(break_pattern)
 	hints.pop(0)
-	# return [ break_pattern + h for h in hints ]
 	return hints
+
+# ------------------------------------------------------------------
+class c4bCheckinCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		global CHECKED_IN
+		today = datetime.datetime.now().strftime('%d-%m-%Y')
+		if CHECKED_IN == today:
+			sublime.message_dialog("You are already checked in today.")
+			return
+		info = c4b_get_attr()
+		if info is None:
+			return
+		data = urllib.parse.urlencode({'uid':info['Name']}).encode('utf-8')
+		url = urllib.parse.urljoin(info['Server'], c4b_CHECKIN_PATH)
+		response = c4bRequest(url, data)
+		if response != None:
+			sublime.message_dialog(response)
+			CHECKED_IN = today
 
 # ------------------------------------------------------------------
 class c4bMyBoardCommand(sublime_plugin.TextCommand):
@@ -91,17 +109,6 @@ class c4bMyBoardCommand(sublime_plugin.TextCommand):
 						with open(wb, 'w', encoding='utf-8') as f:
 							f.write(content)
 						new_view = sublime.active_window().open_file(wb)
-
-						# if self.view.file_name() is None:
-						# 	new_view = sublime.active_window().new_file()
-						# 	new_view.insert(edit, 0, content)
-						# else:
-						# 	cwd = os.path.dirname(self.view.file_name())
-						# 	wb = os.path.join(cwd, bid)
-						# 	wb += '.'+ext if ext!='' else ''
-						# 	with open(wb, 'w', encoding='utf-8') as f:
-						# 		f.write(content)
-						# 	new_view = sublime.active_window().open_file(wb)
 
 # ------------------------------------------------------------------
 class c4bHintCommand(sublime_plugin.TextCommand):
@@ -175,7 +182,6 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 			'bid':			bid,
 			'hints_used':	hints_used,
 		}
-		# data = urllib.parse.urlencode(values).encode('ascii')
 		data = urllib.parse.urlencode(values).encode('utf-8')
 		response = c4bRequest(url,data)
 		if response is not None:

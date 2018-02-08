@@ -15,7 +15,6 @@ func AddSubmission(uid, bid, body, ext string, hints_used int) {
 	defer SEM.Unlock()
 	_, ok := Boards[uid]
 	if ok {
-		// dur := int(time.Since(board.StartingTime).Seconds())
 		des := ""
 		if strings.HasPrefix(body, "#") || strings.HasPrefix(body, "//") {
 			des = strings.SplitN(body, "\n", 2)[0]
@@ -39,7 +38,6 @@ func AddSubmission(uid, bid, body, ext string, hints_used int) {
 			fmt.Print("\x07")
 		}
 		InsertSubmissionSQL.Exec(sid, uid, bid, 0, des, ext, time.Now(), body, hints_used)
-		// InsertSubmissionSQL.Exec(sid, uid, bid, 0, dur, des, ext, time.Now(), body)
 	}
 }
 

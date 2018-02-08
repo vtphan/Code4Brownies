@@ -17,6 +17,7 @@ var InsertUserSQL *sql.Stmt
 var InsertSubmissionSQL *sql.Stmt
 var InsertPollSQL *sql.Stmt
 var UpdatePointsSQL *sql.Stmt
+var InsertAttendanceSQL *sql.Stmt
 
 //-----------------------------------------------------------------
 func init_db() {
@@ -41,6 +42,7 @@ func init_db() {
 	InsertSubmissionSQL = prepare("insert into submission (sid, uid, bid, points, description, language, date, content, hints_used) values (?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	InsertPollSQL = prepare("insert into poll (uid, is_correct, points, date) values (?, ?, ?, ?)")
 	UpdatePointsSQL = prepare("update submission set points=? where sid=?")
+	InsertAttendanceSQL = prepare("insert into attendance (uid, date) values (?, ?)")
 }
 
 //-----------------------------------------------------------------
@@ -57,6 +59,7 @@ func create_tables() {
 	execSQL("create table if not exists broadcast (id integer primary key, bid text unique, content blob, language text, date timestamp, hints integer)")
 	execSQL("create table if not exists submission (id integer primary key, sid text unique, uid text, bid text, points integer, description text, language text, date timestamp, content blob, hints_used integer)")
 	execSQL("create table if not exists poll (id integer primary key, uid text, is_correct integer, points integer, date timestamp)")
+	execSQL("create table if not exists attendance (id integer primary key, uid text, date timestamp)")
 }
 
 //-----------------------------------------------------------------
@@ -79,14 +82,6 @@ func RegisterStudent(uid string) {
 		}
 		Boards[uid] = append(Boards[uid], b)
 	}
-	// Boards[uid] = &Board{
-	// 	Content:      Boards["__all__"].Content,
-	// 	HelpContent:  Boards["__all__"].HelpContent,
-	// 	Description:  Boards["__all__"].Description,
-	// 	StartingTime: time.Now(),
-	// 	Ext:          Boards["__all__"].Ext,
-	// 	Bid:          Boards["__all__"].Bid,
-	// }
 
 	_, err := InsertUserSQL.Exec(uid)
 	if err != nil {
@@ -103,9 +98,7 @@ func loadWhiteboards() {
 	var uid string
 	for rows.Next() {
 		rows.Scan(&uid)
-		// Boards[uid] = &Board{StartingTime: time.Now()}
 		Boards[uid] = make([]*Board, 0)
 	}
-	// Boards["__all__"] = &Board{StartingTime: time.Now()}
 	Boards["__all__"] = make([]*Board, 0)
 }

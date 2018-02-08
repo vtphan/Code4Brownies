@@ -30,6 +30,11 @@
             },
             {"caption":"-", "id":"side-bar-separator"},
             {
+                "caption": "Check in",
+                "id": "c4bCheckin",
+                "command": "c4b_checkin"
+            },
+            {
                 "caption": "Brownie Points",
                 "id": "c4bShowPoints",
                 "command": "c4b_show_points"

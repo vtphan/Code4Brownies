@@ -70,7 +70,7 @@ func main() {
 	http.HandleFunc("/share", AutoRegister(shareHandler))
 	http.HandleFunc("/my_points", AutoRegister(my_pointsHandler))
 	http.HandleFunc("/receive_broadcast", AutoRegister(receive_broadcastHandler))
-	// http.HandleFunc("/check_broadcast", AutoRegister(check_broadcastHandler))
+	http.HandleFunc("/checkin", AutoRegister(checkinHandler))
 
 	// teacher handlers
 	http.HandleFunc("/clear_whiteboards", Authorize(clear_whiteboardsHandler))
