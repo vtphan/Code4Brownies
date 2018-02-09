@@ -23,9 +23,9 @@ func checkinHandler(w http.ResponseWriter, r *http.Request) {
 	uid := r.FormValue("uid")
 	_, err := InsertAttendanceSQL.Exec(uid, time.Now())
 	if err != nil {
-		fmt.Fprint(w, "Problem checking in.")
+		fmt.Fprint(w, "Failed")
 	} else {
-		fmt.Fprint(w, "Hi "+uid+". You are now checked in.")
+		fmt.Fprint(w, "Ok")
 	}
 }
 

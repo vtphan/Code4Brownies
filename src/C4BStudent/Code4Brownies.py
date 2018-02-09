@@ -80,9 +80,12 @@ class c4bCheckinCommand(sublime_plugin.TextCommand):
 		data = urllib.parse.urlencode({'uid':info['Name']}).encode('utf-8')
 		url = urllib.parse.urljoin(info['Server'], c4b_CHECKIN_PATH)
 		response = c4bRequest(url, data)
-		if response != None:
-			sublime.message_dialog(response)
+		if response == 'Ok':
+			sublime.message_dialog('Hi {}. You are now checked in.'.format(info['Name']))
 			CHECKED_IN = today
+		else:
+			sublime.message_dialog('Fail to check in.')
+
 
 # ------------------------------------------------------------------
 class c4bMyBoardCommand(sublime_plugin.TextCommand):
