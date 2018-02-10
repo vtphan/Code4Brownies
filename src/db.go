@@ -18,6 +18,8 @@ var InsertSubmissionSQL *sql.Stmt
 var InsertPollSQL *sql.Stmt
 var UpdatePointsSQL *sql.Stmt
 var InsertAttendanceSQL *sql.Stmt
+var InsertQuizSQL *sql.Stmt
+var InsertQuizAnswerSQL *sql.Stmt
 
 //-----------------------------------------------------------------
 func init_db() {
@@ -43,6 +45,8 @@ func init_db() {
 	InsertPollSQL = prepare("insert into poll (uid, is_correct, points, date) values (?, ?, ?, ?)")
 	UpdatePointsSQL = prepare("update submission set points=? where sid=?")
 	InsertAttendanceSQL = prepare("insert into attendance (uid, date) values (?, ?)")
+	InsertQuizSQL = prepare("insert into quiz (qid, question, answer, date) values (?, ?, ?, ?)")
+	InsertQuizAnswerSQL = prepare("insert into quiz_answer (uid, qid, answer, point, date) values (?, ?, ?, ?, ?)")
 }
 
 //-----------------------------------------------------------------
@@ -60,6 +64,8 @@ func create_tables() {
 	execSQL("create table if not exists submission (id integer primary key, sid text unique, uid text, bid text, points integer, description text, language text, date timestamp, content blob, hints_used integer)")
 	execSQL("create table if not exists poll (id integer primary key, uid text, is_correct integer, points integer, date timestamp)")
 	execSQL("create table if not exists attendance (id integer primary key, uid text, date timestamp)")
+	execSQL("create table if not exists quiz (id integer primary key, qid text unique, question blob, answer text, date timestamp)")
+	execSQL("create table if not exists quiz_answer (id integer primary key, uid text, qid text, answer text, point integer, date timestamp)")
 }
 
 //-----------------------------------------------------------------

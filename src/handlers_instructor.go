@@ -87,6 +87,36 @@ func answer_pollHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //-----------------------------------------------------------------
+// instructor hands out quiz questions
+//-----------------------------------------------------------------
+func send_quiz_questionHandler(w http.ResponseWriter, r *http.Request) {
+	bid := "qz_" + RandStringRunes(6)
+	question, answer := r.FormValue("question"), r.FormValue("answer")
+	content := question + "\n\nANSWER: "
+
+	_, err := InsertQuizSQL.Exec(bid, question, answer, time.Now())
+
+	if err != nil {
+		fmt.Println("Error inserting into quiz table.", err)
+	} else {
+		BOARDS_SEM.Lock()
+		defer BOARDS_SEM.Unlock()
+
+		for uid, _ := range Boards {
+			b := &Board{
+				Content:      content,
+				HelpContent:  answer,
+				Ext:          "txt",
+				Bid:          bid,
+				Description:  "Quiz " + bid,
+				StartingTime: time.Now(),
+			}
+			Boards[uid] = append(Boards[uid], b)
+		}
+	}
+}
+
+//-----------------------------------------------------------------
 // instructor broadcast contents to students
 //-----------------------------------------------------------------
 func broadcastHandler(w http.ResponseWriter, r *http.Request) {
@@ -104,6 +134,10 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error inserting into broadcast table.", err)
 	}
+
+	BOARDS_SEM.Lock()
+	defer BOARDS_SEM.Unlock()
+
 	if r.FormValue("sids") == "__all__" {
 		// for _, board := range Boards {
 		for uid, _ := range Boards {

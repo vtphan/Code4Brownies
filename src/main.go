@@ -83,6 +83,7 @@ func main() {
 	http.HandleFunc("/broadcast", Authorize(broadcastHandler))
 	http.HandleFunc("/get_post", Authorize(get_postHandler))
 	http.HandleFunc("/get_posts", Authorize(get_postsHandler))
+	http.HandleFunc("/send_quiz_question", Authorize(send_quiz_questionHandler))
 
 	// public handlers
 	http.HandleFunc("/view_questions", view_questionsHandler)

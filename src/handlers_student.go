@@ -91,6 +91,22 @@ func shareHandler(w http.ResponseWriter, r *http.Request) {
 	} else if mode == "ask" {
 		Questions = append(Questions, body)
 		fmt.Fprint(w, "Your question will be addressed soon.")
+	} else if mode == "quiz" {
+		items := strings.SplitN(body, ",", 2)
+		point := 0
+		if items[0] == "1" {
+			point = 1
+		}
+		_, err := InsertQuizAnswerSQL.Exec(uid, bid, items[1], point, time.Now())
+		if err != nil {
+			fmt.Fprint(w, "This question has expired.")
+		} else {
+			if point == 0 {
+				fmt.Fprint(w, "Your answer is not correct.")
+			} else {
+				fmt.Fprintf(w, "Your answer is correct. You got %d point.", point)
+			}
+		}
 	} else {
 		fmt.Fprint(w, "Unknown mode.")
 	}
@@ -103,6 +119,10 @@ func receive_broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	uid := r.FormValue("uid")
 	var js []byte
 	var err error
+
+	BOARDS_SEM.Lock()
+	defer BOARDS_SEM.Unlock()
+
 	board, ok := Boards[uid]
 	if ok {
 		js, err = json.Marshal(board)
@@ -111,7 +131,6 @@ func receive_broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err.Error())
 		js, err = json.Marshal([]*Board{})
-		// js, err = json.Marshal(map[string]string{"content": "", "ext": ""})
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
 	} else {

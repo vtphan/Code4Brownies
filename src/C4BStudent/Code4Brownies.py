@@ -24,6 +24,7 @@ CHECKED_IN = ''
 c4b_WHITEBOARD_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Whiteboard")
 
 Hints = {}
+QuizAnswers = {}
 CUR_BID = None
 # ------------------------------------------------------------------
 def c4b_get_attr():
@@ -67,6 +68,50 @@ def get_hints(str):
 	return hints
 
 # ------------------------------------------------------------------
+class c4bSubmitQuizCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		info = c4b_get_attr()
+		if info is None:
+			return
+		url = urllib.parse.urljoin(info['Server'], c4b_SHARE_PATH)
+
+		# Guesstimate extension
+		this_file_name = self.view.file_name()
+		if this_file_name is None:
+			return
+		fname = this_file_name.rsplit('/',1)[-1]
+		ext = 'py' if fname is None else fname.rsplit('.',1)[-1]
+		bid = fname.split('.')[0]
+		if not bid.startswith('qz_'):
+			sublime.message_dialog('This is not a quiz question.')
+			return
+		if bid not in QuizAnswers:
+			sublime.message_dialog('This quiz question is expired.')
+			return
+
+		content = open(this_file_name, 'r', encoding='utf-8').read().strip()
+		items = content.rsplit('ANSWER:', 1)
+		answer = items[-1].strip()
+		if answer==QuizAnswers[bid]:
+			body = '1,' + answer
+		else:
+			body = '0,' + answer
+
+		values = {
+			'uid':			info['Name'],
+			'body':			body,
+			'ext':			'',
+			'mode':			'quiz',
+			'bid':			bid,
+			'hints_used':	-1,
+		}
+		data = urllib.parse.urlencode(values).encode('utf-8')
+		response = c4bRequest(url,data)
+		if response is not None:
+			sublime.message_dialog(response)
+			QuizAnswers.pop(bid)
+
+# ------------------------------------------------------------------
 class c4bCheckinCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		global CHECKED_IN
@@ -105,13 +150,22 @@ class c4bMyBoardCommand(sublime_plugin.TextCommand):
 					content = board['Content']
 					ext = board['Ext']
 					bid = board['Bid']
-					Hints[bid] = [0, get_hints(board['HelpContent'])]
-					if len(content.strip()) > 0:
-						wb = os.path.join(info['Folder'], bid)
-						wb += '.'+ext if ext!='' else ''
+					if bid.startswith('wb_'):
+						Hints[bid] = [0, get_hints(board['HelpContent'])]
+						if len(content.strip()) > 0:
+							wb = os.path.join(info['Folder'], bid)
+							wb += '.'+ext if ext!='' else ''
+							with open(wb, 'w', encoding='utf-8') as f:
+								f.write(content)
+							new_view = sublime.active_window().open_file(wb)
+					elif bid.startswith('qz_'):
+						QuizAnswers[bid] = board['HelpContent'].strip()
+						wb = os.path.join(info['Folder'], bid) + '.' + ext
 						with open(wb, 'w', encoding='utf-8') as f:
 							f.write(content)
 						new_view = sublime.active_window().open_file(wb)
+					else:
+						print('Unknown content type: ', bid)
 
 # ------------------------------------------------------------------
 class c4bHintCommand(sublime_plugin.TextCommand):

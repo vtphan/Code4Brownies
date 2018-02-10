@@ -30,6 +30,11 @@
                 ]
             },
             {
+                "caption": "Quiz",
+                "id": "c4biQuiz",
+                "command": "c4bi_quiz"
+            },
+            {
                 "caption": "Clear whiteboards",
                 "id": "c4biClearWhiteboards",
                 "command": "c4bi_clear_whiteboards"

@@ -19,6 +19,7 @@ c4bi_REQUEST_ENTRY_PATH = "get_post"
 c4bi_REQUEST_ENTRIES_PATH = "get_posts"
 c4bi_NEW_PROBLEM_PATH = "new_problem"
 c4bi_ANSWER_POLL_PATH = "answer_poll"
+c4bi_QUIZ_QUESTION_PATH = "send_quiz_question"
 TIMEOUT = 7
 
 POSTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Posts")
@@ -105,6 +106,41 @@ def count_hints(str):
 	hints = s.split(break_pattern)
 	hints.pop(0)
 	return len(hints)
+
+# ------------------------------------------------------------------
+class c4biQuizCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		file_name = self.view.file_name()
+		if file_name is None:
+			return
+		ext = '' if file_name is None else file_name.rsplit('.',1)[-1]
+		header = ''
+		content = open(file_name, 'r', encoding='utf-8').read()
+		if 'ANSWER:' not in content:
+			sublime.message_dialog('''Each question of a quiz must have the following format:
+<problem description>
+ANSWER: <one_line_answer>
+			''')
+			return
+		Q = content.split('ANSWER:')
+		answers, questions = [], [Q[0].strip()]
+		for i in range(1, len(Q)):
+			items = Q[i].split('\n', 1)
+			print(items)
+			answers.append(items[0].strip())
+			if i < len(Q)-1:
+				questions.append(items[1].strip())
+
+		if sublime.ok_cancel_dialog('The quiz appears to have {} questions.\nDo you want to hand out this quiz?'.format(len(questions))):
+			url = urllib.parse.urljoin(SERVER_ADDR, c4bi_QUIZ_QUESTION_PATH)
+			for i in range(len(questions)):
+				data = urllib.parse.urlencode({
+					'question': questions[i],
+					'answer':	answers[i],
+				}).encode('utf-8')
+				response = c4biRequest(url,data)
+				if response is not None:
+					sublime.status_message(response)
 
 # ------------------------------------------------------------------
 def _broadcast(self, sids='__all__'):
