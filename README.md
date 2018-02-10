@@ -10,9 +10,9 @@ Code4Brownies is a software package that supports active learning in programming
 
 Code4Brownies is designed to support several pedagogical strategies and practices such as scaffolding, guided instruction, differentiated instruction, early-and-often assessment, and early intervention.
 
-## Architectural diagram
+## How It Works
 
-Teacher-students communication is achieved via a server running on the teacher's laptop that talks to Sublime Text IDEs installed on students' and teacher's laptops.  At the beginning of a lecture, the teacher starts the server.  When the lecture is over, the teacher stops the server.  The software is contained within the teacher's machine and the active-learning experience is contained within each studying session.
+Sharing of code and learning material is carried out by a server running on the teacher's laptop that communicates with Sublime Text IDEs installed on the students' and teacher's laptops.  The teacher starts and stops the server at the beginning and end of each study session.  There is no external server that would require extra maintenance.
 
 <img src="diagram.png" width=70% align="middle">
 
