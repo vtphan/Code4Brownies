@@ -198,6 +198,8 @@ func give_pointsHandler(w http.ResponseWriter, r *http.Request) {
 // return all current NewSubs
 //-----------------------------------------------------------------
 func peekHandler(w http.ResponseWriter, r *http.Request) {
+	SUBS_SEM.Lock()
+	defer SUBS_SEM.Unlock()
 	js, err := json.Marshal(NewSubs)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -229,6 +231,9 @@ func get_postHandler(w http.ResponseWriter, r *http.Request) {
 // Instructor retrieves all new submissions
 //-----------------------------------------------------------------
 func get_postsHandler(w http.ResponseWriter, r *http.Request) {
+	SUBS_SEM.Lock()
+	defer SUBS_SEM.Unlock()
+
 	js, err := json.Marshal(NewSubs)
 	if err != nil {
 		fmt.Println(err.Error())

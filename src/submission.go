@@ -11,8 +11,8 @@ import (
 
 // ------------------------------------------------------------------
 func AddSubmission(uid, bid, body, ext string, hints_used int) {
-	SEM.Lock()
-	defer SEM.Unlock()
+	SUBS_SEM.Lock()
+	defer SUBS_SEM.Unlock()
 	_, ok := Boards[uid]
 	if ok {
 		des := ""
@@ -47,8 +47,8 @@ func RemoveSubmission(i int) *Submission {
 	if i < 0 || len(NewSubs) == 0 || i > len(NewSubs) {
 		return &Submission{}
 	} else {
-		SEM.Lock()
-		defer SEM.Unlock()
+		SUBS_SEM.Lock()
+		defer SUBS_SEM.Unlock()
 		s := NewSubs[i]
 		NewSubs = append(NewSubs[:i], NewSubs[i+1:]...)
 		return s

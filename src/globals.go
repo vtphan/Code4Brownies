@@ -54,7 +54,7 @@ func RandStringRunes(n int) string {
 
 // ------------------------------------------------------------------
 
-var SEM sync.Mutex
+var SUBS_SEM sync.Mutex
 var BOARDS_SEM sync.Mutex
 var NewSubs = make([]*Submission, 0)
 var AllSubs = make(map[string]*Submission)

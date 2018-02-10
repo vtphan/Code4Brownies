@@ -70,8 +70,9 @@ func create_tables() {
 
 //-----------------------------------------------------------------
 func RegisterStudent(uid string) {
-	SEM.Lock()
-	defer SEM.Unlock()
+	BOARDS_SEM.Lock()
+	defer BOARDS_SEM.Unlock()
+
 	if _, ok := Boards[uid]; ok {
 		fmt.Println(uid + " is already registered.")
 		return
@@ -102,6 +103,10 @@ func loadWhiteboards() {
 	rows, _ := database.Query("select uid from user")
 	defer rows.Close()
 	var uid string
+
+	BOARDS_SEM.Lock()
+	defer BOARDS_SEM.Unlock()
+
 	for rows.Next() {
 		rows.Scan(&uid)
 		Boards[uid] = make([]*Board, 0)
