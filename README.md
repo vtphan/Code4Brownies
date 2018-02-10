@@ -1,4 +1,4 @@
-Code4Brownies is a software package that supports active learning in programming and algorithms courses.  It enables instructors and students share codes (using the [Sublime Text](https://www.sublimetext.com/3) editor) instantaneously in the classroom.  Features include:
+Code4Brownies is a software package that supports active learning in programming and algorithms courses.  It enables instructors and students share codes instantaneously in the classroom.  Features include:
 
 - Teacher can copy a "scaffold" or partially-complete code to students' virtual whiteboards for them to work on.
 - Students can share their code.
