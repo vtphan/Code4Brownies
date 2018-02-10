@@ -9,7 +9,7 @@ Code4Brownies is a software package that supports active learning in programming
 - Teacher can administer polls.
 - Students can check in. Attendance can be done quickly.
 
-Code4Brownies is designed to support several pedagogical strategies and approaches such as scaffolding, guided instruction, differentiated instruction, early-and-often assessment, and early intervention.
+Code4Brownies is designed to support several pedagogical strategies and practices such as scaffolding, guided instruction, differentiated instruction, early-and-often assessment, and early intervention.
 
 ## Architectural diagram
 
