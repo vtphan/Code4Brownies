@@ -1,13 +1,12 @@
-Code4Brownies is a software package that supports active learning in programming and algorithms courses.  It allows instructors and students to share codes instantaneously during a studying session.  Features include:
+Code4Brownies is a software package that supports active learning in programming and algorithms courses.  It allows instructors and students to share code and learning material instantaneously during a studying session.  Features include:
 
 - Teacher can copy a "scaffold" or partially-complete code to students' virtual whiteboards for them to work on.
-- Teacher can provide additional hints for each scaffold.
-- Teacher can provide scaffolds to a targeted group of students.
+  - Teacher can provide additional hints for each scaffold.
+  - Teacher can provide scaffolds to a targeted group of students.
 - Students work on the scaffolds and then share their code.
 - Teacher can give virtual brownie points to students' shared work.
-- Teacher can administer quizzes.
-- Teacher can administer polls.
-- Students can check in. Attendance can be done quickly.
+- Teacher can administer quizzes and polls.
+- Students can check in and take their own attendance.
 
 Code4Brownies is designed to support several pedagogical strategies and practices such as scaffolding, guided instruction, differentiated instruction, early-and-often assessment, and early intervention.
 
