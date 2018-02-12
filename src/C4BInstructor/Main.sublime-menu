@@ -30,6 +30,27 @@
                 ]
             },
             {
+                "caption": "Poll",
+                "id": "c4biPoll",
+                "children": [
+                    {
+                        "caption": "Start",
+                        "id": "c4biStartPoll",
+                        "command": "c4bi_start_poll"
+                    },
+                    {
+                        "caption": "Results",
+                        "id": "c4biViewPoll",
+                        "command": "c4bi_view_poll"
+                    },
+                    {
+                        "caption": "Answer",
+                        "id": "c4biAnswerPoll",
+                        "command": "c4bi_answer_poll"
+                    }
+                ]
+            },
+            {
                 "caption": "Quiz",
                 "id": "c4biQuiz",
                 "command": "c4bi_quiz"
@@ -67,22 +88,6 @@
                         "caption": "5 brownies",
                         "id": "c4biAwardPoint5",
                         "command": "c4bi_award_point5"
-                    }
-                ]
-            },
-            {
-                "caption": "Poll",
-                "id": "c4biPoll",
-                "children": [
-                    {
-                        "caption": "View Results",
-                        "id": "c4biViewPoll",
-                        "command": "c4bi_view_poll"
-                    },
-                    {
-                        "caption": "Give Answer",
-                        "id": "c4biAnswerPoll",
-                        "command": "c4bi_answer_poll"
                     }
                 ]
             },

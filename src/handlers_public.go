@@ -16,7 +16,7 @@ func view_questionsHandler(w http.ResponseWriter, r *http.Request) {
 	t, err := t.Parse(QUESTIONS_TEMPLATE)
 	if err == nil {
 		w.Header().Set("Content-Type", "text/html")
-		t.Execute(w, &TemplateData{Questions: Questions})
+		t.Execute(w, &QuestionsData{Questions: Questions})
 	} else {
 		fmt.Println(err)
 	}

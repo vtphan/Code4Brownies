@@ -56,6 +56,21 @@ func query_pollHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //-----------------------------------------------------------------
+// Start a new poll
+//-----------------------------------------------------------------
+func start_pollHandler(w http.ResponseWriter, r *http.Request) {
+	POLL_DESCRIPTION = r.FormValue("description")
+	if POLL_DESCRIPTION == "" {
+		fmt.Fprint(w, "Empty")
+	} else {
+		fmt.Fprint(w, "Ok")
+		POLL_ON = true
+		POLL_RESULT = make(map[string]string)
+		POLL_COUNT = make(map[string]int)
+	}
+}
+
+//-----------------------------------------------------------------
 // View poll results
 //-----------------------------------------------------------------
 func view_pollHandler(w http.ResponseWriter, r *http.Request) {
@@ -63,7 +78,7 @@ func view_pollHandler(w http.ResponseWriter, r *http.Request) {
 	t, err := t.Parse(POLL_TEMPLATE)
 	if err == nil {
 		w.Header().Set("Content-Type", "text/html")
-		t.Execute(w, &TemplateData{})
+		t.Execute(w, &PollData{Description: POLL_DESCRIPTION})
 	} else {
 		fmt.Println(err)
 	}
@@ -81,8 +96,7 @@ func answer_pollHandler(w http.ResponseWriter, r *http.Request) {
 			ProcessPollResult(k, 0)
 		}
 	}
-	POLL_RESULT = make(map[string]string)
-	POLL_COUNT = make(map[string]int)
+	POLL_ON = false
 	fmt.Fprintf(w, "Complete poll.")
 }
 

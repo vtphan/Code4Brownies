@@ -18,6 +18,7 @@ c4bi_PEEK_PATH = "peek"
 c4bi_REQUEST_ENTRY_PATH = "get_post"
 c4bi_REQUEST_ENTRIES_PATH = "get_posts"
 c4bi_NEW_PROBLEM_PATH = "new_problem"
+c4bi_START_POLL_PATH = "start_poll"
 c4bi_ANSWER_POLL_PATH = "answer_poll"
 c4bi_QUIZ_QUESTION_PATH = "send_quiz_question"
 TIMEOUT = 7
@@ -71,6 +72,20 @@ class c4biClearQuestionsCommand(sublime_plugin.ApplicationCommand):
 			sublime.message_dialog(response)
 
 # ------------------------------------------------------------------
+class c4biStartPollCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		if sublime.ok_cancel_dialog('Poll the content of the current file.'):
+			file_name = self.view.file_name()
+			content = open(file_name, 'r', encoding='utf-8').read().strip()
+			url = urllib.parse.urljoin(SERVER_ADDR, c4bi_START_POLL_PATH)
+			data = urllib.parse.urlencode({'description': content}).encode('utf-8')
+			response = c4biRequest(url,data)
+			if response == 'Empty':
+				sublime.message_dialog('Poll is empty. Please redo.')
+			else:
+				sublime.message_dialog('Poll started.')
+
+# ------------------------------------------------------------------
 class c4biViewPollCommand(sublime_plugin.ApplicationCommand):
 	def run(self):
 		webbrowser.open(SERVER_ADDR + "/view_poll")
@@ -88,7 +103,6 @@ class c4biAnswerPoll(sublime_plugin.WindowCommand):
 		answer = answer.strip()
 		if len(answer) > 0:
 			url = urllib.parse.urljoin(SERVER_ADDR, c4bi_ANSWER_POLL_PATH)
-			# data = urllib.parse.urlencode({'answer': answer}).encode('ascii')
 			data = urllib.parse.urlencode({'answer': answer}).encode('utf-8')
 			response = c4biRequest(url,data)
 			if response is not None:

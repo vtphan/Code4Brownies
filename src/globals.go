@@ -59,7 +59,7 @@ var BOARDS_SEM sync.Mutex
 var NewSubs = make([]*Submission, 0)
 var AllSubs = make(map[string]*Submission)
 
-type TemplateData struct {
+type QuestionsData struct {
 	SERVER    string
 	Questions []string
 }
@@ -98,6 +98,12 @@ var QUESTIONS_TEMPLATE = `
 </html>
 `
 
+type PollData struct {
+	Description string
+}
+
+var POLL_ON = false
+var POLL_DESCRIPTION = ""
 var POLL_RESULT = make(map[string]string)
 var POLL_COUNT = make(map[string]int)
 var POLL_TEMPLATE = `
@@ -141,6 +147,7 @@ var POLL_TEMPLATE = `
   </head>
 
   <body>
+  	<div style="padding:20px 0 0 200px"><pre id="description">{{.Description}}</pre></div>
     <div id="chart_div"></div>
   </body>
 </html>

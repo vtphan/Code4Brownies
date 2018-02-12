@@ -80,6 +80,10 @@ func shareHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(uid, "submitted.")
 		fmt.Fprintf(w, uid+", thank you for sharing.")
 	} else if mode == "poll" {
+		if POLL_ON == false {
+			fmt.Fprint(w, "There is no poll at this time.")
+			return
+		}
 		body = strings.ToLower(body)
 		prev_answer, ok := POLL_RESULT[uid]
 		if ok {

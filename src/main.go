@@ -75,6 +75,7 @@ func main() {
 	// teacher handlers
 	http.HandleFunc("/clear_whiteboards", Authorize(clear_whiteboardsHandler))
 	http.HandleFunc("/clear_questions", Authorize(clear_questionsHandler))
+	http.HandleFunc("/start_poll", Authorize(start_pollHandler))
 	http.HandleFunc("/query_poll", Authorize(query_pollHandler))
 	http.HandleFunc("/view_poll", Authorize(view_pollHandler))
 	http.HandleFunc("/answer_poll", Authorize(answer_pollHandler))
