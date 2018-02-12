@@ -126,7 +126,6 @@ ANSWER: <one_line_answer>
 		answers, questions = [], [Q[0].strip()]
 		for i in range(1, len(Q)):
 			items = Q[i].split('\n', 1)
-			print(items)
 			answers.append(items[0].strip())
 			if i < len(Q)-1:
 				questions.append(items[1].strip())

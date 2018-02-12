@@ -14,11 +14,6 @@
                 "command": "c4b_share"
             },
             {
-                "caption": "Submit quiz answer",
-                "id": "c4bSubmitQuiz",
-                "command": "c4b_submit_quiz"
-            },
-            {
                 "caption": "Get hints",
                 "id": "c4bHint",
                 "command": "c4b_hint"

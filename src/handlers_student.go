@@ -99,13 +99,9 @@ func shareHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		_, err := InsertQuizAnswerSQL.Exec(uid, bid, items[1], point, time.Now())
 		if err != nil {
-			fmt.Fprint(w, "This question has expired.")
+			fmt.Fprint(w, "Failed")
 		} else {
-			if point == 0 {
-				fmt.Fprint(w, "Your answer is not correct.")
-			} else {
-				fmt.Fprintf(w, "Your answer is correct. You got %d point.", point)
-			}
+			fmt.Fprint(w, "Ok")
 		}
 	} else {
 		fmt.Fprint(w, "Unknown mode.")

@@ -68,50 +68,6 @@ def get_hints(str):
 	return hints
 
 # ------------------------------------------------------------------
-class c4bSubmitQuizCommand(sublime_plugin.TextCommand):
-	def run(self, edit):
-		info = c4b_get_attr()
-		if info is None:
-			return
-		url = urllib.parse.urljoin(info['Server'], c4b_SHARE_PATH)
-
-		# Guesstimate extension
-		this_file_name = self.view.file_name()
-		if this_file_name is None:
-			return
-		fname = this_file_name.rsplit('/',1)[-1]
-		ext = 'py' if fname is None else fname.rsplit('.',1)[-1]
-		bid = fname.split('.')[0]
-		if not bid.startswith('qz_'):
-			sublime.message_dialog('This is not a quiz question.')
-			return
-		if bid not in QuizAnswers:
-			sublime.message_dialog('This quiz question is expired.')
-			return
-
-		content = open(this_file_name, 'r', encoding='utf-8').read().strip()
-		items = content.rsplit('ANSWER:', 1)
-		answer = items[-1].strip()
-		if answer==QuizAnswers[bid]:
-			body = '1,' + answer
-		else:
-			body = '0,' + answer
-
-		values = {
-			'uid':			info['Name'],
-			'body':			body,
-			'ext':			'',
-			'mode':			'quiz',
-			'bid':			bid,
-			'hints_used':	-1,
-		}
-		data = urllib.parse.urlencode(values).encode('utf-8')
-		response = c4bRequest(url,data)
-		if response is not None:
-			sublime.message_dialog(response)
-			QuizAnswers.pop(bid)
-
-# ------------------------------------------------------------------
 class c4bCheckinCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		global CHECKED_IN
@@ -200,12 +156,55 @@ class c4bHintCommand(sublime_plugin.TextCommand):
 			sublime.message_dialog("No hints associated with this file.")
 
 # ------------------------------------------------------------------
+# class c4bSubmitQuizCommand(sublime_plugin.TextCommand):
+# 	def run(self, edit):
+# 		info = c4b_get_attr()
+# 		if info is None:
+# 			return
+# 		url = urllib.parse.urljoin(info['Server'], c4b_SHARE_PATH)
+
+# 		# Guesstimate extension
+# 		this_file_name = self.view.file_name()
+# 		if this_file_name is None:
+# 			return
+# 		fname = this_file_name.rsplit('/',1)[-1]
+# 		ext = 'py' if fname is None else fname.rsplit('.',1)[-1]
+# 		bid = fname.split('.')[0]
+# 		if not bid.startswith('qz_'):
+# 			sublime.message_dialog('This is not a quiz question.')
+# 			return
+# 		if bid not in QuizAnswers:
+# 			sublime.message_dialog('This quiz question is expired.')
+# 			return
+
+# 		content = open(this_file_name, 'r', encoding='utf-8').read().strip()
+# 		items = content.rsplit('ANSWER:', 1)
+# 		answer = items[-1].strip()
+# 		if answer==QuizAnswers[bid]:
+# 			body = '1,' + answer
+# 		else:
+# 			body = '0,' + answer
+
+# 		values = {
+# 			'uid':			info['Name'],
+# 			'body':			body,
+# 			'ext':			'',
+# 			'mode':			'quiz',
+# 			'bid':			bid,
+# 			'hints_used':	-1,
+# 		}
+# 		data = urllib.parse.urlencode(values).encode('utf-8')
+# 		response = c4bRequest(url,data)
+# 		if response is not None:
+# 			sublime.message_dialog(response)
+# 			QuizAnswers.pop(bid)
+
+# ------------------------------------------------------------------
 class c4bShareCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		info = c4b_get_attr()
 		if info is None:
 			return
-		url = urllib.parse.urljoin(info['Server'], c4b_SHARE_PATH)
 
 		# Guesstimate extension
 		this_file_name = self.view.file_name()
@@ -214,35 +213,62 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 		fname = this_file_name.rsplit('/',1)[-1]
 		ext = 'py' if fname is None else fname.rsplit('.',1)[-1]
 		bid = fname.split('.')[0]
-		if not bid.startswith('wb_'):
-			bid = ""
-		header = ''
-		if this_file_name is not None:
-			lines = open(this_file_name, 'r', encoding='utf-8').readlines()
-			if len(lines)>0 and (lines[0].startswith('#') or lines[0].startswith('//')):
-				header = lines[0]
 
-		# Determine content
-		content = ''.join([ self.view.substr(s) for s in self.view.sel() ])
-		if len(content) < 10:  # probably selected by mistake
-			content = self.view.substr(sublime.Region(0, self.view.size()))
+		point = 0
+		if bid.startswith('qz_'):
+			if bid not in QuizAnswers:
+				sublime.message_dialog('Either this question is expired or you already submitted your answer.')
+				return
+			mode = 'quiz'
+			problem = open(this_file_name, 'r', encoding='utf-8').read().strip()
+			items = problem.rsplit('ANSWER:', 1)
+			answer = items[-1].strip()
+			if answer==QuizAnswers[bid]:
+				point = 1
+			content = '{},{}'.format(point,answer)
 		else:
-			content = header + '\n' + content
+			mode = 'code'
+			if not bid.startswith('wb_'):
+				bid = ""
+			header = ''
+			if this_file_name is not None:
+				lines = open(this_file_name, 'r', encoding='utf-8').readlines()
+				if len(lines)>0 and (lines[0].startswith('#') or lines[0].startswith('//')):
+					header = lines[0]
+			content = ''.join([ self.view.substr(s) for s in self.view.sel() ])
+			if len(content) < 10:  # probably selected by mistake
+				content = self.view.substr(sublime.Region(0, self.view.size()))
+			else:
+				content = header + '\n' + content
 
-		# Now send
 		hints_used = -1 if bid not in Hints else Hints[bid][0]
 		values = {
 			'uid':			info['Name'],
 			'body':			content,
 			'ext':			ext,
-			'mode':			'code',
+			'mode':			mode,
 			'bid':			bid,
 			'hints_used':	hints_used,
 		}
 		data = urllib.parse.urlencode(values).encode('utf-8')
+		url = urllib.parse.urljoin(info['Server'], c4b_SHARE_PATH)
 		response = c4bRequest(url,data)
-		if response is not None:
+		if mode=='code':
 			sublime.message_dialog(response)
+		elif mode=='quiz':
+			if response=='Ok':
+				if point == 1:
+					sublime.message_dialog('Your answer is correct. You got 1 point.')
+				else:
+					correct_answer = QuizAnswers[bid]
+					sublime.message_dialog('Good effort. However, the correct answer is {}'.format(correct_answer))
+			elif response=='Failed':
+				sublime.message_dialog('Answer should be submitted only once.')
+			else:
+				sublime.message_dialog('Unknown error.')
+			QuizAnswers.pop(bid)
+		else:
+			print('Unknown mode of sharing.')
 
 # ------------------------------------------------------------------
 class c4bAsk(sublime_plugin.WindowCommand):
