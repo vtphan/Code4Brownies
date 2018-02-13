@@ -320,18 +320,20 @@ class c4biAwardPoint5Command(sublime_plugin.TextCommand):
 def award_points(self, edit, points):
 	this_file_name = self.view.file_name()
 	if this_file_name:
-		sid = this_file_name.rsplit('.',-1)[0]
-		sid = os.path.basename(sid)
-		# Remove c4b_ prefix from file name
+		basename = os.path.basename(this_file_name)
+		if not basename.startswith('c4b_'):
+			sublime.status_message("This is not a student submission.")
+			return
+		sid = basename.rsplit('.',-1)[0]
 		sid = sid.split('c4b_')[-1]
 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROWNIE_PATH)
 		data = urllib.parse.urlencode({'sid':sid, 'points':points}).encode('utf-8')
 		response = c4biRequest(url,data)
-		if response:
+		if response == 'Failed':
+			sublime.status_message("Failed to give brownies.")
+		else:
 			sublime.status_message(response)
 			self.view.window().run_command('close')
-		else:
-			sublime.status_message("no uid associated with this file.")
 
 # ------------------------------------------------------------------
 class c4biAboutCommand(sublime_plugin.WindowCommand):

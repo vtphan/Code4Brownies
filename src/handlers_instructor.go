@@ -198,12 +198,16 @@ func give_pointsHandler(w http.ResponseWriter, r *http.Request) {
 	if sub, ok := AllSubs[r.FormValue("sid")]; ok {
 		points, err := strconv.Atoi(r.FormValue("points"))
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprint(w, "Failed")
 		} else {
 			sub.Points = points
-			UpdatePointsSQL.Exec(points, r.FormValue("sid"))
-			mesg := fmt.Sprintf("%s: %d points.\n", sub.Uid, points)
-			fmt.Fprintf(w, mesg)
+			_, err = UpdatePointsSQL.Exec(points, r.FormValue("sid"))
+			if err != nil {
+				fmt.Fprint(w, "Failed")
+			} else {
+				mesg := fmt.Sprintf("%s: %d points.\n", sub.Uid, points)
+				fmt.Fprintf(w, mesg)
+			}
 		}
 	}
 }
