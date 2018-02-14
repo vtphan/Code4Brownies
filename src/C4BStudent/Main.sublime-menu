@@ -19,11 +19,6 @@
                 "command": "c4b_hint"
             },
             {
-                "caption": "Ask",
-                "id": "c4bAsk",
-                "command": "c4b_ask:off"
-            },
-            {
                 "caption": "Vote",
                 "id": "c4bVote",
                 "command": "c4b_vote"

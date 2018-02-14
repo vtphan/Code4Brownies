@@ -107,10 +107,15 @@ class c4bMyBoardCommand(sublime_plugin.TextCommand):
 					ext = board['Ext']
 					bid = board['Bid']
 					if bid.startswith('wb_'):
-						Hints[bid] = [0, get_hints(board['HelpContent'])]
 						if len(content.strip()) > 0:
 							wb = os.path.join(info['Folder'], bid)
-							wb += '.'+ext if ext!='' else ''
+							wb += '.'+ext if ext!='' else '.txt'
+							if os.path.exists(wb):	# MANUAL HINT
+								tmp = [os.path.basename(f) for f in os.listdir(info['Folder'])]
+								count = len([f for f in tmp if f.startswith(bid+'-')])
+								wb = os.path.join(info['Folder'], bid+'-'+str(count+1))
+							else:					# AUTOMATIC HINT
+								Hints[bid] = [0, get_hints(board['HelpContent'])]
 							with open(wb, 'w', encoding='utf-8') as f:
 								f.write(content)
 							new_view = sublime.active_window().open_file(wb)
@@ -147,57 +152,12 @@ class c4bHintCommand(sublime_plugin.TextCommand):
 			else:
 				help_content = Hints[bid][1][i]
 				Hints[bid][0] = i+1
-				# cwd = os.path.dirname(file_name)
 				hint_file = os.path.join(info['Folder'], bid) + '.' + str(Hints[bid][0])
 				with open(hint_file, 'w', encoding='utf-8') as f:
 					f.write(help_content)
 				new_view = sublime.active_window().open_file(hint_file)
 		else:
 			sublime.message_dialog("No hints associated with this file.")
-
-# ------------------------------------------------------------------
-# class c4bSubmitQuizCommand(sublime_plugin.TextCommand):
-# 	def run(self, edit):
-# 		info = c4b_get_attr()
-# 		if info is None:
-# 			return
-# 		url = urllib.parse.urljoin(info['Server'], c4b_SHARE_PATH)
-
-# 		# Guesstimate extension
-# 		this_file_name = self.view.file_name()
-# 		if this_file_name is None:
-# 			return
-# 		fname = this_file_name.rsplit('/',1)[-1]
-# 		ext = 'py' if fname is None else fname.rsplit('.',1)[-1]
-# 		bid = fname.split('.')[0]
-# 		if not bid.startswith('qz_'):
-# 			sublime.message_dialog('This is not a quiz question.')
-# 			return
-# 		if bid not in QuizAnswers:
-# 			sublime.message_dialog('This quiz question is expired.')
-# 			return
-
-# 		content = open(this_file_name, 'r', encoding='utf-8').read().strip()
-# 		items = content.rsplit('ANSWER:', 1)
-# 		answer = items[-1].strip()
-# 		if answer==QuizAnswers[bid]:
-# 			body = '1,' + answer
-# 		else:
-# 			body = '0,' + answer
-
-# 		values = {
-# 			'uid':			info['Name'],
-# 			'body':			body,
-# 			'ext':			'',
-# 			'mode':			'quiz',
-# 			'bid':			bid,
-# 			'hints_used':	-1,
-# 		}
-# 		data = urllib.parse.urlencode(values).encode('utf-8')
-# 		response = c4bRequest(url,data)
-# 		if response is not None:
-# 			sublime.message_dialog(response)
-# 			QuizAnswers.pop(bid)
 
 # ------------------------------------------------------------------
 class c4bShareCommand(sublime_plugin.TextCommand):
@@ -212,7 +172,10 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 			return
 		fname = this_file_name.rsplit('/',1)[-1]
 		ext = 'py' if fname is None else fname.rsplit('.',1)[-1]
-		bid = fname.split('.')[0]
+
+		# Determine bid
+		bid = fname.rsplit('-',1)[0]	# in case it's a manual hint
+		bid = bid.rsplit('.',1)[0]		# in case it's a wb or auto-hint
 
 		point = 0
 		if bid.startswith('qz_'):

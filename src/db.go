@@ -20,6 +20,7 @@ var UpdatePointsSQL *sql.Stmt
 var InsertAttendanceSQL *sql.Stmt
 var InsertQuizSQL *sql.Stmt
 var InsertQuizAnswerSQL *sql.Stmt
+var SelectBidFromSidSQL *sql.Stmt
 
 //-----------------------------------------------------------------
 func init_db() {
@@ -47,6 +48,7 @@ func init_db() {
 	InsertAttendanceSQL = prepare("insert into attendance (uid, date) values (?, ?)")
 	InsertQuizSQL = prepare("insert into quiz (qid, question, answer, date) values (?, ?, ?, ?)")
 	InsertQuizAnswerSQL = prepare("insert into quiz_answer (uid, qid, answer, point, date) values (?, ?, ?, ?, ?)")
+	SelectBidFromSidSQL = prepare("select bid from submission where sid = ?")
 }
 
 //-----------------------------------------------------------------

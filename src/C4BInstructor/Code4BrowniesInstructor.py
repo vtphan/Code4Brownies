@@ -181,12 +181,18 @@ def _broadcast(self, sids='__all__'):
 			help_file = os.path.join(dirname, prefix+'_help.'+ext)
 			if os.path.exists(help_file):
 				help_content = open(help_file).read()
+		if basename.startswith('c4b_'):
+			original_sid = basename.split('.')[0]
+			original_sid = original_sid.split('c4b_')[1]
+		else:
+			original_sid = ''
 		data = urllib.parse.urlencode({
 			'content': 		content,
 			'sids':			sids,
 			'ext': 			ext,
 			'help_content':	help_content,
 			'hints':		count_hints(help_content),
+			'original_sid':	original_sid,
 		}).encode('utf-8')
 		response = c4biRequest(url,data)
 		if response is not None:

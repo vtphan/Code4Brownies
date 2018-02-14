@@ -135,7 +135,6 @@ func send_quiz_questionHandler(w http.ResponseWriter, r *http.Request) {
 //-----------------------------------------------------------------
 func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	var des string
-	bid := "wb_" + RandStringRunes(6)
 	content, ext := r.FormValue("content"), r.FormValue("ext")
 	help_content := r.FormValue("help_content")
 	hints, err := strconv.Atoi(r.FormValue("hints"))
@@ -143,10 +142,20 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "Error converting number of hints.")
 		return
 	}
-
-	_, err = InsertBroadCastSQL.Exec(bid, content, ext, time.Now(), hints)
-	if err != nil {
-		fmt.Println("Error inserting into broadcast table.", err)
+	original_sid := r.FormValue("original_sid")
+	bid := ""
+	if original_sid != "" {
+		err = SelectBidFromSidSQL.QueryRow(original_sid).Scan(&bid)
+		if err != nil {
+			fmt.Println("Error retrieving bid with", original_sid)
+		}
+	}
+	if bid == "" {
+		bid = "wb_" + RandStringRunes(6)
+		_, err = InsertBroadCastSQL.Exec(bid, content, ext, time.Now(), hints)
+		if err != nil {
+			fmt.Println("Error inserting into broadcast table.", err)
+		}
 	}
 
 	BOARDS_SEM.Lock()
