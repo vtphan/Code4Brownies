@@ -40,7 +40,7 @@ def c4b_get_attr():
 	if 'Server' not in json_obj or len(json_obj['Server']) < 4:
 		sublime.message_dialog("Please set server address.")
 		return None
-	if 'Folder' not in json_obj:
+	if 'Folder' not in json_obj or not os.path.exists(json_obj['Folder']):
 		sublime.message_dialog("Please set course folder.")
 		return None
 	return json_obj
