@@ -29,12 +29,12 @@ Students and the instructor communicate by sending messages to a server.  The se
 
 OSX: run the server in a terminal
 ```
-    ./c4b_osx_0.36
+    ./c4b_osx_0.37
 ````
 
 Windows: run the server in a terminal
 ```
-    ./c4b_win_0.36.exe
+    ./c4b_win_0.37.exe
 ````
 
 If you want to run the server with the source code, you need to install Go.  To run the server:
