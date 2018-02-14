@@ -110,7 +110,7 @@ class c4bMyBoardCommand(sublime_plugin.TextCommand):
 						if len(content.strip()) > 0:
 							wb = os.path.join(info['Folder'], bid)
 							wb += '.'+ext if ext!='' else '.txt'
-							if os.path.exists(wb):	# MANUAL HINT
+							if os.path.exists(wb):	# MANUAL HINT, since bid already exists.
 								tmp = [os.path.basename(f) for f in os.listdir(info['Folder'])]
 								count = len([f for f in tmp if f.startswith(bid+'-')])
 								wb = os.path.join(info['Folder'], bid+'-'+str(count+1))
