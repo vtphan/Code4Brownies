@@ -80,14 +80,14 @@ func RegisterStudent(uid string) {
 		return
 	}
 	Boards[uid] = make([]*Board, 0)
-	for i := 0; i < len(Boards["__all__"]); i++ {
+	for i := 0; i < len(Boards["__default__"]); i++ {
 		b := &Board{
-			Content:      Boards["__all__"][i].Content,
-			HelpContent:  Boards["__all__"][i].HelpContent,
-			Description:  Boards["__all__"][i].Description,
-			StartingTime: Boards["__all__"][i].StartingTime,
-			Ext:          Boards["__all__"][i].Ext,
-			Bid:          Boards["__all__"][i].Bid,
+			Content:      Boards["__default__"][i].Content,
+			HelpContent:  Boards["__default__"][i].HelpContent,
+			Description:  Boards["__default__"][i].Description,
+			StartingTime: Boards["__default__"][i].StartingTime,
+			Ext:          Boards["__default__"][i].Ext,
+			Bid:          Boards["__default__"][i].Bid,
 		}
 		Boards[uid] = append(Boards[uid], b)
 	}
@@ -113,5 +113,5 @@ func loadWhiteboards() {
 		rows.Scan(&uid)
 		Boards[uid] = make([]*Board, 0)
 	}
-	Boards["__all__"] = make([]*Board, 0)
+	Boards["__default__"] = make([]*Board, 0)
 }

@@ -7,11 +7,30 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 )
+
+//-----------------------------------------------------------------
+func testHandler(w http.ResponseWriter, r *http.Request) {
+	var m []BroadcastData
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
+	err = json.Unmarshal(body, &m)
+	if err != nil {
+		panic(err)
+	}
+	for i := 0; i < len(m); i++ {
+		fmt.Println(i, m[i].Sids, m[i].Content)
+	}
+	fmt.Fprintf(w, "Ok")
+}
 
 //-----------------------------------------------------------------
 // INSTRUCTOR's HANDLERS
@@ -134,70 +153,112 @@ func send_quiz_questionHandler(w http.ResponseWriter, r *http.Request) {
 // instructor broadcast contents to students
 //-----------------------------------------------------------------
 func broadcastHandler(w http.ResponseWriter, r *http.Request) {
-	var des string
-	content, ext := r.FormValue("content"), r.FormValue("ext")
-	help_content := r.FormValue("help_content")
-	hints, err := strconv.Atoi(r.FormValue("hints"))
-	if err != nil {
-		fmt.Fprint(w, "Error converting number of hints.")
-		return
-	}
-	original_sid := r.FormValue("original_sid")
-	bid := ""
-	if original_sid != "" {
-		err = SelectBidFromSidSQL.QueryRow(original_sid).Scan(&bid)
-		if err != nil {
-			fmt.Println("Error retrieving bid with", original_sid)
-		}
-	}
-	if bid == "" {
-		bid = "wb_" + RandStringRunes(6)
-		_, err = InsertBroadCastSQL.Exec(bid, content, ext, time.Now(), hints)
-		if err != nil {
-			fmt.Println("Error inserting into broadcast table.", err)
-		}
-	}
-
 	BOARDS_SEM.Lock()
 	defer BOARDS_SEM.Unlock()
 
-	if r.FormValue("sids") == "__all__" {
-		// for _, board := range Boards {
+	// Get the json data
+	var data []BroadcastData
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		panic(err)
+	}
+	if len(data) == 0 {
+		fmt.Fprintf(w, "No content copied to boards.")
+		return
+	}
+
+	// Determine broadcast ids
+	bids := make([]string, 0)
+	for i := 0; i < len(data); i++ {
+		// Retrieve existing bid, or create a new one
+		bid := ""
+		if data[i].Original_sid != "" {
+			err = SelectBidFromSidSQL.QueryRow(data[i].Original_sid).Scan(&bid)
+			if err != nil {
+				panic(err)
+			}
+		}
+		if bid == "" {
+			bid = "wb_" + RandStringRunes(6)
+			_, err = InsertBroadCastSQL.Exec(
+				bid,
+				data[i].Content,
+				data[i].Ext,
+				time.Now(),
+				data[i].Hints,
+			)
+			if err != nil {
+				fmt.Println("Error inserting into broadcast table.", err)
+			}
+		}
+		bids = append(bids, bid)
+	}
+
+	// Determine which boards to insert content
+	selected_uid := make([]string, 0)
+	if data[0].Sids == "__all__" {
 		for uid, _ := range Boards {
-			des = strings.SplitN(content, "\n", 2)[0]
+			selected_uid = append(selected_uid, uid)
+		}
+	} else {
+		sids := strings.Split(data[0].Sids, ",")
+		for i := 0; i < len(sids); i++ {
+			sid := string(sids[i])
+			sub, ok := AllSubs[sid]
+			if ok {
+				selected_uid = append(selected_uid, sub.Uid)
+			}
+		}
+	}
+
+	// Insert broadcast content into boards
+	var des string
+	mode := data[0].Mode
+	rand_idx := make([]int, 0)
+	if mode == 2 {
+		i := 0
+		for j := 0; j < len(selected_uid); j++ {
+			rand_idx = append(rand_idx, i)
+			i = (i + 1) % len(data)
+		}
+		rand.Shuffle(len(rand_idx), func(i, j int) {
+			rand_idx[i], rand_idx[j] = rand_idx[j], rand_idx[i]
+		})
+	}
+	for j := 0; j < len(selected_uid); j++ {
+		uid := selected_uid[j]
+		if mode < 2 {
+			for i := 0; i < len(data); i++ {
+				des = strings.SplitN(data[i].Content, "\n", 2)[0]
+				b := &Board{
+					Content:      data[i].Content,
+					HelpContent:  data[i].Help_content,
+					Ext:          data[i].Ext,
+					Bid:          bids[i],
+					Description:  des,
+					StartingTime: time.Now(),
+				}
+				Boards[uid] = append(Boards[uid], b)
+			}
+		} else {
+			i := rand_idx[j]
+			des = strings.SplitN(data[i].Content, "\n", 2)[0]
 			b := &Board{
-				Content:      content,
-				HelpContent:  help_content,
-				Ext:          ext,
-				Bid:          bid,
+				Content:      data[i].Content,
+				HelpContent:  data[i].Help_content,
+				Ext:          data[i].Ext,
+				Bid:          bids[i],
 				Description:  des,
 				StartingTime: time.Now(),
 			}
 			Boards[uid] = append(Boards[uid], b)
 		}
-	} else {
-		sids := strings.Split(r.FormValue("sids"), ",")
-		for i := 0; i < len(sids); i++ {
-			sid := string(sids[i])
-			sub, ok := AllSubs[sid]
-			if ok {
-				des = strings.SplitN(content, "\n", 2)[0]
-				b := &Board{
-					Content:      content,
-					HelpContent:  help_content,
-					Ext:          ext,
-					Bid:          bid,
-					Description:  des,
-					StartingTime: time.Now(),
-				}
-				Boards[sub.Uid] = append(Boards[sub.Uid], b)
-			} else {
-				fmt.Fprintf(w, "sid "+sid+" is not found.")
-				return
-			}
-		}
 	}
-	fmt.Fprintf(w, "Content copied.")
+	fmt.Fprintf(w, "Content copied to boards.")
 }
 
 //-----------------------------------------------------------------

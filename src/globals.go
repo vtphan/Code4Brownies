@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-const VERSION = "0.36"
+const VERSION = "0.38"
 
 var ADDR = ""
 var PORT = "4030"
@@ -26,6 +26,16 @@ type Board struct {
 }
 
 var Boards = make(map[string][]*Board)
+
+type BroadcastData struct {
+	Content      string `json:"content"`
+	Sids         string `json:"sids"`
+	Ext          string `json:"ext"`
+	Help_content string `json:"help_content"`
+	Hints        int    `json:"hints"`
+	Original_sid string `json:"original_sid"`
+	Mode         int    `json:"mode"`
+}
 
 var Questions []string
 

@@ -171,7 +171,12 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 		if this_file_name is None:
 			return
 		fname = this_file_name.rsplit('/',1)[-1]
-		ext = 'py' if fname is None else fname.rsplit('.',1)[-1]
+		if fname is None or '.' not in fname:
+			ext = 'txt'
+		else:
+			ext = fname.rsplit('.',1)[-1]
+			if ext not in ['txt','md','py','go','java','c','rb','pl']:
+				ext = 'txt'
 
 		# Determine bid
 		bid = fname.rsplit('-',1)[0]	# in case it's a manual hint

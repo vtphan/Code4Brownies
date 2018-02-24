@@ -26,8 +26,8 @@ TIMEOUT = 7
 POSTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Posts")
 
 # ------------------------------------------------------------------
-def c4biRequest(url, data):
-	req = urllib.request.Request(url, data)
+def c4biRequest(url, data, headers={}):
+	req = urllib.request.Request(url, data, headers=headers)
 	try:
 		with urllib.request.urlopen(req, None, TIMEOUT) as response:
 			return response.read().decode(encoding="utf-8")
@@ -156,47 +156,92 @@ ANSWER: <one_line_answer>
 					sublime.status_message(response)
 
 # ------------------------------------------------------------------
-def _broadcast(self, sids='__all__'):
-	file_name = self.view.file_name()
-	ext = '' if file_name is None else file_name.rsplit('.',1)[-1]
-	header = ''
-	if file_name is not None:
-		lines = open(file_name, 'r', encoding='utf-8').readlines()
-		if len(lines)>0 and (lines[0].startswith('#') or lines[0].startswith('//')):
-			header = lines[0]
+class c4biTestCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		url = urllib.parse.urljoin(SERVER_ADDR, 'test')
+		q = [
+			dict(sids='XXX', content='first 1\nfirst 2'),
+			dict(content='second 1\nsecond 2', something='YYY', sids='__all__', help='XXX'),
+		]
+		c = json.dumps(q).encode('utf-8')
+		response = c4biRequest(url, c, headers={'content-type': 'application/json; charset=utf-8'})
+		if response is not None:
+			sublime.status_message(response)
 
-	content = ''.join([ self.view.substr(s) for s in self.view.sel() ])
-	if len(content) < 10:  # probably selected by mistake
-		content = self.view.substr(sublime.Region(0, self.view.size()))
-	else:
-		content = header + '\n' + content
+# ------------------------------------------------------------------
+# mode: 0 (unicast, current tab)
+#		1 (multicast, all tabs)
+#		2 (multicast, all tabs, randomized)
+# ------------------------------------------------------------------
+def _multicast(self, file_names, sids, mode):
+	data = []
+	for file_name in file_names:
+		ext = file_name.rsplit('.',1)[-1]
+		header = ''
+		if file_name is not None:
+			lines = open(file_name, 'r', encoding='utf-8').readlines()
+			if len(lines)>0 and (lines[0].startswith('#') or lines[0].startswith('//')):
+				header = lines[0]
 
-	url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
-	if file_name is not None:
-		basename = os.path.basename(file_name)
-		dirname = os.path.dirname(file_name)
-		help_content, test_content = '', ''
-		if ext in ['py', 'go', 'java', 'c', 'pl', 'rb', 'txt', 'md']:
-			prefix = basename.rsplit('.', 1)[0]
-			help_file = os.path.join(dirname, prefix+'_help.'+ext)
-			if os.path.exists(help_file):
-				help_content = open(help_file).read()
-		if basename.startswith('c4b_'):
-			original_sid = basename.split('.')[0]
-			original_sid = original_sid.split('c4b_')[1]
-		else:
-			original_sid = ''
-		data = urllib.parse.urlencode({
+		content = ''.join(lines)
+		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
+		if file_name is not None:
+			basename = os.path.basename(file_name)
+			dirname = os.path.dirname(file_name)
+			help_content, test_content = '', ''
+			if ext in ['py', 'go', 'java', 'c', 'pl', 'rb', 'txt', 'md']:
+				prefix = basename.rsplit('.', 1)[0]
+				help_file = os.path.join(dirname, prefix+'_help.'+ext)
+				if os.path.exists(help_file):
+					help_content = open(help_file).read()
+			if basename.startswith('c4b_'):
+				original_sid = basename.split('.')[0]
+				original_sid = original_sid.split('c4b_')[1]
+			else:
+				original_sid = ''
+
+		data.append({
 			'content': 		content,
 			'sids':			sids,
 			'ext': 			ext,
 			'help_content':	help_content,
 			'hints':		count_hints(help_content),
 			'original_sid':	original_sid,
-		}).encode('utf-8')
-		response = c4biRequest(url,data)
-		if response is not None:
-			sublime.status_message(response)
+			'mode': 		mode,
+		})
+
+	json_data = json.dumps(data).encode('utf-8')
+	response = c4biRequest(url, json_data, headers={'content-type': 'application/json; charset=utf-8'})
+	if response is not None:
+		sublime.status_message(response)
+
+# ------------------------------------------------------------------
+def _broadcast(self, sids='__all__', mode=0):
+	if mode == 0:
+		fname = self.view.file_name()
+		if fname is None:
+			sublime.message_dialog('Cannot broadcast unsaved content.')
+			return
+		_multicast(self, [fname], sids, mode)
+	else:
+		fnames = [ v.file_name() for v in sublime.active_window().views() ]
+		fnames = [ fname for fname in fnames if fname is not None ]
+		if mode == 1:
+			mesg = 'Broadcast all {} tabs in this window?'.format(len(fnames))
+		elif mode == 2:
+			mesg = 'Broadcast (randomized) all {} tabs in this window?'.format(len(fnames))
+		else:
+			sublime.message_dialog('Unable to broadcast. Unknown mode:', mode)
+			return
+		if sublime.ok_cancel_dialog(mesg):
+			_multicast(self, fnames, sids, mode)
+
+# # ------------------------------------------------------------------
+# Instructor broadcasts content on group defined by current window
+# ------------------------------------------------------------------
+class c4biMulticastRandCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		_broadcast(self, mode=2)
 
 # ------------------------------------------------------------------
 # Instructor gives feedback on this specific file
@@ -219,13 +264,14 @@ class c4biGiveFeedbackCommand(sublime_plugin.TextCommand):
 class c4biBroadcastGroupCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		fnames = [ v.file_name() for v in sublime.active_window().views() ]
-		names = [ os.path.basename(n.rsplit('.',-1)[0]) for n in fnames ]
+		names = [ os.path.basename(n.rsplit('.',-1)[0]) for n in fnames if n is not None ]
 		# Remove c4b_ prefix from file name
-		sids = ','.join([ n.split('c4b_')[-1] for n in names if n.startswith('c4b_') ])
-		if sids != '':
-			_broadcast(self, sids)
-		else:
+		sids = [ n.split('c4b_')[-1] for n in names if n.startswith('c4b_') ]
+		if sids == []:
 			sublime.message_dialog("No students' files in this window.")
+			return
+		if sublime.ok_cancel_dialog("Share this file with {} students whose submissions arein this window?".format(len(sids))):
+			_broadcast(self, ','.join(sids))
 
 # ------------------------------------------------------------------
 class c4biBroadcastCommand(sublime_plugin.TextCommand):

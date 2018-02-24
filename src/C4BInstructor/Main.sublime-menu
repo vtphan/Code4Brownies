@@ -18,14 +18,19 @@
                         "command": "c4bi_broadcast"
                     },
                     {
-                        "caption": "Group",
+                        "caption": "This person",
+                        "id": "c4biGiveFeedback",
+                        "command": "c4bi_give_feedback"
+                    },
+                    {
+                        "caption": "This group",
                         "id": "c4biBroadcastGroup",
                         "command": "c4bi_broadcast_group"
                     },
                     {
-                        "caption": "Individual",
-                        "id": "c4biGiveFeedback",
-                        "command": "c4bi_give_feedback"
+                        "caption": "All (rand)",
+                        "id": "c4biMulticastRand",
+                        "command": "c4bi_multicast_rand"
                     }
                 ]
             },

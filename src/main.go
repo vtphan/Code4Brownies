@@ -73,6 +73,7 @@ func main() {
 	http.HandleFunc("/checkin", AutoRegister(checkinHandler))
 
 	// teacher handlers
+	http.HandleFunc("/test", Authorize(testHandler))
 	http.HandleFunc("/clear_whiteboards", Authorize(clear_whiteboardsHandler))
 	http.HandleFunc("/clear_questions", Authorize(clear_questionsHandler))
 	http.HandleFunc("/start_poll", Authorize(start_pollHandler))
