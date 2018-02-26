@@ -191,7 +191,7 @@ def _multicast(self, file_names, sids, mode):
 			help_content, test_content = '', ''
 			if ext in ['py', 'go', 'java', 'c', 'pl', 'rb', 'txt', 'md']:
 				prefix = basename.rsplit('.', 1)[0]
-				help_file = os.path.join(dirname, prefix+'_help.'+ext)
+				help_file = os.path.join(dirname, prefix+'_hints.'+ext)
 				if os.path.exists(help_file):
 					help_content = open(help_file).read()
 			if basename.startswith('c4b_'):
