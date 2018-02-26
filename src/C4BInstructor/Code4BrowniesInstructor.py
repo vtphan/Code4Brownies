@@ -184,6 +184,12 @@ def _multicast(self, file_names, sids, mode):
 				header = lines[0]
 
 		content = ''.join(lines)
+
+		# Skip empty tabs
+		if content.strip() == '':
+			print('Skipping empty file:', file_name)
+			break
+
 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
 		if file_name is not None:
 			basename = os.path.basename(file_name)
