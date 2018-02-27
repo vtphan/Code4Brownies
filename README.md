@@ -16,15 +16,17 @@ Sharing of code and learning material is carried out by a server running on the 
 
 <img src="diagram.png" width=70% align="middle">
 
-## Student Guide
+## Installation guide for students
 
 [Click here](STUDENT.md)
 
-## Teacher Guide
+## Installation guide for teachers
 
 [Click here](TEACHER.md)
 
+## Teaching with Code4Brownies
 
+[Click here](TEACHING.md)
 
 
 
