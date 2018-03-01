@@ -26,7 +26,7 @@ Sharing of code and learning material is carried out by a server running on the 
 
 ## Installation guide for TAs
 
-[Click here](Assistant.md)
+[Click here](ASSISTANT.md)
 
 ## Teaching with Code4Brownies
 
