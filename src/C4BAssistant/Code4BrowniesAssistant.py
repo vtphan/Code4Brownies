@@ -25,9 +25,6 @@ def c4ba_get_attr():
 	except:
 		sublime.message_dialog("Please set server address and your name.")
 		return None
-	if 'Name' not in json_obj or len(json_obj['Name']) < 2:
-		sublime.message_dialog("Please set your name.")
-		return None
 	if 'Server' not in json_obj or len(json_obj['Server']) < 4:
 		sublime.message_dialog("Please set server address.")
 		return None
@@ -65,7 +62,7 @@ class c4baCleanCommand(sublime_plugin.ApplicationCommand):
 #		2 (multicast, all tabs, randomized)
 # ------------------------------------------------------------------
 def _multicast(self, file_names, sids, mode):
-	info = c4b_get_attr()
+	info = c4ba_get_attr()
 	if info is None:
 		return
 
@@ -87,26 +84,17 @@ def _multicast(self, file_names, sids, mode):
 
 		basename = os.path.basename(file_name)
 		dirname = os.path.dirname(file_name)
-		help_content, test_content = '', ''
-		if ext in ['py', 'go', 'java', 'c', 'pl', 'rb', 'txt', 'md']:
-			prefix = basename.rsplit('.', 1)[0]
-			help_file = os.path.join(dirname, prefix+'_hints.'+ext)
-			if os.path.exists(help_file):
-				help_content = open(help_file).read()
 		if basename.startswith('c4b_'):
 			original_sid = basename.split('.')[0]
 			original_sid = original_sid.split('c4b_')[1]
 		else:
 			original_sid = ''
-		num_of_hints = count_hints(help_content)
-		if len(help_content) > 0:
-			sublime.message_dialog('There are {} hints associated with this exercise.'.format(num_of_hints))
 		data.append({
 			'content': 		content,
 			'sids':			sids,
 			'ext': 			ext,
-			'help_content':	help_content,
-			'hints':		num_of_hints,
+			'help_content':	'',
+			'hints':		0,
 			'original_sid':	original_sid,
 			'mode': 		mode,
 			'passcode':		info['Passcode'],
@@ -179,7 +167,7 @@ class c4baGiveFeedbackCommand(sublime_plugin.TextCommand):
 # ------------------------------------------------------------------
 class c4baGetAllCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
-		info = c4b_get_attr()
+		info = c4ba_get_attr()
 		if info is None:
 			return
 		url = urllib.parse.urljoin(info['Server'], c4ba_REQUEST_ENTRIES_PATH)
@@ -234,7 +222,7 @@ class c4baAwardPoint5Command(sublime_plugin.TextCommand):
 def award_points(self, edit, points):
 	this_file_name = self.view.file_name()
 	if this_file_name:
-		info = c4b_get_attr()
+		info = c4ba_get_attr()
 		if info is None:
 			return
 		basename = os.path.basename(this_file_name)
@@ -251,6 +239,68 @@ def award_points(self, edit, points):
 		else:
 			sublime.status_message(response)
 			self.view.window().run_command('close')
+
+# ------------------------------------------------------------------
+class c4baSetServer(sublime_plugin.WindowCommand):
+	def run(self):
+		try:
+			with open(c4ba_FILE, 'r') as f:
+				info = json.loads(f.read())
+		except:
+			info = dict()
+		if 'Server' not in info:
+			info['Server'] = ''
+		sublime.active_window().show_input_panel("Set server address.  Press Enter:",
+			info['Server'],
+			self.set,
+			None,
+			None)
+
+	def set(self, addr):
+		addr = addr.strip()
+		if len(addr) > 0:
+			try:
+				with open(c4ba_FILE, 'r') as f:
+					info = json.loads(f.read())
+			except:
+				info = dict()
+			if not addr.startswith('http://'):
+				addr = 'http://' + addr
+			info['Server'] = addr
+			with open(c4ba_FILE, 'w') as f:
+				f.write(json.dumps(info, indent=4))
+		else:
+			sublime.message_dialog("Server address is empty.")
+
+# ------------------------------------------------------------------
+class c4baSetPasscode(sublime_plugin.WindowCommand):
+	def run(self):
+		try:
+			with open(c4ba_FILE, 'r') as f:
+				info = json.loads(f.read())
+		except:
+			info = dict()
+		if 'Passcode' not in info:
+			info['Passcode'] = ''
+		sublime.active_window().show_input_panel("Set passcode.  Press Enter:",
+			info['Passcode'],
+			self.set,
+			None,
+			None)
+
+	def set(self, name):
+		name = name.strip()
+		if len(name) > 4:
+			try:
+				with open(c4ba_FILE, 'r') as f:
+					info = json.loads(f.read())
+			except:
+				info = dict()
+			info['Passcode'] = name
+			with open(c4ba_FILE, 'w') as f:
+				f.write(json.dumps(info, indent=4))
+		else:
+			sublime.message_dialog("Passcode is too short.")
 
 # ------------------------------------------------------------------
 class c4baAboutCommand(sublime_plugin.WindowCommand):

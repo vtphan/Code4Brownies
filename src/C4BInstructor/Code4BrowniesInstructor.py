@@ -1,5 +1,5 @@
 # Code4Brownies - Instructor module
-# Author: Vinhthuy Phan, 2015-2017
+# Author: Vinhthuy Phan, 2015-2018
 #
 
 import sublime, sublime_plugin
@@ -190,10 +190,9 @@ def _multicast(self, file_names, sids, mode):
 			print('Skipping empty file:', file_name)
 			break
 
-		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
 		basename = os.path.basename(file_name)
 		dirname = os.path.dirname(file_name)
-		help_content, test_content = '', ''
+		help_content = ''
 		if ext in ['py', 'go', 'java', 'c', 'pl', 'rb', 'txt', 'md']:
 			prefix = basename.rsplit('.', 1)[0]
 			help_file = os.path.join(dirname, prefix+'_hints.'+ext)
@@ -217,6 +216,7 @@ def _multicast(self, file_names, sids, mode):
 			'mode': 		mode,
 		})
 
+	url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
 	json_data = json.dumps(data).encode('utf-8')
 	response = c4biRequest(url, json_data, headers={'content-type': 'application/json; charset=utf-8'})
 	if response is not None:
@@ -405,7 +405,7 @@ class c4biAboutCommand(sublime_plugin.WindowCommand):
 			version = open(os.path.join(sublime.packages_path(), "C4BInstructor", "VERSION")).read().strip()
 		except:
 			version = 'Unknown'
-		sublime.message_dialog("Code4Brownies (v%s)\nCopyright © 2015-2017 Vinhthuy Phan" % version)
+		sublime.message_dialog("Code4Brownies (v%s)\nCopyright © 2015-2018 Vinhthuy Phan" % version)
 
 # ------------------------------------------------------------------
 class c4biUpdate(sublime_plugin.WindowCommand):

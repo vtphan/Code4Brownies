@@ -51,6 +51,17 @@
             },
             {"caption":"-", "id":"side-bar-separator"},
             {
+                "caption": "Set server address",
+                "id": "c4baSetServer",
+                "command": "c4ba_set_server"
+            },
+            {
+                "caption": "Set passcode",
+                "id": "c4baSetPasscode",
+                "command": "c4ba_set_passcode"
+            },
+            {"caption":"-", "id":"side-bar-separator"},
+            {
                 "caption": "Update",
                 "id": "c4baUpdate",
                 "command": "c4ba_update"

@@ -1,5 +1,5 @@
 # Code4Brownies - Student module
-# Author: Vinhthuy Phan, 2015-2017
+# Author: Vinhthuy Phan, 2015-2018
 #
 import sublime, sublime_plugin
 import urllib.parse
@@ -365,7 +365,7 @@ class c4bSetServer(sublime_plugin.WindowCommand):
 			with open(c4b_FILE, 'w') as f:
 				f.write(json.dumps(info, indent=4))
 		else:
-			sublime.message_dialog("Server address is empty.")
+			sublime.message_dialog("Server address cannot be empty.")
 
 # ------------------------------------------------------------------
 class c4bSetName(sublime_plugin.WindowCommand):
@@ -395,7 +395,7 @@ class c4bSetName(sublime_plugin.WindowCommand):
 			with open(c4b_FILE, 'w') as f:
 				f.write(json.dumps(info, indent=4))
 		else:
-			sublime.message_dialog("Server address cannot be empty.")
+			sublime.message_dialog("Name cannot be empty.")
 
 # ------------------------------------------------------------------
 class c4bSetFolder(sublime_plugin.WindowCommand):
@@ -433,7 +433,7 @@ class c4bSetFolder(sublime_plugin.WindowCommand):
 			with open(c4b_FILE, 'w') as f:
 				f.write(json.dumps(info, indent=4))
 		else:
-			sublime.message_dialog("Folder is empty.")
+			sublime.message_dialog("Folder cannot be empty.")
 
 # ------------------------------------------------------------------
 class c4bAbout(sublime_plugin.WindowCommand):
@@ -442,7 +442,7 @@ class c4bAbout(sublime_plugin.WindowCommand):
 			version = open(os.path.join(sublime.packages_path(), "C4BStudent", "VERSION")).read().strip()
 		except:
 			version = 'Unknown'
-		sublime.message_dialog("Code4Brownies (v%s)\nCopyright 2015-2017 Vinhthuy Phan" % version)
+		sublime.message_dialog("Code4Brownies (v%s)\nCopyright 2015-2018 Vinhthuy Phan" % version)
 
 # ------------------------------------------------------------------
 class c4bUpdate(sublime_plugin.WindowCommand):
