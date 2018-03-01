@@ -1,0 +1,70 @@
+[
+    {
+        "caption": "TA",
+        "id": "C4Ba",
+        "children": [
+            {
+                "caption": "Get all",
+                "id": "c4baGetAll",
+                "command": "c4ba_get_all"
+            },
+            {
+                "caption": "Give feedback",
+                "id": "c4biGiveFeedback",
+                "command": "c4ba_give_feedback"
+            },
+            {
+                "caption": "Give brownies",
+                "id": "c4baAwardPoint",
+                "children": [
+                    {
+                        "caption": "0 brownie",
+                        "id": "c4baAwardPoint0",
+                        "command": "c4ba_award_point0"
+                    },
+                    {
+                        "caption": "1 brownie",
+                        "id": "c4baAwardPoint1",
+                        "command": "c4ba_award_point1"
+                    },
+                    {
+                        "caption": "2 brownies",
+                        "id": "c4baAwardPoint2",
+                        "command": "c4ba_award_point2"
+                    },
+                    {
+                        "caption": "3 brownies",
+                        "id": "c4baAwardPoint3",
+                        "command": "c4ba_award_point3"
+                    },
+                    {
+                        "caption": "4 brownies",
+                        "id": "c4baAwardPoint4",
+                        "command": "c4ba_award_point4"
+                    },
+                    {
+                        "caption": "5 brownies",
+                        "id": "c4baAwardPoint5",
+                        "command": "c4ba_award_point5"
+                    }
+                ]
+            },
+            {"caption":"-", "id":"side-bar-separator"},
+            {
+                "caption": "Update",
+                "id": "c4baUpdate",
+                "command": "c4ba_update"
+            },
+            {
+                "caption": "Clean local directory",
+                "id": "c4baClean",
+                "command": "c4ba_clean"
+            },
+            {
+                "caption": "About",
+                "id": "c4baAbout",
+                "command": "c4ba_about"
+            }
+        ]
+    }
+]

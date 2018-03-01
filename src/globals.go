@@ -9,12 +9,13 @@ import (
 	"time"
 )
 
-const VERSION = "0.39"
+const VERSION = "0.40"
 
 var ADDR = ""
 var PORT = "4030"
 var USER_DB string
 var SERVER = ""
+var TAPASSCODE = "thisisthekeyfortaTA"
 
 type Board struct {
 	Content      string

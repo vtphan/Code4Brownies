@@ -33,7 +33,7 @@ func informIPAddress() string {
 //-----------------------------------------------------------------
 func Authorize(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Host != "localhost:4030" {
+		if r.Host != "localhost:4030" || TAPASSCODE != r.FormValue("passcode") {
 			w.WriteHeader(http.StatusUnauthorized)
 			fmt.Fprint(w, "Unauthorized")
 		} else {
