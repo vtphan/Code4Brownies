@@ -43,6 +43,21 @@ func AddSubmission(uid, bid, body, ext string, hints_used int) {
 
 // ------------------------------------------------------------------
 // Remove a submission from NewSubs
+// ------------------------------------------------------------------
+func RemoveSubmissionBySID(sid string) {
+	SUBS_SEM.Lock()
+	defer SUBS_SEM.Unlock()
+	for i := 0; i < len(NewSubs); i++ {
+		if NewSubs[i].Sid == sid {
+			NewSubs = append(NewSubs[:i], NewSubs[i+1:]...)
+			return
+		}
+	}
+}
+
+// ------------------------------------------------------------------
+// Remove a submission from NewSubs
+// ------------------------------------------------------------------
 func RemoveSubmission(i int) *Submission {
 	if i < 0 || len(NewSubs) == 0 || i > len(NewSubs) {
 		return &Submission{}

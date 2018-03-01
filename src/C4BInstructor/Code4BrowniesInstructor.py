@@ -175,13 +175,13 @@ class c4biTestCommand(sublime_plugin.TextCommand):
 # ------------------------------------------------------------------
 def _multicast(self, file_names, sids, mode):
 	data = []
+	file_names = [ f for f in file_names if f is not None ]
 	for file_name in file_names:
 		ext = file_name.rsplit('.',1)[-1]
 		header = ''
-		if file_name is not None:
-			lines = open(file_name, 'r', encoding='utf-8').readlines()
-			if len(lines)>0 and (lines[0].startswith('#') or lines[0].startswith('//')):
-				header = lines[0]
+		lines = open(file_name, 'r', encoding='utf-8').readlines()
+		if len(lines)>0 and (lines[0].startswith('#') or lines[0].startswith('//')):
+			header = lines[0]
 
 		content = ''.join(lines)
 
@@ -191,27 +191,28 @@ def _multicast(self, file_names, sids, mode):
 			break
 
 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROADCAST_PATH)
-		if file_name is not None:
-			basename = os.path.basename(file_name)
-			dirname = os.path.dirname(file_name)
-			help_content, test_content = '', ''
-			if ext in ['py', 'go', 'java', 'c', 'pl', 'rb', 'txt', 'md']:
-				prefix = basename.rsplit('.', 1)[0]
-				help_file = os.path.join(dirname, prefix+'_hints.'+ext)
-				if os.path.exists(help_file):
-					help_content = open(help_file).read()
-			if basename.startswith('c4b_'):
-				original_sid = basename.split('.')[0]
-				original_sid = original_sid.split('c4b_')[1]
-			else:
-				original_sid = ''
-
+		basename = os.path.basename(file_name)
+		dirname = os.path.dirname(file_name)
+		help_content, test_content = '', ''
+		if ext in ['py', 'go', 'java', 'c', 'pl', 'rb', 'txt', 'md']:
+			prefix = basename.rsplit('.', 1)[0]
+			help_file = os.path.join(dirname, prefix+'_hints.'+ext)
+			if os.path.exists(help_file):
+				help_content = open(help_file).read()
+		if basename.startswith('c4b_'):
+			original_sid = basename.split('.')[0]
+			original_sid = original_sid.split('c4b_')[1]
+		else:
+			original_sid = ''
+		num_of_hints = count_hints(help_content)
+		if len(help_content) > 0:
+			sublime.message_dialog('There are {} hints associated with this exercise.'.format(num_of_hints))
 		data.append({
 			'content': 		content,
 			'sids':			sids,
 			'ext': 			ext,
 			'help_content':	help_content,
-			'hints':		count_hints(help_content),
+			'hints':		num_of_hints,
 			'original_sid':	original_sid,
 			'mode': 		mode,
 		})
@@ -355,6 +356,10 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 # ------------------------------------------------------------------
 # Instructor rewards brownies.
 # ------------------------------------------------------------------
+class c4biAwardPoint0Command(sublime_plugin.TextCommand):
+	def run(self, edit):
+		award_points(self, edit, 0)
+
 class c4biAwardPoint1Command(sublime_plugin.TextCommand):
 	def run(self, edit):
 		award_points(self, edit, 1)

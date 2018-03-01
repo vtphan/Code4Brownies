@@ -70,6 +70,11 @@
                 "id": "c4biAwardPoint",
                 "children": [
                     {
+                        "caption": "0 brownie",
+                        "id": "c4biAwardPoint0",
+                        "command": "c4bi_award_point0"
+                    },
+                    {
                         "caption": "1 brownie",
                         "id": "c4biAwardPoint1",
                         "command": "c4bi_award_point1"

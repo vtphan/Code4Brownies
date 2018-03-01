@@ -272,6 +272,7 @@ func give_pointsHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			sub.Points = points
 			_, err = UpdatePointsSQL.Exec(points, r.FormValue("sid"))
+			RemoveSubmissionBySID(r.FormValue("sid"))
 			if err != nil {
 				fmt.Fprint(w, "Failed")
 			} else {
@@ -305,7 +306,8 @@ func get_postHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err.Error)
 	} else {
-		js, err := json.Marshal(RemoveSubmission(e))
+		// js, err := json.Marshal(RemoveSubmission(e))
+		js, err := json.Marshal(NewSubs[e])
 		if err != nil {
 			fmt.Println(err.Error())
 		} else {
@@ -326,7 +328,7 @@ func get_postsHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
-		NewSubs = make([]*Submission, 0)
+		// NewSubs = make([]*Submission, 0)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
 	}

@@ -116,6 +116,8 @@ class c4bMyBoardCommand(sublime_plugin.TextCommand):
 								wb = os.path.join(info['Folder'], bid+'-'+str(count+1))
 							else:					# AUTOMATIC HINT
 								Hints[bid] = [0, get_hints(board['HelpContent'])]
+								if len(Hints[bid][1]) > 0:
+									sublime.message_dialog('There are {} hints associated with this exercise.'.format(len(Hints[bid][1])))
 							with open(wb, 'w', encoding='utf-8') as f:
 								f.write(content)
 							new_view = sublime.active_window().open_file(wb)
