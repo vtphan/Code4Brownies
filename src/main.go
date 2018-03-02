@@ -1,5 +1,5 @@
 //
-// Author: Vinhthuy Phan, 2015 - 2017
+// Author: Vinhthuy Phan, 2015 - 2018
 //
 package main
 
@@ -33,7 +33,21 @@ func informIPAddress() string {
 //-----------------------------------------------------------------
 func Authorize(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Host == "localhost:4030" || TAPASSCODE == r.FormValue("passcode") {
+		if r.Host == "localhost:4030" {
+			fn(w, r)
+		} else {
+			w.WriteHeader(http.StatusUnauthorized)
+			fmt.Fprint(w, "Unauthorized")
+		}
+	}
+}
+
+//-----------------------------------------------------------------
+// Authorize TAs
+//-----------------------------------------------------------------
+func AuthorizeTA(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if TAPASSCODE == r.FormValue("passcode") {
 			fn(w, r)
 		} else {
 			w.WriteHeader(http.StatusUnauthorized)
@@ -65,6 +79,11 @@ func main() {
 	USER_DB = filepath.Join(".", "c4b.db")
 	flag.StringVar(&USER_DB, "db", USER_DB, "user database.")
 	flag.Parse()
+
+	// TA handlers
+	http.HandleFunc("/ta_feedback", AuthorizeTA(feedbackHandler))
+	http.HandleFunc("/ta_give_points", AuthorizeTA(ta_give_pointsHandler))
+	http.HandleFunc("/ta_get_posts", AuthorizeTA(get_postsHandler))
 
 	// student handlers
 	http.HandleFunc("/share", AutoRegister(shareHandler))

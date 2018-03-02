@@ -1,5 +1,5 @@
 //
-// Author: Vinhthuy Phan, 2015 - 2017
+// Author: Vinhthuy Phan, 2015 - 2018
 //
 package main
 
@@ -150,7 +150,7 @@ func send_quiz_questionHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //-----------------------------------------------------------------
-// instructor broadcast contents to students
+// instructor broadcasts materials to students
 //-----------------------------------------------------------------
 func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	BOARDS_SEM.Lock()
@@ -262,7 +262,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //-----------------------------------------------------------------
-// give one brownie point to a user
+// Instructor gives brownie points to a user
 //-----------------------------------------------------------------
 func give_pointsHandler(w http.ResponseWriter, r *http.Request) {
 	if sub, ok := AllSubs[r.FormValue("sid")]; ok {
@@ -270,13 +270,13 @@ func give_pointsHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Fprint(w, "Failed")
 		} else {
-			sub.Points = points
-			_, err = UpdatePointsSQL.Exec(points, r.FormValue("sid"))
 			RemoveSubmissionBySID(r.FormValue("sid"))
+			sub.Points = points
+			_, err = UpdatePointsSQL.Exec(sub.Points, r.FormValue("sid"))
 			if err != nil {
 				fmt.Fprint(w, "Failed")
 			} else {
-				mesg := fmt.Sprintf("%s: %d points.\n", sub.Uid, points)
+				mesg := fmt.Sprintf("%s: %d points.\n", sub.Uid, sub.Points)
 				fmt.Fprintf(w, mesg)
 			}
 		}

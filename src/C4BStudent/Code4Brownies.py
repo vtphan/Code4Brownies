@@ -171,6 +171,7 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 		# Guesstimate extension
 		this_file_name = self.view.file_name()
 		if this_file_name is None:
+			sublime.message_dialog('Please save this to a file first.')
 			return
 		fname = this_file_name.rsplit('/',1)[-1]
 		if fname is None or '.' not in fname:

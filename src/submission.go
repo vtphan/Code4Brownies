@@ -1,5 +1,5 @@
 //
-// Author: Vinhthuy Phan, 2015 - 2017
+// Author: Vinhthuy Phan, 2015 - 2018
 //
 package main
 
@@ -44,15 +44,16 @@ func AddSubmission(uid, bid, body, ext string, hints_used int) {
 // ------------------------------------------------------------------
 // Remove a submission from NewSubs
 // ------------------------------------------------------------------
-func RemoveSubmissionBySID(sid string) {
+func RemoveSubmissionBySID(sid string) bool {
 	SUBS_SEM.Lock()
 	defer SUBS_SEM.Unlock()
 	for i := 0; i < len(NewSubs); i++ {
 		if NewSubs[i].Sid == sid {
 			NewSubs = append(NewSubs[:i], NewSubs[i+1:]...)
-			return
+			return true
 		}
 	}
+	return false
 }
 
 // ------------------------------------------------------------------

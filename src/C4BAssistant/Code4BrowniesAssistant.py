@@ -10,9 +10,9 @@ import json
 import socket
 
 c4ba_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
-c4ba_BROADCAST_PATH = "broadcast"
-c4ba_BROWNIE_PATH = "give_points"
-c4ba_REQUEST_ENTRIES_PATH = "get_posts"
+c4ba_FEEDBACK_PATH = "ta_feedback"
+c4ba_BROWNIE_PATH = "ta_give_points"
+c4ba_REQUEST_ENTRIES_PATH = "ta_get_posts"
 TIMEOUT = 7
 
 POSTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Posts")
@@ -57,110 +57,46 @@ class c4baCleanCommand(sublime_plugin.ApplicationCommand):
 					sublime.status_message("remove " + local_file)
 
 # ------------------------------------------------------------------
-# mode: 0 (unicast, current tab)
-#		1 (multicast, all tabs)
-#		2 (multicast, all tabs, randomized)
-# ------------------------------------------------------------------
-def _multicast(self, file_names, sids, mode):
-	info = c4ba_get_attr()
-	if info is None:
-		return
-
-	data = []
-	file_names = [ f for f in file_names if f is not None ]
-	for file_name in file_names:
-		ext = file_name.rsplit('.',1)[-1]
-		header = ''
-		lines = open(file_name, 'r', encoding='utf-8').readlines()
-		if len(lines)>0 and (lines[0].startswith('#') or lines[0].startswith('//')):
-			header = lines[0]
-
-		content = ''.join(lines)
-
-		# Skip empty tabs
-		if content.strip() == '':
-			print('Skipping empty file:', file_name)
-			break
-
-		basename = os.path.basename(file_name)
-		dirname = os.path.dirname(file_name)
-		if basename.startswith('c4b_'):
-			original_sid = basename.split('.')[0]
-			original_sid = original_sid.split('c4b_')[1]
-		else:
-			original_sid = ''
-		data.append({
-			'content': 		content,
-			'sids':			sids,
-			'ext': 			ext,
-			'help_content':	'',
-			'hints':		0,
-			'original_sid':	original_sid,
-			'mode': 		mode,
-			'passcode':		info['Passcode'],
-		})
-
-	url = urllib.parse.urljoin(info['Server'], c4ba_BROADCAST_PATH)
-	json_data = json.dumps(data).encode('utf-8')
-	response = c4baRequest(url, json_data, headers={'content-type': 'application/json; charset=utf-8'})
-	if response is not None:
-		sublime.status_message(response)
-
-# ------------------------------------------------------------------
-def _broadcast(self, sids='__all__', mode=0):
-	if mode == 0:
-		fname = self.view.file_name()
-		if fname is None:
-			sublime.message_dialog('Cannot broadcast unsaved content.')
-			return
-		_multicast(self, [fname], sids, mode)
-	else:
-		fnames = [ v.file_name() for v in sublime.active_window().views() ]
-		fnames = [ fname for fname in fnames if fname is not None ]
-		if mode == 1:
-			mesg = 'Broadcast all {} tabs in this window?'.format(len(fnames))
-		elif mode == 2:
-			mesg = 'Broadcast (randomized) all {} tabs in this window?'.format(len(fnames))
-		else:
-			sublime.message_dialog('Unable to broadcast. Unknown mode:', mode)
-			return
-		if sublime.ok_cancel_dialog(mesg):
-			_multicast(self, fnames, sids, mode)
-
-# ------------------------------------------------------------------
 # TA gives feedback on this specific file
 # ------------------------------------------------------------------
 class c4baGiveFeedbackCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
+		info = c4ba_get_attr()
+		if info is None:
+			return
+
 		this_file_name = self.view.file_name()
-		if this_file_name is not None:
-			sid = this_file_name.rsplit('.',-1)[0]
-			sid = os.path.basename(sid)
-			if sid.startswith('c4b_'):
-				sid = sid.split('c4b_')[-1]
-				_broadcast(self, sid)
-			else:
-				sublime.message_dialog("No student associated to this window.")
+		if this_file_name is None:
+			sublime.message_dialog('No student is associated with this file.')
+			return
 
-# ------------------------------------------------------------------
-# TA broadcasts content on group defined by current window
-# ------------------------------------------------------------------
-# class c4baBroadcastGroupCommand(sublime_plugin.TextCommand):
-# 	def run(self, edit):
-# 		fnames = [ v.file_name() for v in sublime.active_window().views() ]
-# 		names = [ os.path.basename(n.rsplit('.',-1)[0]) for n in fnames if n is not None ]
-# 		# Remove c4b_ prefix from file name
-# 		sids = [ n.split('c4b_')[-1] for n in names if n.startswith('c4b_') ]
-# 		if sids == []:
-# 			sublime.message_dialog("No students' files in this window.")
-# 			return
-# 		if sublime.ok_cancel_dialog("Share this file with {} students whose submissions arein this window?".format(len(sids))):
-# 			_broadcast(self, ','.join(sids))
+		# Get content and ext
+		ext = this_file_name.rsplit('.',1)[-1]
+		header = ''
+		lines = open(this_file_name, 'r', encoding='utf-8').readlines()
+		if len(lines)>0 and (lines[0].startswith('#') or lines[0].startswith('//')):
+			header = lines[0]
+		content = ''.join(lines)
 
-# ------------------------------------------------------------------
-# class c4baBroadcastCommand(sublime_plugin.TextCommand):
-# 	def run(self, edit):
-# 		_broadcast(self)
+		# Determine sid
+		basename = os.path.basename(this_file_name)
+		if not basename.startswith('c4b_'):
+			sublime.message_dialog('No student is associated with this file.')
+			return
+		sid = basename.split('.')[0]
+		sid = sid.split('c4b_')[1]
+
+		data = urllib.parse.urlencode({
+			'content': 		content,
+			'sid':			sid,
+			'ext': 			ext,
+			'passcode':		info['Passcode'],
+		}).encode('utf-8')
+
+		url = urllib.parse.urljoin(info['Server'], c4ba_FEEDBACK_PATH)
+		response = c4baRequest(url, data)
+		if response is not None:
+			sublime.message_dialog(response)
 
 # ------------------------------------------------------------------
 # TA retrieves all posts.

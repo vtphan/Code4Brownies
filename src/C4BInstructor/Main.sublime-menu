@@ -18,7 +18,7 @@
                         "command": "c4bi_broadcast"
                     },
                     {
-                        "caption": "This person",
+                        "caption": "This student",
                         "id": "c4biGiveFeedback",
                         "command": "c4bi_give_feedback"
                     },
@@ -69,11 +69,6 @@
                 "caption": "Give brownies",
                 "id": "c4biAwardPoint",
                 "children": [
-                    {
-                        "caption": "0 brownie",
-                        "id": "c4biAwardPoint0",
-                        "command": "c4bi_award_point0"
-                    },
                     {
                         "caption": "1 brownie",
                         "id": "c4biAwardPoint1",
