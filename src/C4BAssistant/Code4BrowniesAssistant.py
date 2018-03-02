@@ -258,11 +258,11 @@ class c4baUpdate(sublime_plugin.WindowCommand):
 			c4b_menu = os.path.join(package_path, "Main.sublime-menu")
 			c4b_version = os.path.join(package_path, "VERSION")
 			try:
-				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/Assistant/Code4BrowniesAssistant.py", c4b_py)
-				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/Assistant/Main.sublime-menu", c4b_menu)
+				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BAssistant/Code4BrowniesAssistant.py", c4b_py)
+				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/C4BAssistant/Main.sublime-menu", c4b_menu)
 				urllib.request.urlretrieve("https://raw.githubusercontent.com/vtphan/Code4Brownies/master/src/VERSION", c4b_version)
 				version = open(c4b_version).read().strip()
-				sublime.message_dialog("Code4Brownies has been updated to version %s.  Latest server is at https://github.com/vtphan/Code4Brownies" % version)
+				sublime.message_dialog("Code4Brownies has been updated to version %s." % version)
 			except:
 				sublime.message_dialog("A problem occurred during update.")
 
