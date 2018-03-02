@@ -358,6 +358,10 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 # ------------------------------------------------------------------
 # Instructor rewards brownies.
 # ------------------------------------------------------------------
+class c4biAwardPoint0Command(sublime_plugin.TextCommand):
+	def run(self, edit):
+		award_points(self, edit, 0)
+
 class c4biAwardPoint1Command(sublime_plugin.TextCommand):
 	def run(self, edit):
 		award_points(self, edit, 1)

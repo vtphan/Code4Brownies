@@ -171,9 +171,9 @@ def award_points(self, edit, points):
 		data = urllib.parse.urlencode({'sid':sid, 'points':points, 'passcode':info['Passcode']}).encode('utf-8')
 		response = c4baRequest(url,data)
 		if response == 'Failed':
-			sublime.status_message("Failed to give brownies.")
+			sublime.message_dialog("Failed to give brownies.")
 		else:
-			sublime.status_message(response)
+			sublime.message_dialog(response)
 			self.view.window().run_command('close')
 
 # ------------------------------------------------------------------
