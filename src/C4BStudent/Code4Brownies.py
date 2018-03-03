@@ -99,7 +99,7 @@ class c4bTrackBoardCommand(sublime_plugin.ApplicationCommand):
 		if info is None:
 			return
 		u = urllib.parse.urlencode({'uid' : info['Name']})
-		webbrowser.open(info['Server'] + '/check_board?' + u)
+		webbrowser.open(info['Server'] + '/track_board?' + u)
 
 # ------------------------------------------------------------------
 def get_hints(str):
