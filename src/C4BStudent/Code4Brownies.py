@@ -10,13 +10,14 @@ import threading
 import time
 import random
 import datetime
+import webbrowser
 
 c4b_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
 c4b_CHECKIN_PATH = "checkin"
 c4b_SHARE_PATH = "share"
 c4b_MY_POINTS_PATH = "my_points"
 c4b_RECEIVE_BROADCAST_PATH = "receive_broadcast"
-c4b_CHECK_BROADCAST_PATH = "check_broadcast"
+c4b_CHECK_BOARD_PATH = "check_board"
 c4b_DEFAULT_FOLDER = os.path.join(os.path.expanduser('~'), 'C4B')
 TIMEOUT = 7
 CHECKED_IN = ''
@@ -26,36 +27,79 @@ c4b_WHITEBOARD_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "
 Hints = {}
 QuizAnswers = {}
 CUR_BID = None
+
 # ------------------------------------------------------------------
-def c4b_get_attr():
+# def check_board():
+# 	delay = 10000
+# 	# new_view = sublime.active_window().run_command('c4b_my_board')
+# 	# print('>', new_view)
+
+# 	info = c4b_get_attr(verbose=False)
+# 	if info is None:
+# 		return
+# 	url = urllib.parse.urljoin(info['Server'], c4b_CHECK_BOARD_PATH)
+# 	data = urllib.parse.urlencode({'uid':info['Name']}).encode('utf-8')
+# 	response = c4bRequest(url, data, verbose=False)
+# 	if response is not None:
+# 		count = len(response)
+# 		if count==-1:
+# 			print('Unknown uid: -1')
+# 		elif count==0:
+# 			print('Whiteboard empty')
+# 		elif count > 0:
+# 			print('You might have new material on your board.', count, PREVIOUS_BOARD_COUNT)
+# 			sublime.status_message('You have new material on the virtual whiteboard. Get it now.')
+# 	else:
+		# print('Error checking for whiteboard')
+	# sublime.set_timeout_async(check_board, delay)
+
+#sublime.set_timeout_async(check_board, 10000)
+
+# ------------------------------------------------------------------
+def c4b_get_attr(verbose=True):
 	try:
 		with open(c4b_FILE, 'r') as f:
 			json_obj = json.loads(f.read())
 	except:
-		sublime.message_dialog("Please set server address and your name.")
+		if verbose==True:
+			sublime.message_dialog("Please set server address and your name.")
 		return None
 	if 'Name' not in json_obj or len(json_obj['Name']) < 2:
-		sublime.message_dialog("Please set your name.")
+		if verbose==True:
+			sublime.message_dialog("Please set your name.")
 		return None
 	if 'Server' not in json_obj or len(json_obj['Server']) < 4:
-		sublime.message_dialog("Please set server address.")
+		if verbose==True:
+			sublime.message_dialog("Please set server address.")
 		return None
 	if 'Folder' not in json_obj or not os.path.exists(json_obj['Folder']):
-		sublime.message_dialog("Please set course folder.")
+		if verbose==True:
+			sublime.message_dialog("Please set course folder.")
 		return None
 	return json_obj
 
 # ------------------------------------------------------------------
-def c4bRequest(url, data):
+def c4bRequest(url, data, verbose=True):
 	req = urllib.request.Request(url, data)
 	try:
 		with urllib.request.urlopen(req, None, TIMEOUT) as response:
 			return response.read().decode(encoding="utf-8")
 	except urllib.error.HTTPError as err:
-		sublime.message_dialog("{0}".format(err))
+		if verbose==True:
+			sublime.message_dialog("{0}".format(err))
 	except urllib.error.URLError as err:
-		sublime.message_dialog("{0}\nCannot connect to server.".format(err))
+		if verbose==True:
+			sublime.message_dialog("{0}\nCannot connect to server.".format(err))
 	return None
+
+# ------------------------------------------------------------------
+class c4bTrackBoardCommand(sublime_plugin.ApplicationCommand):
+	def run(self):
+		info = c4b_get_attr()
+		if info is None:
+			return
+		u = urllib.parse.urlencode({'uid' : info['Name']})
+		webbrowser.open(info['Server'] + '/check_board?' + u)
 
 # ------------------------------------------------------------------
 def get_hints(str):
@@ -89,8 +133,8 @@ class c4bCheckinCommand(sublime_plugin.TextCommand):
 
 
 # ------------------------------------------------------------------
-class c4bMyBoardCommand(sublime_plugin.TextCommand):
-	def run(self, edit):
+class c4bMyBoardCommand(sublime_plugin.WindowCommand):
+	def run(self):
 		info = c4b_get_attr()
 		if info is None:
 			return

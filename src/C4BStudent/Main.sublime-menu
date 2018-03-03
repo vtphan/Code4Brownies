@@ -23,6 +23,11 @@
                 "id": "c4bVote",
                 "command": "c4b_vote"
             },
+            {
+                "caption": "Track White Board",
+                "id": "c4bTrackBoard",
+                "command": "c4b_track_board"
+            },
             {"caption":"-", "id":"side-bar-separator"},
             {
                 "caption": "Check in",

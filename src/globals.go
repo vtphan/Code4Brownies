@@ -175,3 +175,39 @@ var VIEW_SUBMISSION_QUEUE_TEMPLATE = `
 	</body>
 </html>
 `
+
+var CHECK_BOARD_TEMPLATE = `
+<html>
+	<head>
+  		<title>Tracking</title>
+		<meta http-equiv="refresh" content="10" />
+	</head>
+	<style>
+		pre {
+		    font-family: monospace;
+		    font-size: 100%;
+		    color: red;
+		    padding-top:1em;
+		    padding-left:0.5em;
+		}
+	</style>
+	<body>
+	<pre>{{.Message}}</pre>
+	</body>
+</html>
+`
+
+const YOU_GOT_CODE = `
+Y
+O
+U
+
+G
+O
+T
+
+C
+O
+D
+E
+`
