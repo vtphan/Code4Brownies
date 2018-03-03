@@ -163,3 +163,15 @@ var POLL_TEMPLATE = `
   </body>
 </html>
 `
+
+var VIEW_SUBMISSION_QUEUE_TEMPLATE = `
+<html>
+	<head>
+  		<title>New Submissions</title>
+		<meta http-equiv="refresh" content="5" />
+	</head>
+	<body>
+	{{.Count}} new submissions.
+	</body>
+</html>
+`

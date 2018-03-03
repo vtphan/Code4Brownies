@@ -49,6 +49,11 @@
                     }
                 ]
             },
+            {
+                "caption": "Submission Queue",
+                "id": "c4baViewSubmissionQueue",
+                "command": "c4ba_view_submission_queue"
+            },
             {"caption":"-", "id":"side-bar-separator"},
             {
                 "caption": "Set server address",

@@ -11,6 +11,19 @@ import (
 )
 
 //-----------------------------------------------------------------
+func queue_lengthHandler(w http.ResponseWriter, r *http.Request) {
+	t := template.New("poll template")
+	t, err := t.Parse(VIEW_SUBMISSION_QUEUE_TEMPLATE)
+	if err == nil {
+		data := struct{ Count int }{len(NewSubs)}
+		w.Header().Set("Content-Type", "text/html")
+		t.Execute(w, data)
+	} else {
+		fmt.Println(err)
+	}
+}
+
+//-----------------------------------------------------------------
 func view_questionsHandler(w http.ResponseWriter, r *http.Request) {
 	t := template.New("questions template")
 	t, err := t.Parse(QUESTIONS_TEMPLATE)

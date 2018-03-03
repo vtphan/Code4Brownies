@@ -8,41 +8,69 @@ import urllib.request
 import os
 import json
 import socket
+import webbrowser
 
 c4ba_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
 c4ba_FEEDBACK_PATH = "ta_feedback"
 c4ba_BROWNIE_PATH = "ta_give_points"
 c4ba_REQUEST_ENTRIES_PATH = "ta_get_posts"
+c4ba_QUEUE_LENGTH_PATH = "queue_length"
 TIMEOUT = 7
 
 POSTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Posts")
 
 # ------------------------------------------------------------------
-def c4ba_get_attr():
+
+# def check_new_submissions():
+# 	delay = 5000
+# 	info = c4ba_get_attr(verbose=False)
+# 	if info is None:
+# 		return
+# 	url = urllib.parse.urljoin(info['Server'], c4ba_QUEUE_LENGTH_PATH)
+# 	data = urllib.parse.urlencode({}).encode('utf-8')
+# 	response = c4baRequest(url, data, verbose=False)
+# 	if response is not None:
+# 		count = len(response)
+# 		if count > 0:
+# 			print('There are {} submissions in the queue.'.format(count))
+# 			sublime.status_message('There are {} submissions in the queue.'.format(count))
+# 	else:
+# 		print('Error checking for new submissions. Response is None')
+# 	sublime.set_timeout_async(check_new_submissions, delay)
+
+# sublime.set_timeout_async(check_new_submissions, 5000)
+
+# ------------------------------------------------------------------
+def c4ba_get_attr(verbose=True):
 	try:
 		with open(c4ba_FILE, 'r') as f:
 			json_obj = json.loads(f.read())
 	except:
-		sublime.message_dialog("Please set server address and your name.")
+		if verbose:
+			sublime.message_dialog("Please set server address and your name.")
 		return None
 	if 'Server' not in json_obj or len(json_obj['Server']) < 4:
-		sublime.message_dialog("Please set server address.")
+		if verbose:
+			sublime.message_dialog("Please set server address.")
 		return None
 	if 'Passcode' not in json_obj or len(json_obj['Passcode']) < 4:
-		sublime.message_dialog("Please set passcode.")
+		if verbose:
+			sublime.message_dialog("Please set passcode.")
 		return None
 	return json_obj
 
 # ------------------------------------------------------------------
-def c4baRequest(url, data, headers={}):
+def c4baRequest(url, data, headers={}, verbose=True):
 	req = urllib.request.Request(url, data, headers=headers)
 	try:
 		with urllib.request.urlopen(req, None, TIMEOUT) as response:
 			return response.read().decode(encoding="utf-8")
 	except urllib.error.HTTPError as err:
-		sublime.message_dialog("{0}".format(err))
+		if verbose:
+			sublime.message_dialog("{0}".format(err))
 	except urllib.error.URLError as err:
-		sublime.message_dialog("{0}\nCannot connect to server.".format(err))
+		if verbose:
+			sublime.message_dialog("{0}\nCannot connect to server.".format(err))
 	return None
 
 # ------------------------------------------------------------------
@@ -175,6 +203,14 @@ def award_points(self, edit, points):
 		else:
 			sublime.message_dialog(response)
 			self.view.window().run_command('close')
+
+# ------------------------------------------------------------------
+class c4baViewSubmissionQueueCommand(sublime_plugin.ApplicationCommand):
+	def run(self):
+		info = c4ba_get_attr()
+		if info is None:
+			return
+		webbrowser.open(info['Server'] + "/queue_length")
 
 # ------------------------------------------------------------------
 class c4baSetServer(sublime_plugin.WindowCommand):
