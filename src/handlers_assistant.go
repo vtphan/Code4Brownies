@@ -25,7 +25,7 @@ func feedbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if bid == "" {
 		bid = "wb_" + RandStringRunes(6)
-		_, err = InsertBroadCastSQL.Exec(bid, content, ext, time.Now(), 0)
+		_, err = InsertBroadcastSQL.Exec(bid, content, ext, time.Now(), 0, "TA")
 		if err != nil {
 			fmt.Println("Error inserting into broadcast table.", err)
 		}

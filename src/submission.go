@@ -37,7 +37,7 @@ func AddSubmission(uid, bid, body, ext string, hints_used int) {
 		if len(NewSubs) == 1 {
 			fmt.Print("\x07")
 		}
-		InsertSubmissionSQL.Exec(sid, uid, bid, 0, des, ext, time.Now(), body, hints_used)
+		InsertSubmissionSQL.Exec(sid, uid, bid, 0, des, ext, time.Now(), body, hints_used, nil)
 	}
 }
 
@@ -49,6 +49,10 @@ func RemoveSubmissionBySID(sid string) bool {
 	defer SUBS_SEM.Unlock()
 	for i := 0; i < len(NewSubs); i++ {
 		if NewSubs[i].Sid == sid {
+			_, err := UpdateCompletionTimeSQL.Exec(time.Now(), NewSubs[i].Sid)
+			if err != nil {
+				fmt.Println("Failed to update completion time")
+			}
 			NewSubs = append(NewSubs[:i], NewSubs[i+1:]...)
 			return true
 		}
@@ -66,6 +70,10 @@ func RemoveSubmission(i int) *Submission {
 		SUBS_SEM.Lock()
 		defer SUBS_SEM.Unlock()
 		s := NewSubs[i]
+		_, err := UpdateCompletionTimeSQL.Exec(time.Now(), s.Sid)
+		if err != nil {
+			fmt.Println("Failed to update completion time")
+		}
 		NewSubs = append(NewSubs[:i], NewSubs[i+1:]...)
 		return s
 	}
