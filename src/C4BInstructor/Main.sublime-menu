@@ -123,9 +123,9 @@
                 "command": "c4bi_peek"
             },
             {
-                "caption": "Submission Queue",
-                "id": "c4biViewSubmissionQueue",
-                "command": "c4bi_view_submission_queue"
+                "caption": "Track submissions",
+                "id": "c4biTrackSubmissions",
+                "command": "c4bi_track_submissions"
             },
             {"caption":"-", "id":"side-bar-separator"},
             {

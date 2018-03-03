@@ -164,22 +164,33 @@ var POLL_TEMPLATE = `
 </html>
 `
 
-var VIEW_SUBMISSION_QUEUE_TEMPLATE = `
+var TRACK_SUBMISSIONS_TEMPLATE = `
 <html>
 	<head>
-  		<title>New Submissions</title>
-		<meta http-equiv="refresh" content="5" />
+  		<title>Track Submissions</title>
+		<meta http-equiv="refresh" content="10" />
+	<style>
+		div {
+		    font-family: monospace;
+		    font-size: 150%;
+		    color: red;
+		    padding-top:0.5em;
+		    padding-left:0.5em;
+		}
+	</style>
 	</head>
 	<body>
-	{{.Count}} new submissions.
+	<div>
+	{{.Message}}
+	</div>
 	</body>
 </html>
 `
 
-var CHECK_BOARD_TEMPLATE = `
+var TRACK_BOARD_TEMPLATE = `
 <html>
 	<head>
-  		<title>Tracking</title>
+  		<title>Track Virtual Board</title>
 		<meta http-equiv="refresh" content="10" />
 	</head>
 	<style>

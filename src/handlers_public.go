@@ -11,14 +11,14 @@ import (
 )
 
 //-----------------------------------------------------------------
-func check_boardHandler(w http.ResponseWriter, r *http.Request) {
+func track_boardHandler(w http.ResponseWriter, r *http.Request) {
 	uid := r.FormValue("uid")
 	board, ok := Boards[uid]
 	if !ok {
-		fmt.Println("check_board: unknown user", uid)
+		fmt.Println("track_board: unknown user", uid)
 	} else {
 		t := template.New("check board template")
-		t, err := t.Parse(CHECK_BOARD_TEMPLATE)
+		t, err := t.Parse(TRACK_BOARD_TEMPLATE)
 		if err == nil {
 			data := struct{ Message string }{""}
 			if len(board) > 0 {
@@ -33,11 +33,14 @@ func check_boardHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //-----------------------------------------------------------------
-func queue_lengthHandler(w http.ResponseWriter, r *http.Request) {
-	t := template.New("queue length template")
-	t, err := t.Parse(VIEW_SUBMISSION_QUEUE_TEMPLATE)
+func track_submissionsHandler(w http.ResponseWriter, r *http.Request) {
+	t := template.New("track submission template")
+	t, err := t.Parse(TRACK_SUBMISSIONS_TEMPLATE)
 	if err == nil {
-		data := struct{ Count int }{len(NewSubs)}
+		data := struct{ Message string }{""}
+		if len(NewSubs) > 0 {
+			data = struct{ Message string }{fmt.Sprintf("%d", len(NewSubs))}
+		}
 		w.Header().Set("Content-Type", "text/html")
 		t.Execute(w, data)
 	} else {

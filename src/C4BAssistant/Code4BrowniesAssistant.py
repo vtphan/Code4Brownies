@@ -14,7 +14,6 @@ c4ba_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
 c4ba_FEEDBACK_PATH = "ta_feedback"
 c4ba_BROWNIE_PATH = "ta_give_points"
 c4ba_REQUEST_ENTRIES_PATH = "ta_get_posts"
-c4ba_QUEUE_LENGTH_PATH = "queue_length"
 TIMEOUT = 7
 
 POSTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Posts")
@@ -205,12 +204,12 @@ def award_points(self, edit, points):
 			self.view.window().run_command('close')
 
 # ------------------------------------------------------------------
-class c4baViewSubmissionQueueCommand(sublime_plugin.ApplicationCommand):
+class c4baTrackSubmissionsCommand(sublime_plugin.ApplicationCommand):
 	def run(self):
 		info = c4ba_get_attr()
 		if info is None:
 			return
-		webbrowser.open(info['Server'] + "/queue_length")
+		webbrowser.open(info['Server'] + "/track_submissions")
 
 # ------------------------------------------------------------------
 class c4baSetServer(sublime_plugin.WindowCommand):

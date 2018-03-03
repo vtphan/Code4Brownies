@@ -50,9 +50,9 @@
                 ]
             },
             {
-                "caption": "Submission Queue",
-                "id": "c4baViewSubmissionQueue",
-                "command": "c4ba_view_submission_queue"
+                "caption": "Track submissions",
+                "id": "c4baTrackSubmissions",
+                "command": "c4ba_track_submissions"
             },
             {"caption":"-", "id":"side-bar-separator"},
             {

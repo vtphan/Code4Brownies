@@ -107,8 +107,8 @@ func main() {
 	http.HandleFunc("/send_quiz_question", Authorize(send_quiz_questionHandler))
 
 	// public handlers
-	http.HandleFunc("/check_board", check_boardHandler)
-	http.HandleFunc("/queue_length", queue_lengthHandler)
+	http.HandleFunc("/track_board", track_boardHandler)
+	http.HandleFunc("/track_submissions", track_submissionsHandler)
 	http.HandleFunc("/view_questions", view_questionsHandler)
 	http.HandleFunc("/get_questions", get_questionsHandler)
 

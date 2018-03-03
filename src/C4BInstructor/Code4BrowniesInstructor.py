@@ -49,9 +49,9 @@ class c4biCleanCommand(sublime_plugin.ApplicationCommand):
 					sublime.status_message("remove " + local_file)
 
 # ------------------------------------------------------------------
-class c4biViewSubmissionQueueCommand(sublime_plugin.ApplicationCommand):
+class c4biTrackSubmissionsCommand(sublime_plugin.ApplicationCommand):
 	def run(self):
-		webbrowser.open(SERVER_ADDR + "/queue_length")
+		webbrowser.open(SERVER_ADDR + "/track_submissions")
 
 # ------------------------------------------------------------------
 class c4biViewQuestionsCommand(sublime_plugin.ApplicationCommand):
