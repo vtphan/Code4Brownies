@@ -52,6 +52,10 @@ def c4ba_get_attr(verbose=True):
 		if verbose:
 			sublime.message_dialog("Please set server address.")
 		return None
+	if 'Name' not in json_obj:
+		if verbose:
+			sublime.message_dialog("Please set your name.")
+		return None
 	if 'Passcode' not in json_obj or len(json_obj['Passcode']) < 4:
 		if verbose:
 			sublime.message_dialog("Please set passcode.")
@@ -118,6 +122,7 @@ class c4baGiveFeedbackCommand(sublime_plugin.TextCommand):
 			'sid':			sid,
 			'ext': 			ext,
 			'passcode':		info['Passcode'],
+			'name':			info['Name'],
 		}).encode('utf-8')
 
 		url = urllib.parse.urljoin(info['Server'], c4ba_FEEDBACK_PATH)
@@ -134,7 +139,10 @@ class c4baGetAllCommand(sublime_plugin.TextCommand):
 		if info is None:
 			return
 		url = urllib.parse.urljoin(info['Server'], c4ba_REQUEST_ENTRIES_PATH)
-		data = urllib.parse.urlencode({'passcode':info['Passcode']}).encode('utf-8')
+		data = urllib.parse.urlencode({
+			'passcode':	info['Passcode'],
+			'name':		info['Name'],
+		}).encode('utf-8')
 		response = c4baRequest(url,data)
 		if response is not None:
 			entries = json.loads(response)
@@ -152,7 +160,7 @@ class c4baGetAllCommand(sublime_plugin.TextCommand):
 						fp.write(entry['Body'])
 					new_view = self.view.window().open_file(userFile)
 			else:
-				sublime.status_message("Queue is empty.")
+				sublime.message_dialog("Queue is empty.")
 
 
 # ------------------------------------------------------------------
@@ -195,7 +203,12 @@ def award_points(self, edit, points):
 		sid = basename.rsplit('.',-1)[0]
 		sid = sid.split('c4b_')[-1]
 		url = urllib.parse.urljoin(info['Server'], c4ba_BROWNIE_PATH)
-		data = urllib.parse.urlencode({'sid':sid, 'points':points, 'passcode':info['Passcode']}).encode('utf-8')
+		data = urllib.parse.urlencode({
+			'sid':		sid,
+			'points':	points,
+			'passcode':	info['Passcode'],
+			'name':		info['Name'],
+		}).encode('utf-8')
 		response = c4baRequest(url,data)
 		if response == 'Failed':
 			sublime.message_dialog("Failed to give brownies.")
@@ -242,6 +255,33 @@ class c4baSetServer(sublime_plugin.WindowCommand):
 				f.write(json.dumps(info, indent=4))
 		else:
 			sublime.message_dialog("Server address is empty.")
+
+# ------------------------------------------------------------------
+class c4baSetName(sublime_plugin.WindowCommand):
+	def run(self):
+		try:
+			with open(c4ba_FILE, 'r') as f:
+				info = json.loads(f.read())
+		except:
+			info = dict()
+		if 'Name' not in info:
+			info['Name'] = ''
+		sublime.active_window().show_input_panel("Set your name.  Press Enter:",
+			info['Name'],
+			self.set,
+			None,
+			None)
+
+	def set(self, name):
+		name = name.strip()
+		try:
+			with open(c4ba_FILE, 'r') as f:
+				info = json.loads(f.read())
+		except:
+			info = dict()
+		info['Name'] = name
+		with open(c4ba_FILE, 'w') as f:
+			f.write(json.dumps(info, indent=4))
 
 # ------------------------------------------------------------------
 class c4baSetPasscode(sublime_plugin.WindowCommand):

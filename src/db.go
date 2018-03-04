@@ -4,10 +4,13 @@
 package main
 
 import (
+	"bufio"
 	"database/sql"
+	"encoding/csv"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
-	// "time"
+	"io"
+	"os"
 )
 
 //-----------------------------------------------------------------
@@ -116,4 +119,23 @@ func loadWhiteboards() {
 		Boards[uid] = make([]*Board, 0)
 	}
 	Boards["__default__"] = make([]*Board, 0)
+}
+
+//-----------------------------------------------------------------
+func init_TA() {
+	f, err := os.Open(TA_DB)
+	if err != nil {
+		panic(err)
+	}
+	r := csv.NewReader(bufio.NewReader(f))
+	for {
+		record, err2 := r.Read()
+		if err2 == io.EOF {
+			break
+		}
+		if err2 != nil {
+			panic(err2)
+		}
+		TA_INFO[record[0]] = record[1]
+	}
 }

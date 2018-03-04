@@ -15,7 +15,9 @@ var ADDR = ""
 var PORT = "4030"
 var USER_DB string
 var SERVER = ""
-var TAPASSCODE = "thisisthekeyfortaTA"
+var TA_DB string
+var TA_INFO = make(map[string]string)
+var TAPASSCODE = "444"
 
 type Board struct {
 	Content      string

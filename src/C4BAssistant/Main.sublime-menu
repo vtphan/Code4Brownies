@@ -61,6 +61,11 @@
                 "command": "c4ba_set_server"
             },
             {
+                "caption": "Set name",
+                "id": "c4baSetName",
+                "command": "c4ba_set_name"
+            },
+            {
                 "caption": "Set passcode",
                 "id": "c4baSetPasscode",
                 "command": "c4ba_set_passcode"

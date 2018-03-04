@@ -47,11 +47,13 @@ func Authorize(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
 //-----------------------------------------------------------------
 func AuthorizeTA(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if TAPASSCODE == r.FormValue("passcode") {
+		passcode, ok := TA_INFO[r.FormValue("name")]
+		if ok && passcode == r.FormValue("passcode") {
 			fn(w, r)
 		} else {
 			w.WriteHeader(http.StatusUnauthorized)
 			fmt.Fprint(w, "Unauthorized")
+			fmt.Println("Unauthorized TA access:", r.FormValue("name"), r.FormValue("passcode"))
 		}
 	}
 }
@@ -77,7 +79,9 @@ func main() {
 	fmt.Println("*********************************************\n")
 	rand.Seed(time.Now().UnixNano())
 	USER_DB = filepath.Join(".", "c4b.db")
-	flag.StringVar(&USER_DB, "db", USER_DB, "user database.")
+	TA_DB = filepath.Join(".", "c4b_tas.txt")
+	flag.StringVar(&USER_DB, "db", USER_DB, "user database (sqlite).")
+	flag.StringVar(&TA_DB, "ta", TA_DB, "TA information.")
 	flag.Parse()
 
 	// TA handlers
@@ -113,6 +117,7 @@ func main() {
 	http.HandleFunc("/get_questions", get_questionsHandler)
 
 	init_db()
+	init_TA()
 	loadWhiteboards()
 
 	// Start serving app
