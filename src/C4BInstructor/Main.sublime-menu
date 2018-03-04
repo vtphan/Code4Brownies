@@ -9,6 +9,11 @@
                 "command": "c4bi_get_all"
             },
             {
+                "caption": "Give feedback",
+                "id": "c4biGiveFeedback",
+                "command": "c4bi_give_feedback"
+            },
+            {
                 "caption": "Share with",
                 "id": "c4biBroadcastContent",
                 "children": [
@@ -18,52 +23,16 @@
                         "command": "c4bi_broadcast"
                     },
                     {
-                        "caption": "This student",
-                        "id": "c4biGiveFeedback",
-                        "command": "c4bi_give_feedback"
-                    },
-                    {
-                        "caption": "This group",
-                        "id": "c4biBroadcastGroup",
-                        "command": "c4bi_broadcast_group"
-                    },
-                    {
                         "caption": "All (rand)",
                         "id": "c4biMulticastRand",
                         "command": "c4bi_multicast_rand"
-                    }
-                ]
-            },
-            {
-                "caption": "Poll",
-                "id": "c4biPoll",
-                "children": [
-                    {
-                        "caption": "Start",
-                        "id": "c4biStartPoll",
-                        "command": "c4bi_start_poll"
                     },
                     {
-                        "caption": "Results",
-                        "id": "c4biViewPoll",
-                        "command": "c4bi_view_poll"
-                    },
-                    {
-                        "caption": "Answer",
-                        "id": "c4biAnswerPoll",
-                        "command": "c4bi_answer_poll"
+                        "caption": "Group",
+                        "id": "c4biBroadcastGroup",
+                        "command": "c4bi_broadcast_group"
                     }
                 ]
-            },
-            {
-                "caption": "Quiz",
-                "id": "c4biQuiz",
-                "command": "c4bi_quiz"
-            },
-            {
-                "caption": "Clear whiteboards",
-                "id": "c4biClearWhiteboards",
-                "command": "c4bi_clear_whiteboards"
             },
             {
                 "caption": "Give brownies",
@@ -102,25 +71,64 @@
                 ]
             },
             {
-                "caption": "Peek",
-                "id": "c4biPeek",
-                "command": "c4bi_peek"
+                "caption": "Test",
+                "id": "c4biTest",
+                "children": [
+                    {
+                        "caption": "Poll",
+                        "id": "c4biPoll",
+                        "children": [
+                            {
+                                "caption": "Start",
+                                "id": "c4biStartPoll",
+                                "command": "c4bi_start_poll"
+                            },
+                            {
+                                "caption": "Results",
+                                "id": "c4biViewPoll",
+                                "command": "c4bi_view_poll"
+                            },
+                            {
+                                "caption": "Answer",
+                                "id": "c4biAnswerPoll",
+                                "command": "c4bi_answer_poll"
+                            }
+                        ]
+                    },
+                    {
+                        "caption": "Quiz",
+                        "id": "c4biQuiz",
+                        "command": "c4bi_quiz"
+                    }
+                ]
             },
+            {"caption":"-", "id":"side-bar-separator"},
             {
                 "caption": "Track submissions",
                 "id": "c4biTrackSubmissions",
                 "command": "c4bi_track_submissions"
+            },
+            {
+                "caption": "Peek",
+                "id": "c4biPeek",
+                "command": "c4bi_peek"
+            },
+            {"caption":"-", "id":"side-bar-separator"},
+            {
+                "caption": "Clear whiteboards",
+                "id": "c4biClearWhiteboards",
+                "command": "c4bi_clear_whiteboards"
+            },
+            {
+                "caption": "Clear local directory",
+                "id": "c4biClean",
+                "command": "c4bi_clean"
             },
             {"caption":"-", "id":"side-bar-separator"},
             {
                 "caption": "Update",
                 "id": "c4biUpdate",
                 "command": "c4bi_update"
-            },
-            {
-                "caption": "Clean local directory",
-                "id": "c4biClean",
-                "command": "c4bi_clean"
             },
             {
                 "caption": "About",

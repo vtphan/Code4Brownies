@@ -19,27 +19,6 @@ TIMEOUT = 7
 POSTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Posts")
 
 # ------------------------------------------------------------------
-
-# def check_new_submissions():
-# 	delay = 5000
-# 	info = c4ba_get_attr(verbose=False)
-# 	if info is None:
-# 		return
-# 	url = urllib.parse.urljoin(info['Server'], c4ba_QUEUE_LENGTH_PATH)
-# 	data = urllib.parse.urlencode({}).encode('utf-8')
-# 	response = c4baRequest(url, data, verbose=False)
-# 	if response is not None:
-# 		count = len(response)
-# 		if count > 0:
-# 			print('There are {} submissions in the queue.'.format(count))
-# 			sublime.status_message('There are {} submissions in the queue.'.format(count))
-# 	else:
-# 		print('Error checking for new submissions. Response is None')
-# 	sublime.set_timeout_async(check_new_submissions, delay)
-
-# sublime.set_timeout_async(check_new_submissions, 5000)
-
-# ------------------------------------------------------------------
 def c4ba_get_attr(verbose=True):
 	try:
 		with open(c4ba_FILE, 'r') as f:

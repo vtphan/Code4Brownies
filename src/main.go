@@ -37,7 +37,28 @@ func Authorize(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
 			fn(w, r)
 		} else {
 			w.WriteHeader(http.StatusUnauthorized)
-			fmt.Fprint(w, "Unauthorized")
+			fmt.Println("Unauthorized instructor access")
+			fmt.Fprint(w, "Unauthorized instructor access")
+		}
+	}
+}
+
+//-----------------------------------------------------------------
+// Authorize Instructor and TAs
+//-----------------------------------------------------------------
+func AuthorizeShared(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Host == "localhost:4030" {
+			fn(w, r, r.FormValue("name"))
+		} else {
+			passcode, ok := TA_INFO[r.FormValue("name")]
+			if ok && passcode == r.FormValue("passcode") {
+				fn(w, r, r.FormValue("name"))
+			} else {
+				w.WriteHeader(http.StatusUnauthorized)
+				fmt.Println("Unauthorized access:", r.FormValue("name"), r.FormValue("passcode"))
+				fmt.Fprint(w, "Unauthorized access")
+			}
 		}
 	}
 }
@@ -84,19 +105,22 @@ func main() {
 	flag.StringVar(&TA_DB, "ta", TA_DB, "TA information.")
 	flag.Parse()
 
-	// TA handlers
-	http.HandleFunc("/ta_feedback", AuthorizeTA(feedbackHandler))
-	http.HandleFunc("/ta_give_points", AuthorizeTA(ta_give_pointsHandler))
-	http.HandleFunc("/ta_get_posts", AuthorizeTA(get_postsHandler))
-
 	// student handlers
 	http.HandleFunc("/share", AutoRegister(shareHandler))
 	http.HandleFunc("/my_points", AutoRegister(my_pointsHandler))
 	http.HandleFunc("/receive_broadcast", AutoRegister(receive_broadcastHandler))
 	http.HandleFunc("/checkin", AutoRegister(checkinHandler))
 
+	// instructor+TAs handlers
+	http.HandleFunc("/ta_get_posts", AuthorizeShared(get_postsHandler))
+	http.HandleFunc("/ta_feedback", AuthorizeShared(feedbackHandler))
+	http.HandleFunc("/get_posts", AuthorizeShared(get_postsHandler))
+	http.HandleFunc("/feedback", AuthorizeShared(feedbackHandler))
+
+	// TA handlers
+	http.HandleFunc("/ta_give_points", AuthorizeTA(ta_give_pointsHandler))
+
 	// teacher handlers
-	http.HandleFunc("/test", Authorize(testHandler))
 	http.HandleFunc("/clear_whiteboards", Authorize(clear_whiteboardsHandler))
 	http.HandleFunc("/clear_questions", Authorize(clear_questionsHandler))
 	http.HandleFunc("/start_poll", Authorize(start_pollHandler))
@@ -107,7 +131,6 @@ func main() {
 	http.HandleFunc("/peek", Authorize(peekHandler))
 	http.HandleFunc("/broadcast", Authorize(broadcastHandler))
 	http.HandleFunc("/get_post", Authorize(get_postHandler))
-	http.HandleFunc("/get_posts", Authorize(get_postsHandler))
 	http.HandleFunc("/send_quiz_question", Authorize(send_quiz_questionHandler))
 
 	// public handlers
@@ -116,11 +139,15 @@ func main() {
 	http.HandleFunc("/view_questions", view_questionsHandler)
 	http.HandleFunc("/get_questions", get_questionsHandler)
 
+	// for testing purporses
+	http.HandleFunc("/test", Authorize(testHandler))
+
+	// Initialization
 	init_db()
 	init_TA()
 	loadWhiteboards()
 
-	// Start serving app
+	// Starting to serve C4B
 	err := http.ListenAndServe("0.0.0.0:"+PORT, nil)
 	if err != nil {
 		panic(err.Error() + "\n")

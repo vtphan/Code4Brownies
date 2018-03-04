@@ -10,7 +10,7 @@
             },
             {
                 "caption": "Give feedback",
-                "id": "c4biGiveFeedback",
+                "id": "c4baGiveFeedback",
                 "command": "c4ba_give_feedback"
             },
             {

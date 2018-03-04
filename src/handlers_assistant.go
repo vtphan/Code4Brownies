@@ -12,9 +12,9 @@ import (
 )
 
 //-----------------------------------------------------------------
-// TA gives feedback to a student
+// Deprecated
 //-----------------------------------------------------------------
-func feedbackHandler(w http.ResponseWriter, r *http.Request) {
+func deprecated_feedbackHandler(w http.ResponseWriter, r *http.Request) {
 	BOARDS_SEM.Lock()
 	defer BOARDS_SEM.Unlock()
 	content, ext, sid := r.FormValue("content"), r.FormValue("ext"), r.FormValue("sid")

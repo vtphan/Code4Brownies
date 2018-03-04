@@ -167,7 +167,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	if len(data) == 0 {
-		fmt.Fprintf(w, "No content copied to boards.")
+		fmt.Fprintf(w, "No content copied to white boards.")
 		return
 	}
 
@@ -175,26 +175,39 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	bids := make([]string, 0)
 	for i := 0; i < len(data); i++ {
 		// Retrieve existing bid, or create a new one
-		bid := ""
-		if data[i].Original_sid != "" {
-			err = SelectBidFromSidSQL.QueryRow(data[i].Original_sid).Scan(&bid)
-			if err != nil {
-				panic(err)
-			}
-		}
-		if bid == "" {
-			bid = "wb_" + RandStringRunes(6)
-			_, err = InsertBroadcastSQL.Exec(
-				bid,
-				data[i].Content,
-				data[i].Ext,
-				time.Now(),
-				data[i].Hints,
-				"Instructor",
-			)
-			if err != nil {
-				fmt.Println("Error inserting into broadcast table.", err)
-			}
+		// bid := ""
+		// if data[i].Original_sid != "" {
+		// 	err = SelectBidFromSidSQL.QueryRow(data[i].Original_sid).Scan(&bid)
+		// 	if err != nil {
+		// 		panic(err)
+		// 	}
+		// }
+		// if bid == "" {
+		// 	bid = "wb_" + RandStringRunes(6)
+		// 	_, err = InsertBroadcastSQL.Exec(
+		// 		bid,
+		// 		data[i].Content,
+		// 		data[i].Ext,
+		// 		time.Now(),
+		// 		data[i].Hints,
+		// 		"Instructor",
+		// 	)
+		// 	if err != nil {
+		// 		fmt.Println("Error inserting into broadcast table.", err)
+		// 	}
+		// }
+		bid := "wb_" + RandStringRunes(6)
+		_, err = InsertBroadcastSQL.Exec(
+			bid,
+			data[i].Content,
+			data[i].Ext,
+			time.Now(),
+			data[i].Hints,
+			"Instructor",
+		)
+		if err != nil {
+			fmt.Println("Error inserting into broadcast table.", err)
+			return
 		}
 		bids = append(bids, bid)
 	}
@@ -216,7 +229,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Insert broadcast content into boards
+	// Insert content into white boards
 	var des string
 	mode := data[0].Mode
 	rand_idx := make([]int, 0)
@@ -259,7 +272,7 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 			Boards[uid] = append(Boards[uid], b)
 		}
 	}
-	fmt.Fprintf(w, "Content copied to boards.")
+	fmt.Fprintf(w, "Content copied to white boards.")
 }
 
 //-----------------------------------------------------------------
@@ -315,22 +328,5 @@ func get_postHandler(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(js)
 		}
-	}
-}
-
-//-----------------------------------------------------------------
-// Instructor retrieves all new submissions
-//-----------------------------------------------------------------
-func get_postsHandler(w http.ResponseWriter, r *http.Request) {
-	SUBS_SEM.Lock()
-	defer SUBS_SEM.Unlock()
-
-	js, err := json.Marshal(NewSubs)
-	if err != nil {
-		fmt.Println(err.Error())
-	} else {
-		// NewSubs = make([]*Submission, 0)
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
 	}
 }

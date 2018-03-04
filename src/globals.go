@@ -17,7 +17,6 @@ var USER_DB string
 var SERVER = ""
 var TA_DB string
 var TA_INFO = make(map[string]string)
-var TAPASSCODE = "444"
 
 type Board struct {
 	Content      string
@@ -36,8 +35,8 @@ type BroadcastData struct {
 	Ext          string `json:"ext"`
 	Help_content string `json:"help_content"`
 	Hints        int    `json:"hints"`
-	Original_sid string `json:"original_sid"`
 	Mode         int    `json:"mode"`
+	// Original_sid string `json:"original_sid"`
 }
 
 var Questions []string

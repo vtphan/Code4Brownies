@@ -21,6 +21,8 @@ c4bi_NEW_PROBLEM_PATH = "new_problem"
 c4bi_START_POLL_PATH = "start_poll"
 c4bi_ANSWER_POLL_PATH = "answer_poll"
 c4bi_QUIZ_QUESTION_PATH = "send_quiz_question"
+c4bi_FEEDBACK_PATH = "feedback"
+
 TIMEOUT = 7
 
 POSTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Posts")
@@ -174,6 +176,45 @@ class c4biTestCommand(sublime_plugin.TextCommand):
 			sublime.status_message(response)
 
 # ------------------------------------------------------------------
+# TA gives feedback on this specific file
+# ------------------------------------------------------------------
+class c4biGiveFeedbackCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		this_file_name = self.view.file_name()
+		if this_file_name is None:
+			sublime.message_dialog('No student is associated with this file.')
+			return
+
+		# Get content and ext
+		ext = this_file_name.rsplit('.',1)[-1]
+		header = ''
+		lines = open(this_file_name, 'r', encoding='utf-8').readlines()
+		if len(lines)>0 and (lines[0].startswith('#') or lines[0].startswith('//')):
+			header = lines[0]
+		content = ''.join(lines)
+
+		# Determine sid
+		basename = os.path.basename(this_file_name)
+		if not basename.startswith('c4b_'):
+			sublime.message_dialog('No student is associated with this file.')
+			return
+		sid = basename.split('.')[0]
+		sid = sid.split('c4b_')[1]
+
+		data = urllib.parse.urlencode({
+			'content': 		content,
+			'sid':			sid,
+			'ext': 			ext,
+			'name':			"instructor",
+			'passcode':		"",
+		}).encode('utf-8')
+
+		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_FEEDBACK_PATH)
+		response = c4biRequest(url, data)
+		if response is not None:
+			sublime.message_dialog(response)
+
+# ------------------------------------------------------------------
 # mode: 0 (unicast, current tab)
 #		1 (multicast, all tabs)
 #		2 (multicast, all tabs, randomized)
@@ -205,11 +246,11 @@ def _multicast(self, file_names, sids, mode):
 				help_file = os.path.join(dirname, prefix+'_hints.'+ext)
 				if os.path.exists(help_file):
 					help_content = open(help_file).read()
-			if basename.startswith('c4b_'):
-				original_sid = basename.split('.')[0]
-				original_sid = original_sid.split('c4b_')[1]
-			else:
-				original_sid = ''
+			# if basename.startswith('c4b_'):
+			# 	original_sid = basename.split('.')[0]
+			# 	original_sid = original_sid.split('c4b_')[1]
+			# else:
+			# 	original_sid = ''
 
 		num_of_hints = count_hints(help_content)
 		if num_of_hints > 0:
@@ -221,14 +262,14 @@ def _multicast(self, file_names, sids, mode):
 			'ext': 			ext,
 			'help_content':	help_content,
 			'hints':		num_of_hints,
-			'original_sid':	original_sid,
+			# 'original_sid':	original_sid,
 			'mode': 		mode,
 		})
 
 	json_data = json.dumps(data).encode('utf-8')
 	response = c4biRequest(url, json_data, headers={'content-type': 'application/json; charset=utf-8'})
 	if response is not None:
-		sublime.status_message(response)
+		sublime.message_dialog(response)
 
 # ------------------------------------------------------------------
 def _broadcast(self, sids='__all__', mode=0):
@@ -256,22 +297,22 @@ def _broadcast(self, sids='__all__', mode=0):
 # ------------------------------------------------------------------
 class c4biMulticastRandCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
-		_broadcast(self, mode=2)
+		_broadcast(self, sids='__all__', mode=2)
 
 # ------------------------------------------------------------------
-# Instructor gives feedback on this specific file
+# Deprecated: Instructor gives feedback on this specific file
 # ------------------------------------------------------------------
-class c4biGiveFeedbackCommand(sublime_plugin.TextCommand):
-	def run(self, edit):
-		this_file_name = self.view.file_name()
-		if this_file_name is not None:
-			sid = this_file_name.rsplit('.',-1)[0]
-			sid = os.path.basename(sid)
-			if sid.startswith('c4b_'):
-				sid = sid.split('c4b_')[-1]
-				_broadcast(self, sid)
-			else:
-				sublime.message_dialog("No student associated to this window.")
+# class c4biGiveFeedbackCommand(sublime_plugin.TextCommand):
+# 	def run(self, edit):
+# 		this_file_name = self.view.file_name()
+# 		if this_file_name is not None:
+# 			sid = this_file_name.rsplit('.',-1)[0]
+# 			sid = os.path.basename(sid)
+# 			if sid.startswith('c4b_'):
+# 				sid = sid.split('c4b_')[-1]
+# 				_broadcast(self, sid)
+# 			else:
+# 				sublime.message_dialog("No student associated to this window.")
 
 # ------------------------------------------------------------------
 # Instructor broadcasts content on group defined by current window
@@ -286,12 +327,12 @@ class c4biBroadcastGroupCommand(sublime_plugin.TextCommand):
 			sublime.message_dialog("No students' files in this window.")
 			return
 		if sublime.ok_cancel_dialog("Share this file with {} students whose submissions arein this window?".format(len(sids))):
-			_broadcast(self, ','.join(sids))
+			_broadcast(self, sids=','.join(sids), mode=0)
 
 # ------------------------------------------------------------------
 class c4biBroadcastCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
-		_broadcast(self)
+		_broadcast(self, sids='__all__', mode=0)
 
 # ------------------------------------------------------------------
 # Instructor retrieves all posts.

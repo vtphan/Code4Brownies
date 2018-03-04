@@ -25,6 +25,7 @@ var InsertAttendanceSQL *sql.Stmt
 var InsertQuizSQL *sql.Stmt
 var InsertQuizAnswerSQL *sql.Stmt
 var SelectBidFromSidSQL *sql.Stmt
+var InsertFeedbackSQL *sql.Stmt
 
 //-----------------------------------------------------------------
 func init_db() {
@@ -54,6 +55,7 @@ func init_db() {
 	InsertQuizSQL = prepare("insert into quiz (qid, question, answer, date) values (?, ?, ?, ?)")
 	InsertQuizAnswerSQL = prepare("insert into quiz_answer (uid, qid, answer, point, date) values (?, ?, ?, ?, ?)")
 	SelectBidFromSidSQL = prepare("select bid from submission where sid = ?")
+	InsertFeedbackSQL = prepare("insert into feedback (author, uid, content, sid, date) values (?, ?, ?, ?, ?)")
 }
 
 //-----------------------------------------------------------------
@@ -68,11 +70,13 @@ func create_tables() {
 	}
 	execSQL("create table if not exists user (id integer primary key, uid text unique)")
 	execSQL("create table if not exists broadcast (id integer primary key, bid text unique, content blob, language text, date timestamp, hints integer, author text)")
+	// To change: bid should be integer (broadcast.id) instead of bid.
 	execSQL("create table if not exists submission (id integer primary key, sid text unique, uid text, bid text, points integer, description text, language text, date timestamp, content blob, hints_used integer, completion_time timestamp)")
 	execSQL("create table if not exists poll (id integer primary key, uid text, is_correct integer, points integer, date timestamp)")
 	execSQL("create table if not exists attendance (id integer primary key, uid text, date timestamp)")
 	execSQL("create table if not exists quiz (id integer primary key, qid text unique, question blob, answer text, date timestamp)")
 	execSQL("create table if not exists quiz_answer (id integer primary key, uid text, qid text, answer text, point integer, date timestamp)")
+	execSQL("create table if not exists feedback (id integer primary key, author text, uid text, content blob, sid text, date timestamp)")
 }
 
 //-----------------------------------------------------------------
