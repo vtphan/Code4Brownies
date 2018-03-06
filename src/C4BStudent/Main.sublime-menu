@@ -9,6 +9,11 @@
                 "command": "c4b_my_board"
             },
             {
+                "caption": "Track White Board",
+                "id": "c4bTrackBoard",
+                "command": "c4b_track_board"
+            },
+            {
                 "caption": "Share",
                 "id": "c4bShare",
                 "command": "c4b_share"
@@ -22,11 +27,6 @@
                 "caption": "Vote",
                 "id": "c4bVote",
                 "command": "c4b_vote"
-            },
-            {
-                "caption": "Track White Board",
-                "id": "c4bTrackBoard",
-                "command": "c4b_track_board"
             },
             {"caption":"-", "id":"side-bar-separator"},
             {

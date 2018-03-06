@@ -9,46 +9,87 @@
                 "command": "c4ba_get_all"
             },
             {
-                "caption": "Give feedback",
-                "id": "c4baGiveFeedback",
-                "command": "c4ba_give_feedback"
+                "caption": "Insert feedback",
+                "id": "c4baInsertFeedback",
+                "command": "c4ba_insert_feedback"
             },
             {
-                "caption": "Give brownies",
-                "id": "c4baAwardPoint",
+                "caption": "Share feedback",
+                "id": "c4baShareFeedback",
                 "children": [
                     {
-                        "caption": "0 brownie",
-                        "id": "c4baAwardPoint0",
-                        "command": "c4ba_award_point0"
+                        "caption": "not graded",
+                        "id": "c4baShareFeedbackUngraded",
+                        "command": "c4ba_share_feedback_ungraded"
                     },
                     {
-                        "caption": "1 brownie",
-                        "id": "c4baAwardPoint1",
-                        "command": "c4ba_award_point1"
+                        "caption": "0 point",
+                        "id": "c4baShareFeedbackZero",
+                        "command": "c4ba_share_feedback_zero"
                     },
                     {
-                        "caption": "2 brownies",
-                        "id": "c4baAwardPoint2",
-                        "command": "c4ba_award_point2"
+                        "caption": "1 point",
+                        "id": "c4baShareFeedbackOne",
+                        "command": "c4ba_share_feedback_one"
                     },
                     {
-                        "caption": "3 brownies",
-                        "id": "c4baAwardPoint3",
-                        "command": "c4ba_award_point3"
+                        "caption": "2 points",
+                        "id": "c4baShareFeedbackTwo",
+                        "command": "c4ba_share_feedback_two"
                     },
                     {
-                        "caption": "4 brownies",
-                        "id": "c4baAwardPoint4",
-                        "command": "c4ba_award_point4"
+                        "caption": "3 points",
+                        "id": "c4baShareFeedbackThree",
+                        "command": "c4ba_share_feedback_three"
                     },
                     {
-                        "caption": "5 brownies",
-                        "id": "c4baAwardPoint5",
-                        "command": "c4ba_award_point5"
+                        "caption": "4 points",
+                        "id": "c4baShareFeedbackFour",
+                        "command": "c4ba_share_feedback_four"
+                    },
+                    {
+                        "caption": "5 points",
+                        "id": "c4baShareFeedbackFive",
+                        "command": "c4ba_share_feedback_five"
                     }
                 ]
             },
+            // {
+            //     "caption": "Give brownies",
+            //     "id": "c4baAwardPoint",
+            //     "children": [
+            //         {
+            //             "caption": "0 brownie",
+            //             "id": "c4baAwardPoint0",
+            //             "command": "c4ba_award_point0"
+            //         },
+            //         {
+            //             "caption": "1 brownie",
+            //             "id": "c4baAwardPoint1",
+            //             "command": "c4ba_award_point1"
+            //         },
+            //         {
+            //             "caption": "2 brownies",
+            //             "id": "c4baAwardPoint2",
+            //             "command": "c4ba_award_point2"
+            //         },
+            //         {
+            //             "caption": "3 brownies",
+            //             "id": "c4baAwardPoint3",
+            //             "command": "c4ba_award_point3"
+            //         },
+            //         {
+            //             "caption": "4 brownies",
+            //             "id": "c4baAwardPoint4",
+            //             "command": "c4ba_award_point4"
+            //         },
+            //         {
+            //             "caption": "5 brownies",
+            //             "id": "c4baAwardPoint5",
+            //             "command": "c4ba_award_point5"
+            //         }
+            //     ]
+            // },
             {
                 "caption": "Track submissions",
                 "id": "c4baTrackSubmissions",
@@ -69,6 +110,11 @@
                 "caption": "Set passcode",
                 "id": "c4baSetPasscode",
                 "command": "c4ba_set_passcode"
+            },
+            {
+                "caption": "Modify feedback def",
+                "id": "c4baModifyFeedbackDef",
+                "command": "c4ba_modify_feedback_def"
             },
             {"caption":"-", "id":"side-bar-separator"},
             {

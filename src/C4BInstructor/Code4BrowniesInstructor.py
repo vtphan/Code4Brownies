@@ -22,6 +22,7 @@ c4bi_START_POLL_PATH = "start_poll"
 c4bi_ANSWER_POLL_PATH = "answer_poll"
 c4bi_QUIZ_QUESTION_PATH = "send_quiz_question"
 c4bi_FEEDBACK_PATH = "feedback"
+c4bi_FEEDBACK_CODE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "feedback_code.txt")
 
 TIMEOUT = 7
 
@@ -176,43 +177,200 @@ class c4biTestCommand(sublime_plugin.TextCommand):
 			sublime.status_message(response)
 
 # ------------------------------------------------------------------
-# TA gives feedback on this specific file
+def _share_feedback(self, edit, points=-1):
+	# Get info
+	# info = c4ba_get_attr()
+	# if info is None:
+	# 	return
+
+	# Detect empty buffer
+	this_file_name = self.view.file_name()
+	if this_file_name is None:
+		sublime.message_dialog('Empty file is not a student submission.')
+		return
+
+	# Determine sid
+	basename = os.path.basename(this_file_name)
+	if not basename.startswith('c4b_'):
+		sublime.message_dialog('This does not look like a student submission.')
+		return
+
+	# Get content and ext
+	ext = this_file_name.rsplit('.',1)[-1]
+	header = ''
+	lines = open(this_file_name, 'r', encoding='utf-8').readlines()
+	if len(lines)>0 and (lines[0].startswith('#') or lines[0].startswith('//')):
+		header = lines[0]
+	content = ''.join(lines)
+
+	# Determine sid
+	basename = os.path.basename(this_file_name)
+	if not basename.startswith('c4b_'):
+		sublime.message_dialog('This does not look like a student submission.')
+		return
+	sid = basename.split('.')[0]
+	sid = sid.split('c4b_')[1]
+
+	# Prepare and send feedback
+	data = urllib.parse.urlencode({
+		'content': 		content,
+		'sid':			sid,
+		'ext': 			ext,
+		'points':		points,
+		'passcode':		'',
+		'name':			'instructor',
+		'has_feedback': 1 if '#--> ' in content else 0,
+	}).encode('utf-8')
+
+	url = urllib.parse.urljoin(SERVER_ADDR, c4bi_FEEDBACK_PATH)
+	response = c4biRequest(url, data)
+	if response is not None:
+		sublime.message_dialog(response)
+		if points != -1:
+			self.view.window().run_command('close')
+
 # ------------------------------------------------------------------
-class c4biGiveFeedbackCommand(sublime_plugin.TextCommand):
+# TA inserts feedback on the current file
+# ------------------------------------------------------------------
+class c4biShareFeedbackUngradedCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
+		_share_feedback(self, edit)
+
+class c4biShareFeedbackZeroCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		_share_feedback(self, edit, 0)
+
+class c4biShareFeedbackOneCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		_share_feedback(self, edit, 1)
+
+class c4biShareFeedbackTwoCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		_share_feedback(self, edit, 2)
+
+class c4biShareFeedbackThreeCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		_share_feedback(self, edit, 3)
+
+class c4biShareFeedbackFourCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		_share_feedback(self, edit, 4)
+
+class c4biShareFeedbackFiveCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		_share_feedback(self, edit, 5)
+
+# ------------------------------------------------------------------
+# TA inserts feedback on the current file
+# ------------------------------------------------------------------
+class c4biInsertFeedbackCommand(sublime_plugin.TextCommand):
+	#--------------------------------------------------------
+	def on_cancel(self):
+		self.view.hide_popup()
+
+	#--------------------------------------------------------
+	def process_feedback(self, line):
+		self.view.hide_popup()
+
+		# Retrieve feedback: <line no>,<feedback no> separated by a spaces
+		items = line.strip().split()
+		items = [ i.strip().split(',') for i in items ]
+		feedback = [ (int(i[0]), self.feedback_def[int(i[1])]) for i in items ]
+
+		# Insert feedback and build content
 		this_file_name = self.view.file_name()
-		if this_file_name is None:
-			sublime.message_dialog('No student is associated with this file.')
-			return
+		content = ''
+		with open(this_file_name, 'r', encoding='utf-8') as fp:
+			lines = fp.readlines()
+			for fb in feedback:
+				line_no = fb[0]-1
+				if line_no < len(lines):
+					cur_line = lines[line_no].rstrip()
+					if cur_line == '':
+						cur_line = '#--> ' + fb[1] + '\n'
+					else:
+						cur_line =  cur_line + '\t#--> ' + fb[1] + '\n'
+					lines[line_no] = cur_line
+				else:
+					lines.append('\n#--> ' + fb[1] + '\n')
+			content = ''.join(lines)
 
-		# Get content and ext
-		ext = this_file_name.rsplit('.',1)[-1]
-		header = ''
-		lines = open(this_file_name, 'r', encoding='utf-8').readlines()
-		if len(lines)>0 and (lines[0].startswith('#') or lines[0].startswith('//')):
-			header = lines[0]
-		content = ''.join(lines)
+		# Write back to file
+		with open(this_file_name, 'w', encoding='utf-8') as fp:
+			fp.write(content)
 
-		# Determine sid
-		basename = os.path.basename(this_file_name)
-		if not basename.startswith('c4b_'):
-			sublime.message_dialog('No student is associated with this file.')
-			return
-		sid = basename.split('.')[0]
-		sid = sid.split('c4b_')[1]
+	#--------------------------------------------------------
+	def read_feedback_def(self):
+		self.feedback_def, instr = {}, []
+		with open(c4bi_FEEDBACK_CODE, 'r') as f:
+			i = 1
+			for line in f:
+				if line.strip():
+					# print('{}. {}'.format(i, line.strip()))
+					instr.append('{}. {}'.format(i,line))
+					self.feedback_def[i] = line.strip()
+					i += 1
+		# sublime.status_message('Feedback code printed in console.')
+		return '<br>'.join(instr)
 
-		data = urllib.parse.urlencode({
-			'content': 		content,
-			'sid':			sid,
-			'ext': 			ext,
-			'name':			"instructor",
-			'passcode':		"",
-		}).encode('utf-8')
+	#--------------------------------------------------------
+	def run(self, edit):
+		sublime.active_window().show_input_panel("<line no>,<feedback no> (separate multiple items by a space)",
+			"",
+			self.process_feedback,
+			None,
+			self.on_cancel)
 
-		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_FEEDBACK_PATH)
-		response = c4biRequest(url, data)
-		if response is not None:
-			sublime.message_dialog(response)
+		# Show feedback code
+		instr = self.read_feedback_def()
+		if self.feedback_def:
+			self.view.show_popup(instr)
+
+
+# ------------------------------------------------------------------
+class c4biModifyFeedbackDef(sublime_plugin.WindowCommand):
+	def run(self):
+		sublime.active_window().open_file(c4bi_FEEDBACK_CODE)
+
+# ------------------------------------------------------------------
+# TA gives feedback on this specific file
+# DEPRECATED
+# ------------------------------------------------------------------
+# class c4biGiveFeedbackCommand(sublime_plugin.TextCommand):
+# 	def run(self, edit):
+# 		this_file_name = self.view.file_name()
+# 		if this_file_name is None:
+# 			sublime.message_dialog('This does not look like a student submission.')
+# 			return
+
+# 		# Get content and ext
+# 		ext = this_file_name.rsplit('.',1)[-1]
+# 		header = ''
+# 		lines = open(this_file_name, 'r', encoding='utf-8').readlines()
+# 		if len(lines)>0 and (lines[0].startswith('#') or lines[0].startswith('//')):
+# 			header = lines[0]
+# 		content = ''.join(lines)
+
+# 		# Determine sid
+# 		basename = os.path.basename(this_file_name)
+# 		if not basename.startswith('c4b_'):
+# 			sublime.message_dialog('This does not look like a student submission.')
+# 			return
+# 		sid = basename.split('.')[0]
+# 		sid = sid.split('c4b_')[1]
+
+# 		data = urllib.parse.urlencode({
+# 			'content': 		content,
+# 			'sid':			sid,
+# 			'ext': 			ext,
+# 			'name':			"instructor",
+# 			'passcode':		"",
+# 		}).encode('utf-8')
+
+# 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_FEEDBACK_PATH)
+# 		response = c4biRequest(url, data)
+# 		if response is not None:
+# 			sublime.message_dialog(response)
 
 # ------------------------------------------------------------------
 # mode: 0 (unicast, current tab)
@@ -269,7 +427,7 @@ def _multicast(self, file_names, sids, mode):
 	json_data = json.dumps(data).encode('utf-8')
 	response = c4biRequest(url, json_data, headers={'content-type': 'application/json; charset=utf-8'})
 	if response is not None:
-		sublime.message_dialog(response)
+		sublime.status_message(response)
 
 # ------------------------------------------------------------------
 def _broadcast(self, sids='__all__', mode=0):
@@ -404,47 +562,47 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 # ------------------------------------------------------------------
 # Instructor rewards brownies.
 # ------------------------------------------------------------------
-class c4biAwardPoint0Command(sublime_plugin.TextCommand):
-	def run(self, edit):
-		award_points(self, edit, 0)
+# class c4biAwardPoint0Command(sublime_plugin.TextCommand):
+# 	def run(self, edit):
+# 		award_points(self, edit, 0)
 
-class c4biAwardPoint1Command(sublime_plugin.TextCommand):
-	def run(self, edit):
-		award_points(self, edit, 1)
+# class c4biAwardPoint1Command(sublime_plugin.TextCommand):
+# 	def run(self, edit):
+# 		award_points(self, edit, 1)
 
-class c4biAwardPoint2Command(sublime_plugin.TextCommand):
-	def run(self, edit):
-		award_points(self, edit, 2)
+# class c4biAwardPoint2Command(sublime_plugin.TextCommand):
+# 	def run(self, edit):
+# 		award_points(self, edit, 2)
 
-class c4biAwardPoint3Command(sublime_plugin.TextCommand):
-	def run(self, edit):
-		award_points(self, edit, 3)
+# class c4biAwardPoint3Command(sublime_plugin.TextCommand):
+# 	def run(self, edit):
+# 		award_points(self, edit, 3)
 
-class c4biAwardPoint4Command(sublime_plugin.TextCommand):
-	def run(self, edit):
-		award_points(self, edit, 4)
+# class c4biAwardPoint4Command(sublime_plugin.TextCommand):
+# 	def run(self, edit):
+# 		award_points(self, edit, 4)
 
-class c4biAwardPoint5Command(sublime_plugin.TextCommand):
-	def run(self, edit):
-		award_points(self, edit, 5)
+# class c4biAwardPoint5Command(sublime_plugin.TextCommand):
+# 	def run(self, edit):
+# 		award_points(self, edit, 5)
 
-def award_points(self, edit, points):
-	this_file_name = self.view.file_name()
-	if this_file_name:
-		basename = os.path.basename(this_file_name)
-		if not basename.startswith('c4b_'):
-			sublime.status_message("This is not a student submission.")
-			return
-		sid = basename.rsplit('.',-1)[0]
-		sid = sid.split('c4b_')[-1]
-		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROWNIE_PATH)
-		data = urllib.parse.urlencode({'sid':sid, 'points':points}).encode('utf-8')
-		response = c4biRequest(url,data)
-		if response == 'Failed':
-			sublime.status_message("Failed to give brownies.")
-		else:
-			sublime.status_message(response)
-			self.view.window().run_command('close')
+# def award_points(self, edit, points):
+# 	this_file_name = self.view.file_name()
+# 	if this_file_name:
+# 		basename = os.path.basename(this_file_name)
+# 		if not basename.startswith('c4b_'):
+# 			sublime.status_message("This is not a student submission.")
+# 			return
+# 		sid = basename.rsplit('.',-1)[0]
+# 		sid = sid.split('c4b_')[-1]
+# 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROWNIE_PATH)
+# 		data = urllib.parse.urlencode({'sid':sid, 'points':points}).encode('utf-8')
+# 		response = c4biRequest(url,data)
+# 		if response == 'Failed':
+# 			sublime.status_message("Failed to give brownies.")
+# 		else:
+# 			sublime.status_message(response)
+# 			self.view.window().run_command('close')
 
 # ------------------------------------------------------------------
 class c4biAboutCommand(sublime_plugin.WindowCommand):
