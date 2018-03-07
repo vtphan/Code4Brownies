@@ -53,24 +53,26 @@ func feedbackHandler(w http.ResponseWriter, r *http.Request, author string) {
 		}
 
 		// Give points
-		success := RemoveSubmissionBySID(sid)
-		if author == "instructor" || success == true {
-			sub.Points = points
-			_, err := UpdatePointsSQL.Exec(sub.Points, sid)
-			if err != nil {
-				mesg += "Failed to update points."
-			} else {
-				if author == "instructor" {
-					mesg += fmt.Sprintf("\n%d points given.\n", sub.Points)
+		if points >= 0 {
+			success := RemoveSubmissionBySID(sid)
+			// fmt.Println(success, author)
+			if author == "instructor" || success == true {
+				sub.Points = points
+				_, err := UpdatePointsSQL.Exec(sub.Points, sid)
+				if err != nil {
+					mesg += "Failed to update points."
 				} else {
-					mesg += fmt.Sprintf("\n%d points given to %s.\n", sub.Points, sub.Uid)
+					if author == "instructor" {
+						mesg += fmt.Sprintf("\n%d points given.\n", sub.Points)
+					} else {
+						mesg += fmt.Sprintf("\n%d points given to %s.\n", sub.Points, sub.Uid)
+					}
 				}
+			} else {
+				// if instructor graded this submission, ignore TA.
+				mesg += fmt.Sprintf("\nSubmission is already graded.")
 			}
-		} else {
-			// if instructor graded this submission, ignore TA.
-			mesg += fmt.Sprintf("\nSubmission is already graded.")
 		}
-		// fmt.Printf("%s gave feedback\n", author)
 		fmt.Fprintf(w, mesg)
 	} else {
 		fmt.Fprintf(w, "sid %s is not found.", sid)

@@ -161,7 +161,7 @@ class c4bMyBoardCommand(sublime_plugin.WindowCommand):
 							else:					# AUTOMATIC HINT
 								Hints[bid] = [0, get_hints(board['HelpContent'])]
 								if len(Hints[bid][1]) > 0:
-									sublime.message_dialog('There are {} hints associated with this exercise.'.format(len(Hints[bid][1])))
+									sublime.message_dialog('This exercise has {} hints.'.format(len(Hints[bid][1])))
 							with open(wb, 'w', encoding='utf-8') as f:
 								f.write(content)
 							new_view = sublime.active_window().open_file(wb)
@@ -235,7 +235,8 @@ class c4bShareCommand(sublime_plugin.TextCommand):
 				sublime.message_dialog('Either this question is expired or you already submitted your answer.')
 				return
 			mode = 'quiz'
-			problem = open(this_file_name, 'r', encoding='utf-8').read().strip()
+			# problem = open(this_file_name, 'r', encoding='utf-8').read().strip()
+			problem = self.view.substr(sublime.Region(0, self.view.size())).strip()
 			items = problem.rsplit('ANSWER:', 1)
 			answer = items[-1].strip()
 			if answer==QuizAnswers[bid]:

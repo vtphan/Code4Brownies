@@ -73,24 +73,7 @@ class c4baModifyFeedbackDef(sublime_plugin.WindowCommand):
 		sublime.active_window().open_file(c4ba_FEEDBACK_CODE)
 
 # ------------------------------------------------------------------
-# class c4baViewFeedbackDef(sublime_plugin.TextCommand):
-# 	def process_feedback(self, x):
-# 		print(x)
-
-# 	def run(self, edit):
-# 		# sublime.message_dialog('Feedback definition shown in console.')
-# 		with open(c4ba_FEEDBACK_CODE) as f:
-# 			content = f.readlines()
-# 			content = [ l for l in content if l.strip() ]
-# 			# sublime.active_window().show_quick_panel(content, on_select=lambda x: x)
-# 			self.view.show_popup('<br>'.join(content))
-# 			# sublime.active_window().show_input_panel("Feedback",
-# 			# 	"",
-# 			# 	self.process_feedback,
-# 			# 	None,
-# 			# 	None)
-
-def _share_feedback(self, edit, points=-1):
+def c4ba_share_feedback(self, edit, points=-1):
 	# Get info
 	info = c4ba_get_attr()
 	if info is None:
@@ -110,12 +93,14 @@ def _share_feedback(self, edit, points=-1):
 
 	# Get content and ext
 	ext = this_file_name.rsplit('.',1)[-1]
-	header = ''
-	lines = open(this_file_name, 'r', encoding='utf-8').readlines()
-	if len(lines)>0 and (lines[0].startswith('#') or lines[0].startswith('//')):
-		header = lines[0]
-	content = ''.join(lines)
-
+	content = self.view.substr(sublime.Region(0, self.view.size()))
+	header = content.split('\n',1)[0]
+	if not header.startswith('#') or not header.startswith('//'):
+		header = ''
+	# lines = open(this_file_name, 'r', encoding='utf-8').readlines()
+	# if len(lines)>0 and (lines[0].startswith('#') or lines[0].startswith('//')):
+	# 	header = lines[0]
+	# content = ''.join(lines)
 	# Determine sid
 	basename = os.path.basename(this_file_name)
 	if not basename.startswith('c4b_'):
@@ -125,7 +110,6 @@ def _share_feedback(self, edit, points=-1):
 	sid = sid.split('c4b_')[1]
 
 	# Prepare and send feedback
-
 	data = urllib.parse.urlencode({
 		'content': 		content,
 		'sid':			sid,
@@ -133,7 +117,7 @@ def _share_feedback(self, edit, points=-1):
 		'points':		points,
 		'passcode':		info['Passcode'],
 		'name':			info['Name'],
-		'has_feedback': 1 if '#--> ' in content else 0,
+		'has_feedback': _has_feedback(this_file_name, content)
 	}).encode('utf-8')
 	url = urllib.parse.urljoin(info['Server'], c4ba_FEEDBACK_PATH)
 	response = c4baRequest(url, data)
@@ -143,101 +127,176 @@ def _share_feedback(self, edit, points=-1):
 			self.view.window().run_command('close')
 
 # ------------------------------------------------------------------
-# TA inserts feedback on the current file
+# TA shares feedback on the current file
 # ------------------------------------------------------------------
 class c4baShareFeedbackUngradedCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
-		_share_feedback(self, edit)
+		c4ba_share_feedback(self, edit)
 
 class c4baShareFeedbackZeroCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
-		_share_feedback(self, edit, 0)
+		c4ba_share_feedback(self, edit, 0)
 
 class c4baShareFeedbackOneCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
-		_share_feedback(self, edit, 1)
+		c4ba_share_feedback(self, edit, 1)
 
 class c4baShareFeedbackTwoCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
-		_share_feedback(self, edit, 2)
+		c4ba_share_feedback(self, edit, 2)
 
 class c4baShareFeedbackThreeCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
-		_share_feedback(self, edit, 3)
+		c4ba_share_feedback(self, edit, 3)
 
 class c4baShareFeedbackFourCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
-		_share_feedback(self, edit, 4)
+		c4ba_share_feedback(self, edit, 4)
 
 class c4baShareFeedbackFiveCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
-		_share_feedback(self, edit, 5)
+		c4ba_share_feedback(self, edit, 5)
+
+# ------------------------------------------------------------------
+def _build_feedback_line(file_name, fb):
+	ext = file_name.rsplit('.', 1)[-1]
+	if ext in ['py', 'pl', 'rb', 'txt', 'md']:
+		prefix = '##> '
+	else:
+		prefix = '///> '
+	return prefix + fb
+
+# ------------------------------------------------------------------
+def _has_feedback(file_name, content):
+	ext = file_name.rsplit('.', 1)[-1]
+	if ext in ['py', 'pl', 'rb', 'txt', 'md']:
+		prefix = '##> '
+	else:
+		prefix = '///> '
+	if prefix in content:
+		return 1
+	return 0
 
 # ------------------------------------------------------------------
 # TA inserts feedback on the current file
 # ------------------------------------------------------------------
 class c4baInsertFeedbackCommand(sublime_plugin.TextCommand):
-	#--------------------------------------------------------
-	def on_cancel(self):
-		self.view.hide_popup()
-
-	#--------------------------------------------------------
-	def process_feedback(self, line):
-		self.view.hide_popup()
-
-		# Retrieve feedback: <line no>,<feedback no> separated by a spaces
-		items = line.strip().split()
-		items = [ i.strip().split(',') for i in items ]
-		feedback = [ (int(i[0]), self.feedback_def[int(i[1])]) for i in items ]
-
-		# Insert feedback and build content
-		this_file_name = self.view.file_name()
-		content = ''
-		with open(this_file_name, 'r', encoding='utf-8') as fp:
-			lines = fp.readlines()
-			for fb in feedback:
-				line_no = fb[0]-1
-				if line_no < len(lines):
-					cur_line = lines[line_no].rstrip()
-					if cur_line == '':
-						cur_line = '#--> ' + fb[1] + '\n'
-					else:
-						cur_line =  cur_line + '\t#--> ' + fb[1] + '\n'
-					lines[line_no] = cur_line
-				else:
-					lines.append('\n#--> ' + fb[1] + '\n')
-			content = ''.join(lines)
-
-		# Write back to file
-		with open(this_file_name, 'w', encoding='utf-8') as fp:
-			fp.write(content)
-
-	#--------------------------------------------------------
 	def read_feedback_def(self):
-		self.feedback_def, instr = {}, []
+		if not os.path.exists(c4ba_FEEDBACK_CODE):
+			feedback_code = [
+				'GOOD JOB!!!',
+				'Syntax',
+				'Incorrect logic',
+				'Base case',
+				'Will not stop',
+				'Return value',
+				'Incorrect parameters',
+				'Unreachable',
+			]
+			with open(c4ba_FEEDBACK_CODE, 'w') as f:
+				f.write('\n'.join(feedback_code))
+
 		with open(c4ba_FEEDBACK_CODE, 'r') as f:
-			i = 1
-			for line in f:
-				if line.strip():
-					# print('{}. {}'.format(i, line.strip()))
-					instr.append('{}. {}'.format(i,line))
-					self.feedback_def[i] = line.strip()
-					i += 1
-		# sublime.status_message('Feedback code printed in console.')
-		return '<br>'.join(instr)
+			fb = f.readlines()
+			fb = [ l.strip() for l in fb if l.strip() ]
+		return fb
 
 	#--------------------------------------------------------
 	def run(self, edit):
-		sublime.active_window().show_input_panel("<line no>,<feedback no> (separate multiple items by a space)",
-			"",
-			self.process_feedback,
-			None,
-			self.on_cancel)
+		def on_done(i):
+			if i < len(items):
+				this_file_name = self.view.file_name()
+				fb = _build_feedback_line(this_file_name, items[i])
+				selection = self.view.sel()[0]
+				line = self.view.substr(self.view.line(selection))
+				if line != '':
+					fb = '\t' + fb
+				cursor = selection.begin()
+				self.view.insert(edit, cursor, fb)
 
-		# Show feedback code
-		instr = self.read_feedback_def()
-		if self.feedback_def:
-			self.view.show_popup(instr)
+		items = self.read_feedback_def()
+		self.view.show_popup_menu(items, on_done)
+
+
+# class c4baInsertFeedbackCommand(sublime_plugin.TextCommand):
+# 	#--------------------------------------------------------
+# 	def on_cancel(self):
+# 		self.view.hide_popup()
+
+# 	#--------------------------------------------------------
+# 	def process_feedback(self, line):
+# 		self.view.hide_popup()
+
+# 		# Retrieve feedback: <line no>,<feedback no> separated by a spaces
+# 		items = line.strip().split()
+# 		items = [ i.strip().split(',') for i in items ]
+# 		feedback = [ (int(i[0]), self.feedback_def[int(i[1])]) for i in items ]
+
+# 		# Insert feedback and build content
+# 		this_file_name = self.view.file_name()
+# 		content = ''
+# 		with open(this_file_name, 'r', encoding='utf-8') as fp:
+# 			lines = fp.readlines()
+# 			for fb in feedback:
+# 				line_no = fb[0]-1
+# 				if line_no < len(lines):
+# 					cur_line = lines[line_no].rstrip()
+# 					if cur_line == '':
+# 						cur_line = _build_feedback_line(this_file_name, fb[1])
+# 					else:
+# 						cur_line +=  '\t' + _build_feedback_line(this_file_name, fb[1])
+# 					lines[line_no] = cur_line
+# 				else:
+# 					lines.append('\n' + _build_feedback_line(this_file_name, fb[1]))
+# 			content = ''.join(lines)
+
+# 		# Write back to file
+# 		with open(this_file_name, 'w', encoding='utf-8') as fp:
+# 			fp.write(content)
+
+# 	#--------------------------------------------------------
+# 	def read_feedback_def(self):
+# 		if not os.path.exists(c4ba_FEEDBACK_CODE):
+# 			feedback_code = [
+# 				'GOOD JOB!!!',
+# 				'Syntax',
+# 				'Incorrect logic',
+# 				'Base case',
+# 				'Will not stop',
+# 				'Return value',
+# 				'Incorrect parameters',
+# 				'Unreachable',
+# 			]
+# 			with open(c4ba_FEEDBACK_CODE, 'w') as f:
+# 				f.write('\n'.join(feedback_code))
+
+# 		self.feedback_def, instr = {}, []
+# 		with open(c4ba_FEEDBACK_CODE, 'r') as f:
+# 			i = 1
+# 			for line in f:
+# 				if line.strip():
+# 					# print('{}. {}'.format(i, line.strip()))
+# 					instr.append('{}. {}'.format(i,line))
+# 					self.feedback_def[i] = line.strip()
+# 					i += 1
+# 		# sublime.status_message('Feedback code printed in console.')
+# 		return '<br>'.join(instr)
+
+# 	#--------------------------------------------------------
+# 	def run(self, edit):
+# 		# cursor = self.view.sel()[0].begin()
+# 		# self.view.insert(edit, cursor, 'HELLO WORLD')
+
+# 		sublime.active_window().show_input_panel("<line no>,<feedback no> (separate multiple items by a space)",
+# 			"",
+# 			self.process_feedback,
+# 			None,
+# 			self.on_cancel)
+
+# 		# Show feedback code
+# 		instr = self.read_feedback_def()
+# 		if self.feedback_def:
+# 			self.view.show_popup(instr)
 
 
 # ------------------------------------------------------------------
