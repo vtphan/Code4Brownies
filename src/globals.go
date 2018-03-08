@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-const VERSION = "0.42"
+const VERSION = "0.43"
 
 var ADDR = ""
 var PORT = "4030"
@@ -17,6 +17,15 @@ var USER_DB string
 var SERVER = ""
 var TA_DB string
 var TA_INFO = make(map[string]string)
+
+type TAData struct {
+	Content string
+	Ext     string
+}
+
+var TABoardOut = make([]*TAData, 0)
+var TABoardIn = make([]*TAData, 0)
+var TABoard_SEM sync.Mutex
 
 type Board struct {
 	Content      string

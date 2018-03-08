@@ -4,49 +4,34 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
-	"time"
+	// "strings"
+	// "time"
 )
 
 //-----------------------------------------------------------------
-// Deprecated
+func ta_share_with_teacherHandler(w http.ResponseWriter, r *http.Request) {
+	TABoard_SEM.Lock()
+	defer TABoard_SEM.Unlock()
+	content, ext := r.FormValue("content"), r.FormValue("ext")
+	TABoardOut = append(TABoardOut, &TAData{Content: content, Ext: ext})
+	fmt.Fprintf(w, "Content shared with instructor.")
+}
+
 //-----------------------------------------------------------------
-func deprecated_feedbackHandler(w http.ResponseWriter, r *http.Request) {
-	BOARDS_SEM.Lock()
-	defer BOARDS_SEM.Unlock()
-	content, ext, sid := r.FormValue("content"), r.FormValue("ext"), r.FormValue("sid")
-	bid := ""
-	err := SelectBidFromSidSQL.QueryRow(sid).Scan(&bid)
+func ta_get_from_teacherHandler(w http.ResponseWriter, r *http.Request) {
+	TABoard_SEM.Lock()
+	defer TABoard_SEM.Unlock()
+	js, err := json.Marshal(TABoardIn)
 	if err != nil {
-		fmt.Println("Error retrieving bid with", sid)
-	}
-	if bid == "" {
-		bid = "wb_" + RandStringRunes(6)
-		_, err = InsertBroadcastSQL.Exec(bid, content, ext, time.Now(), 0, "TA")
-		if err != nil {
-			fmt.Println("Error inserting into broadcast table.", err)
-		}
-	}
-	sub, ok := AllSubs[sid]
-	if ok {
-		des := strings.SplitN(content, "\n", 2)[0]
-		b := &Board{
-			Content:      content,
-			HelpContent:  "",
-			Ext:          ext,
-			Bid:          bid,
-			Description:  des,
-			StartingTime: time.Now(),
-		}
-		Boards[sub.Uid] = append(Boards[sub.Uid], b)
+		fmt.Println(err.Error())
 	} else {
-		fmt.Fprintf(w, "sid "+sid+" is not found.")
-		return
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
 	}
-	fmt.Fprintf(w, "Content copied student's virtual board.")
 }
 
 //-----------------------------------------------------------------

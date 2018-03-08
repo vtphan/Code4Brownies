@@ -4,7 +4,7 @@
         "id": "C4Ba",
         "children": [
             {
-                "caption": "Get all",
+                "caption": "Get student code",
                 "id": "c4baGetAll",
                 "command": "c4ba_get_all"
             },
@@ -94,6 +94,17 @@
                 "caption": "Track submissions",
                 "id": "c4baTrackSubmissions",
                 "command": "c4ba_track_submissions"
+            },
+            {"caption":"-", "id":"side-bar-separator"},
+            {
+                "caption": "Get from teacher",
+                "id": "c4baGetFromTeacher",
+                "command": "c4ba_get_from_teacher"
+            },
+            {
+                "caption": "Share with teacher",
+                "id": "c4baShareWithTeacher",
+                "command": "c4ba_share_with_teacher"
             },
             {"caption":"-", "id":"side-bar-separator"},
             {

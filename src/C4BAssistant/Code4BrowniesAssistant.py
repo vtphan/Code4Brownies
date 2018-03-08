@@ -15,6 +15,8 @@ c4ba_FEEDBACK_CODE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "
 c4ba_FEEDBACK_PATH = "ta_feedback"
 c4ba_BROWNIE_PATH = "ta_give_points"
 c4ba_REQUEST_ENTRIES_PATH = "ta_get_posts"
+c4ba_SHARE_WITH_TEACHER_PATH = "ta_share_with_teacher"
+c4ba_GET_FROM_TEACHER_PATH = "ta_get_from_teacher"
 TIMEOUT = 7
 
 POSTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Posts")
@@ -73,58 +75,56 @@ class c4baModifyFeedbackDef(sublime_plugin.WindowCommand):
 		sublime.active_window().open_file(c4ba_FEEDBACK_CODE)
 
 # ------------------------------------------------------------------
-def c4ba_share_feedback(self, edit, points=-1):
-	# Get info
-	info = c4ba_get_attr()
-	if info is None:
-		return
+class c4baShareWithTeacherCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		info = c4ba_get_attr()
+		if info is None:
+			return
 
-	# Detect empty buffer
-	this_file_name = self.view.file_name()
-	if this_file_name is None:
-		sublime.message_dialog('Empty file is not a student submission.')
-		return
+		this_file_name = self.view.file_name()
+		if this_file_name is None:
+			sublime.message_dialog('Do not share an empty file.')
+			return
 
-	# Determine sid
-	basename = os.path.basename(this_file_name)
-	if not basename.startswith('c4b_'):
-		sublime.message_dialog('This does not look like a student submission.')
-		return
+		ext = this_file_name.rsplit('.',1)[-1]
+		content = self.view.substr(sublime.Region(0, self.view.size()))
+		data = urllib.parse.urlencode({
+			'content': 		content,
+			'ext': 			ext,
+			'passcode':	info['Passcode'],
+			'name':		info['Name'],
+		}).encode('utf-8')
+		url = urllib.parse.urljoin(info['Server'], c4ba_SHARE_WITH_TEACHER_PATH)
+		response = c4baRequest(url, data)
+		if response is not None:
+			sublime.message_dialog(response)
 
-	# Get content and ext
-	ext = this_file_name.rsplit('.',1)[-1]
-	content = self.view.substr(sublime.Region(0, self.view.size()))
-	header = content.split('\n',1)[0]
-	if not header.startswith('#') or not header.startswith('//'):
-		header = ''
-	# lines = open(this_file_name, 'r', encoding='utf-8').readlines()
-	# if len(lines)>0 and (lines[0].startswith('#') or lines[0].startswith('//')):
-	# 	header = lines[0]
-	# content = ''.join(lines)
-	# Determine sid
-	basename = os.path.basename(this_file_name)
-	if not basename.startswith('c4b_'):
-		sublime.message_dialog('This does not look like a student submission.')
-		return
-	sid = basename.split('.')[0]
-	sid = sid.split('c4b_')[1]
-
-	# Prepare and send feedback
-	data = urllib.parse.urlencode({
-		'content': 		content,
-		'sid':			sid,
-		'ext': 			ext,
-		'points':		points,
-		'passcode':		info['Passcode'],
-		'name':			info['Name'],
-		'has_feedback': _has_feedback(this_file_name, content)
-	}).encode('utf-8')
-	url = urllib.parse.urljoin(info['Server'], c4ba_FEEDBACK_PATH)
-	response = c4baRequest(url, data)
-	if response is not None:
-		sublime.message_dialog(response)
-		if points != -1:
-			self.view.window().run_command('close')
+# ------------------------------------------------------------------
+class c4baGetFromTeacherCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		info = c4ba_get_attr()
+		if info is None:
+			return
+		url = urllib.parse.urljoin(info['Server'], c4ba_GET_FROM_TEACHER_PATH)
+		data = urllib.parse.urlencode({
+			'passcode':	info['Passcode'],
+			'name':		info['Name'],
+		}).encode('utf-8')
+		response = c4baRequest(url,data)
+		if response is not None:
+			entries = json.loads(response)
+			if entries:
+				for i in range(len(entries)-1, -1, -1):
+					entry = entries[i]
+					if not os.path.isdir(POSTS_DIR):
+						os.mkdir(POSTS_DIR)
+					outfile_name = 'teacher_{}.{}'.format(i,entry['Ext'])
+					outfile = os.path.join(POSTS_DIR, outfile_name)
+					with open(outfile, 'w', encoding='utf-8') as fp:
+						fp.write(entry['Content'])
+					new_view = self.view.window().open_file(outfile)
+			else:
+				sublime.message_dialog("Queue is empty.")
 
 # ------------------------------------------------------------------
 # TA shares feedback on the current file

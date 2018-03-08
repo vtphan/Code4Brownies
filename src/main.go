@@ -119,8 +119,12 @@ func main() {
 
 	// TA handlers
 	http.HandleFunc("/ta_give_points", AuthorizeTA(ta_give_pointsHandler))
+	http.HandleFunc("/ta_share_with_teacher", AuthorizeTA(ta_share_with_teacherHandler))
+	http.HandleFunc("/ta_get_from_teacher", AuthorizeTA(ta_get_from_teacherHandler))
 
 	// teacher handlers
+	http.HandleFunc("/share_with_ta", Authorize(share_with_taHandler))
+	http.HandleFunc("/get_from_ta", Authorize(get_from_taHandler))
 	http.HandleFunc("/clear_whiteboards", Authorize(clear_whiteboardsHandler))
 	http.HandleFunc("/clear_questions", Authorize(clear_questionsHandler))
 	http.HandleFunc("/start_poll", Authorize(start_pollHandler))

@@ -155,22 +155,32 @@
                 "command": "c4bi_peek"
             },
             {
+                "caption": "Clear whiteboards",
+                "id": "c4biClearWhiteboards",
+                "command": "c4bi_clear_whiteboards"
+            },
+            {
                 "caption": "Modify feedback definitions",
                 "id": "c4biModifyFeedbackDef",
                 "command": "c4bi_modify_feedback_def"
             },
             {"caption":"-", "id":"side-bar-separator"},
             {
-                "caption": "Clear whiteboards",
-                "id": "c4biClearWhiteboards",
-                "command": "c4bi_clear_whiteboards"
+                "caption": "Get from TA",
+                "id": "c4biGetFromTa",
+                "command": "c4bi_get_from_ta"
             },
+            {
+                "caption": "Share with TA",
+                "id": "c4biShareWithTa",
+                "command": "c4bi_share_with_ta"
+            },
+            {"caption":"-", "id":"side-bar-separator"},
             {
                 "caption": "Clear local directory",
                 "id": "c4biClean",
                 "command": "c4bi_clean"
             },
-            {"caption":"-", "id":"side-bar-separator"},
             {
                 "caption": "Update",
                 "id": "c4biUpdate",

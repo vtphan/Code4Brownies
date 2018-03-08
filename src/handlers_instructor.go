@@ -37,6 +37,28 @@ func testHandler(w http.ResponseWriter, r *http.Request) {
 //-----------------------------------------------------------------
 
 //-----------------------------------------------------------------
+func share_with_taHandler(w http.ResponseWriter, r *http.Request) {
+	TABoard_SEM.Lock()
+	defer TABoard_SEM.Unlock()
+	content, ext := r.FormValue("content"), r.FormValue("ext")
+	TABoardIn = append(TABoardIn, &TAData{Content: content, Ext: ext})
+	fmt.Fprintf(w, "Content shared with TA.")
+}
+
+//-----------------------------------------------------------------
+func get_from_taHandler(w http.ResponseWriter, r *http.Request) {
+	TABoard_SEM.Lock()
+	defer TABoard_SEM.Unlock()
+	js, err := json.Marshal(TABoardOut)
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+}
+
+//-----------------------------------------------------------------
 // Clear whiteboards
 //-----------------------------------------------------------------
 func clear_whiteboardsHandler(w http.ResponseWriter, r *http.Request) {

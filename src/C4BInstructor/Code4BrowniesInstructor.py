@@ -22,6 +22,9 @@ c4bi_START_POLL_PATH = "start_poll"
 c4bi_ANSWER_POLL_PATH = "answer_poll"
 c4bi_QUIZ_QUESTION_PATH = "send_quiz_question"
 c4bi_FEEDBACK_PATH = "feedback"
+c4bi_SHARE_WITH_TA_PATH = "share_with_ta"
+c4bi_GET_FROM_TA_PATH = "get_from_ta"
+
 c4bi_FEEDBACK_CODE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "feedback_code.txt")
 
 TIMEOUT = 7
@@ -39,6 +42,46 @@ def c4biRequest(url, data, headers={}):
 	except urllib.error.URLError as err:
 		sublime.message_dialog("{0}\nCannot connect to server.".format(err))
 	return None
+
+# ------------------------------------------------------------------
+class c4biShareWithTaCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		this_file_name = self.view.file_name()
+		if this_file_name is None:
+			sublime.message_dialog('Do not share an empty file.')
+			return
+
+		ext = this_file_name.rsplit('.',1)[-1]
+		content = self.view.substr(sublime.Region(0, self.view.size()))
+		data = urllib.parse.urlencode({
+			'content': 		content,
+			'ext': 			ext,
+		}).encode('utf-8')
+		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_SHARE_WITH_TA_PATH)
+		response = c4biRequest(url, data)
+		if response is not None:
+			sublime.message_dialog(response)
+
+# ------------------------------------------------------------------
+class c4biGetFromTa(sublime_plugin.TextCommand):
+	def run(self, edit):
+		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_GET_FROM_TA_PATH)
+		data = urllib.parse.urlencode({}).encode('utf-8')
+		response = c4biRequest(url,data)
+		if response is not None:
+			entries = json.loads(response)
+			if entries:
+				for i in range(len(entries)-1, -1, -1):
+					entry = entries[i]
+					if not os.path.isdir(POSTS_DIR):
+						os.mkdir(POSTS_DIR)
+					outfile_name = 'ta_{}.{}'.format(i,entry['Ext'])
+					outfile = os.path.join(POSTS_DIR, outfile_name)
+					with open(outfile, 'w', encoding='utf-8') as fp:
+						fp.write(entry['Content'])
+					new_view = self.view.window().open_file(outfile)
+			else:
+				sublime.message_dialog("Queue is empty.")
 
 # ------------------------------------------------------------------
 class c4biCleanCommand(sublime_plugin.ApplicationCommand):
@@ -178,11 +221,6 @@ class c4biTestCommand(sublime_plugin.TextCommand):
 
 # ------------------------------------------------------------------
 def c4bi_share_feedback(self, edit, points=-1):
-	# Get info
-	# info = c4ba_get_attr()
-	# if info is None:
-	# 	return
-
 	# Detect empty buffer
 	this_file_name = self.view.file_name()
 	if this_file_name is None:
