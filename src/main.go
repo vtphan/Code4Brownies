@@ -112,15 +112,15 @@ func main() {
 	http.HandleFunc("/checkin", AutoRegister(checkinHandler))
 
 	// instructor+TAs handlers
-	http.HandleFunc("/ta_get_posts", AuthorizeShared(get_postsHandler))
-	http.HandleFunc("/ta_feedback", AuthorizeShared(feedbackHandler))
 	http.HandleFunc("/get_posts", AuthorizeShared(get_postsHandler))
 	http.HandleFunc("/feedback", AuthorizeShared(feedbackHandler))
 	http.HandleFunc("/add_public_board", AuthorizeShared(add_public_boardHandler))
 	http.HandleFunc("/remove_public_board", AuthorizeShared(remove_public_boardHandler))
+	// http.HandleFunc("/give_points", AuthorizeShared(give_pointsHandler))
+	http.HandleFunc("/peek", AuthorizeShared(peekHandler))
+	http.HandleFunc("/get_post_by_index", AuthorizeShared(get_post_by_indexHandler))
 
 	// TA handlers
-	http.HandleFunc("/ta_give_points", AuthorizeTA(ta_give_pointsHandler))
 	http.HandleFunc("/ta_share_with_teacher", AuthorizeTA(ta_share_with_teacherHandler))
 	http.HandleFunc("/ta_get_from_teacher", AuthorizeTA(ta_get_from_teacherHandler))
 
@@ -133,10 +133,7 @@ func main() {
 	http.HandleFunc("/query_poll", Authorize(query_pollHandler))
 	http.HandleFunc("/view_poll", Authorize(view_pollHandler))
 	http.HandleFunc("/answer_poll", Authorize(answer_pollHandler))
-	http.HandleFunc("/give_points", Authorize(give_pointsHandler))
-	http.HandleFunc("/peek", Authorize(peekHandler))
 	http.HandleFunc("/broadcast", Authorize(broadcastHandler))
-	http.HandleFunc("/get_post", Authorize(get_postHandler))
 	http.HandleFunc("/send_quiz_question", Authorize(send_quiz_questionHandler))
 
 	// public handlers

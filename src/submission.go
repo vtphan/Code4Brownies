@@ -30,6 +30,7 @@ func AddSubmission(uid, bid, body, ext string, hints_used int) {
 			Points:    0,
 			Pdes:      des,
 			Timestamp: timestamp,
+			Status:    "new",
 			// Duration:  dur,
 		}
 		AllSubs[sid] = sub
@@ -53,6 +54,7 @@ func RemoveSubmissionBySID(sid string) bool {
 			if err != nil {
 				fmt.Println("Failed to update completion time")
 			}
+			NewSubs[i].Status = "done"
 			NewSubs = append(NewSubs[:i], NewSubs[i+1:]...)
 			return true
 		}

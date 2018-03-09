@@ -69,6 +69,7 @@ type Submission struct {
 	Points    int
 	Pdes      string // problem description
 	Timestamp string
+	Status    string
 	// Duration  int    // in seconds
 }
 

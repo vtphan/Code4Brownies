@@ -5,8 +5,29 @@
         "children": [
             {
                 "caption": "Get submissions",
-                "id": "c4baGetAll",
-                "command": "c4ba_get_all"
+                "id": "c4baGetSubmissions",
+                "children": [
+                    {
+                        "caption": "1",
+                        "id": "c4baGetOneSubmission",
+                        "command": "c4ba_get_one_submission"
+                    },
+                    {
+                        "caption": "3",
+                        "id": "c4baGetThreeSubmissions",
+                        "command": "c4ba_get_three_submissions"
+                    },
+                    {
+                        "caption": "All",
+                        "id": "c4baGetAllSubmissions",
+                        "command": "c4ba_get_all_submissions"
+                    },
+                    {
+                        "caption": "Preview",
+                        "id": "c4baPeek",
+                        "command": "c4ba_peek"
+                    },
+                ]
             },
             {
                 "caption": "Insert comment",

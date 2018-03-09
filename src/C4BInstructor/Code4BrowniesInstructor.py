@@ -13,9 +13,9 @@ import webbrowser
 
 SERVER_ADDR = "http://localhost:4030"
 c4bi_BROADCAST_PATH = "broadcast"
-c4bi_BROWNIE_PATH = "give_points"
+# c4bi_BROWNIE_PATH = "give_points"
 c4bi_PEEK_PATH = "peek"
-c4bi_REQUEST_ENTRY_PATH = "get_post"
+c4bi_REQUEST_ENTRY_PATH = "get_post_by_index"
 c4bi_REQUEST_ENTRIES_PATH = "get_posts"
 c4bi_NEW_PROBLEM_PATH = "new_problem"
 c4bi_START_POLL_PATH = "start_poll"
@@ -292,8 +292,7 @@ def c4bi_share_feedback(self, edit, points=-1):
 	response = c4biRequest(url, data)
 	if response is not None:
 		sublime.message_dialog(response)
-		if points != -1:
-			self.view.window().run_command('close')
+		self.view.window().run_command('close')
 
 # ------------------------------------------------------------------
 # Instructor shares feedback on the current file
@@ -628,33 +627,50 @@ class c4biBroadcastCommand(sublime_plugin.TextCommand):
 		_broadcast(self, sids='__all__', mode=0)
 
 # ------------------------------------------------------------------
-# Instructor retrieves all posts.
+# how_many = -1 means gets all submissions.
 # ------------------------------------------------------------------
-class c4biGetAllCommand(sublime_plugin.TextCommand):
-	def run(self, edit):
-		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_REQUEST_ENTRIES_PATH)
-		data = urllib.parse.urlencode({}).encode('utf-8')
-		response = c4biRequest(url,data)
-		if response is not None:
-			entries = json.loads(response)
-			# print(entries)
-			if entries:
-				for entry in reversed(entries):
-					# print(entry)
-					ext = '' if entry['Ext']=='' else '.'+entry['Ext']
-					if not os.path.isdir(POSTS_DIR):
-						os.mkdir(POSTS_DIR)
-					# Prefix c4b_ to file name
-					userFile_name = 'c4b_' + entry['Sid'] + ext
-					userFile = os.path.join(POSTS_DIR, userFile_name)
-					with open(userFile, 'w', encoding='utf-8') as fp:
-						fp.write(entry['Body'])
-					new_view = self.view.window().open_file(userFile)
-			else:
-				sublime.status_message("Queue is empty.")
+def c4bi_get_submissions(self, edit, how_many):
+	url = urllib.parse.urljoin(SERVER_ADDR, c4bi_REQUEST_ENTRIES_PATH)
+	data = urllib.parse.urlencode({
+		'how_many': 	how_many,
+		'name': 		'instructor',
+	}).encode('utf-8')
+	response = c4biRequest(url,data)
+	if response is not None:
+		entries = json.loads(response)
+		if entries:
+			for entry in reversed(entries):
+				ext = '' if entry['Ext']=='' else '.'+entry['Ext']
+				if not os.path.isdir(POSTS_DIR):
+					os.mkdir(POSTS_DIR)
+				# Prefix c4b_ to file name
+				userFile_name = 'c4b_' + entry['Sid'] + ext
+				userFile = os.path.join(POSTS_DIR, userFile_name)
+				with open(userFile, 'w', encoding='utf-8') as fp:
+					fp.write(entry['Body'])
+				new_view = self.view.window().open_file(userFile)
+		else:
+			sublime.status_message("Queue is empty.")
 
 # ------------------------------------------------------------------
-# Instructor looks at new posts and is able to select one.
+# Instructor retrieves submissions
+# ------------------------------------------------------------------
+class c4biGetOneSubmissionCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		c4bi_get_submissions(self, edit, 1)
+
+# ------------------------------------------------------------------
+class c4biGetThreeSubmissionsCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		c4bi_get_submissions(self, edit, 3)
+
+# ------------------------------------------------------------------
+class c4biGetAllSubmissionsCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		c4bi_get_submissions(self, edit, -1)
+
+# ------------------------------------------------------------------
+# Preview submissions and select by index
 # ------------------------------------------------------------------
 class c4biPeekCommand(sublime_plugin.TextCommand):
 	def request_entry(self, users, edit):
@@ -662,7 +678,10 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 			if selected < 0:
 				return
 			url = urllib.parse.urljoin(SERVER_ADDR, c4bi_REQUEST_ENTRY_PATH)
-			data = urllib.parse.urlencode({'post':selected}).encode('utf-8')
+			data = urllib.parse.urlencode({
+				'post':		selected,
+				'name':		'instructor',
+			}).encode('utf-8')
 			response = c4biRequest(url,data)
 			if response is not None:
 				json_obj = json.loads(response)
@@ -680,8 +699,7 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 
 	def run(self, edit):
 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_PEEK_PATH)
-		# data = urllib.parse.urlencode({}).encode('ascii')
-		data = urllib.parse.urlencode({}).encode('utf-8')
+		data = urllib.parse.urlencode({'name': 'instructor'}).encode('utf-8')
 		response = c4biRequest(url,data)
 		if response is not None:
 			json_obj = json.loads(response)
@@ -693,51 +711,6 @@ class c4biPeekCommand(sublime_plugin.TextCommand):
 					self.view.show_popup_menu(users, self.request_entry(users, edit))
 				else:
 					sublime.status_message("Queue is empty.")
-
-# ------------------------------------------------------------------
-# Instructor rewards brownies.
-# ------------------------------------------------------------------
-# class c4biAwardPoint0Command(sublime_plugin.TextCommand):
-# 	def run(self, edit):
-# 		award_points(self, edit, 0)
-
-# class c4biAwardPoint1Command(sublime_plugin.TextCommand):
-# 	def run(self, edit):
-# 		award_points(self, edit, 1)
-
-# class c4biAwardPoint2Command(sublime_plugin.TextCommand):
-# 	def run(self, edit):
-# 		award_points(self, edit, 2)
-
-# class c4biAwardPoint3Command(sublime_plugin.TextCommand):
-# 	def run(self, edit):
-# 		award_points(self, edit, 3)
-
-# class c4biAwardPoint4Command(sublime_plugin.TextCommand):
-# 	def run(self, edit):
-# 		award_points(self, edit, 4)
-
-# class c4biAwardPoint5Command(sublime_plugin.TextCommand):
-# 	def run(self, edit):
-# 		award_points(self, edit, 5)
-
-# def award_points(self, edit, points):
-# 	this_file_name = self.view.file_name()
-# 	if this_file_name:
-# 		basename = os.path.basename(this_file_name)
-# 		if not basename.startswith('c4b_'):
-# 			sublime.status_message("This is not a student submission.")
-# 			return
-# 		sid = basename.rsplit('.',-1)[0]
-# 		sid = sid.split('c4b_')[-1]
-# 		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_BROWNIE_PATH)
-# 		data = urllib.parse.urlencode({'sid':sid, 'points':points}).encode('utf-8')
-# 		response = c4biRequest(url,data)
-# 		if response == 'Failed':
-# 			sublime.status_message("Failed to give brownies.")
-# 		else:
-# 			sublime.status_message(response)
-# 			self.view.window().run_command('close')
 
 # ------------------------------------------------------------------
 class c4biAboutCommand(sublime_plugin.WindowCommand):

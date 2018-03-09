@@ -10,7 +10,7 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"net/http"
-	"strconv"
+	// "strconv"
 	"strings"
 	"time"
 )
@@ -196,28 +196,6 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 	// Determine broadcast ids
 	bids := make([]string, 0)
 	for i := 0; i < len(data); i++ {
-		// Retrieve existing bid, or create a new one
-		// bid := ""
-		// if data[i].Original_sid != "" {
-		// 	err = SelectBidFromSidSQL.QueryRow(data[i].Original_sid).Scan(&bid)
-		// 	if err != nil {
-		// 		panic(err)
-		// 	}
-		// }
-		// if bid == "" {
-		// 	bid = "wb_" + RandStringRunes(6)
-		// 	_, err = InsertBroadcastSQL.Exec(
-		// 		bid,
-		// 		data[i].Content,
-		// 		data[i].Ext,
-		// 		time.Now(),
-		// 		data[i].Hints,
-		// 		"Instructor",
-		// 	)
-		// 	if err != nil {
-		// 		fmt.Println("Error inserting into broadcast table.", err)
-		// 	}
-		// }
 		bid := "wb_" + RandStringRunes(6)
 		_, err = InsertBroadcastSQL.Exec(
 			bid,
@@ -295,60 +273,4 @@ func broadcastHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	fmt.Fprintf(w, "Content copied to white boards.")
-}
-
-//-----------------------------------------------------------------
-// Instructor gives brownie points to a user
-//-----------------------------------------------------------------
-func give_pointsHandler(w http.ResponseWriter, r *http.Request) {
-	if sub, ok := AllSubs[r.FormValue("sid")]; ok {
-		points, err := strconv.Atoi(r.FormValue("points"))
-		if err != nil {
-			fmt.Fprint(w, "Failed")
-		} else {
-			RemoveSubmissionBySID(r.FormValue("sid"))
-			sub.Points = points
-			_, err = UpdatePointsSQL.Exec(sub.Points, r.FormValue("sid"))
-			if err != nil {
-				fmt.Fprint(w, "Failed")
-			} else {
-				mesg := fmt.Sprintf("%s: %d points.\n", sub.Uid, sub.Points)
-				fmt.Fprintf(w, mesg)
-			}
-		}
-	}
-}
-
-//-----------------------------------------------------------------
-// return all current NewSubs
-//-----------------------------------------------------------------
-func peekHandler(w http.ResponseWriter, r *http.Request) {
-	SUBS_SEM.Lock()
-	defer SUBS_SEM.Unlock()
-	js, err := json.Marshal(NewSubs)
-	if err != nil {
-		fmt.Println(err.Error())
-	} else {
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
-	}
-}
-
-//-----------------------------------------------------------------
-// Instructor retrieves a new submission
-//-----------------------------------------------------------------
-func get_postHandler(w http.ResponseWriter, r *http.Request) {
-	e, err := strconv.Atoi(r.FormValue("post"))
-	if err != nil {
-		fmt.Println(err.Error)
-	} else {
-		// js, err := json.Marshal(RemoveSubmission(e))
-		js, err := json.Marshal(NewSubs[e])
-		if err != nil {
-			fmt.Println(err.Error())
-		} else {
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(js)
-		}
-	}
 }

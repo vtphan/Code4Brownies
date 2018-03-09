@@ -31,8 +31,29 @@
             },
             {
                 "caption": "Get submissions",
-                "id": "c4biGetAll",
-                "command": "c4bi_get_all"
+                "id": "c4biGetSubmissions",
+                "children": [
+                    {
+                        "caption": "1",
+                        "id": "c4biGetOneSubmission",
+                        "command": "c4bi_get_one_submission"
+                    },
+                    {
+                        "caption": "3",
+                        "id": "c4biGetThreeSubmissions",
+                        "command": "c4bi_get_three_submissions"
+                    },
+                    {
+                        "caption": "All",
+                        "id": "c4biGetAllSubmissions",
+                        "command": "c4bi_get_all_submissions"
+                    },
+                    {
+                        "caption": "Preview",
+                        "id": "c4biPeek",
+                        "command": "c4bi_peek"
+                    },
+                ]
             },
             {
                 "caption": "Insert comment",
@@ -118,11 +139,6 @@
                         "command": "c4bi_view_public_board"
                     },
                 ]
-            },
-            {
-                "caption": "Peek",
-                "id": "c4biPeek",
-                "command": "c4bi_peek"
             },
             {
                 "caption": "Clear whiteboards",

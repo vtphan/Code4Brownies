@@ -92,6 +92,10 @@ func feedbackHandler(w http.ResponseWriter, r *http.Request, author string) {
 				// if instructor graded this submission, ignore TA.
 				mesg += fmt.Sprintf("\nSubmission is already graded.")
 			}
+		} else {
+			// reset status from "pending" to "new" so others can look at it
+			sub.Status = "new"
+			mesg += "Ungraded. Submission goes back into the queue."
 		}
 		fmt.Fprintf(w, mesg)
 	} else {
@@ -105,15 +109,97 @@ func feedbackHandler(w http.ResponseWriter, r *http.Request, author string) {
 func get_postsHandler(w http.ResponseWriter, r *http.Request, author string) {
 	SUBS_SEM.Lock()
 	defer SUBS_SEM.Unlock()
+	how_many, _ := strconv.Atoi(r.FormValue("how_many"))
+	selected := make([]*Submission, 0)
+	get_all := false
+	if how_many == -1 {
+		how_many = len(NewSubs)
+		get_all = true
 
-	js, err := json.Marshal(NewSubs)
+	}
+	j := 0
+	for i := 0; j < how_many && i < len(NewSubs); i++ {
+		if NewSubs[i].Status == "new" || get_all {
+			NewSubs[i].Status = "pending"
+			selected = append(selected, NewSubs[i])
+			j++
+		}
+	}
+	js, err := json.Marshal(selected)
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
-		// NewSubs = make([]*Submission, 0)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
 	}
 }
+
+//-----------------------------------------------------------------
+// peek at all submissions in NewSubs
+//-----------------------------------------------------------------
+func peekHandler(w http.ResponseWriter, r *http.Request, author string) {
+	SUBS_SEM.Lock()
+	defer SUBS_SEM.Unlock()
+	js, err := json.Marshal(NewSubs)
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+}
+
+//-----------------------------------------------------------------
+// retrieve a submission in NewSubs by index
+//-----------------------------------------------------------------
+func get_post_by_indexHandler(w http.ResponseWriter, r *http.Request, author string) {
+	SUBS_SEM.Lock()
+	defer SUBS_SEM.Unlock()
+	idx, err := strconv.Atoi(r.FormValue("post"))
+	if err != nil {
+		fmt.Println(err.Error)
+	} else {
+		var js []byte
+		if idx < 0 || idx >= len(NewSubs) {
+			js, err = json.Marshal(&Submission{})
+		} else {
+			NewSubs[idx].Status = "pending"
+			js, err = json.Marshal(NewSubs[idx])
+		}
+		if err != nil {
+			fmt.Println(err.Error())
+		} else {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(js)
+		}
+	}
+}
+
+//-----------------------------------------------------------------
+// (deprecated) Instructor gives brownie points to a user
+//-----------------------------------------------------------------
+// func give_pointsHandler(w http.ResponseWriter, r *http.Request, author string) {
+// 	if sub, ok := AllSubs[r.FormValue("sid")]; ok {
+// 		points, err := strconv.Atoi(r.FormValue("points"))
+// 		if err != nil {
+// 			fmt.Fprint(w, "Failed")
+// 		} else {
+// 			success := RemoveSubmissionBySID(r.FormValue("sid"))
+// 			if author != "instructor" && success == false {
+// 				// Instructor graded this submission, TA can't change.
+// 				fmt.Fprintf(w, "This submission is already graded.")
+// 			} else {
+// 				sub.Points = points
+// 				_, err = UpdatePointsSQL.Exec(sub.Points, r.FormValue("sid"))
+// 				if err != nil {
+// 					fmt.Fprint(w, "Failed")
+// 				} else {
+// 					mesg := fmt.Sprintf("%s: %d points.\n", sub.Uid, sub.Points)
+// 					fmt.Fprintf(w, mesg)
+// 				}
+// 			}
+// 		}
+// 	}
+// }
 
 //-----------------------------------------------------------------

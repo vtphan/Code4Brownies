@@ -12,9 +12,11 @@ import webbrowser
 
 c4ba_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "info")
 c4ba_FEEDBACK_CODE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "feedback_code.txt")
-c4ba_FEEDBACK_PATH = "ta_feedback"
-c4ba_BROWNIE_PATH = "ta_give_points"
-c4ba_REQUEST_ENTRIES_PATH = "ta_get_posts"
+c4ba_PEEK_PATH = "peek"
+c4ba_REQUEST_ENTRY_PATH = "get_post_by_index"
+c4ba_FEEDBACK_PATH = "feedback"
+c4ba_BROWNIE_PATH = "give_points"
+c4ba_REQUEST_ENTRIES_PATH = "get_posts"
 c4ba_SHARE_WITH_TEACHER_PATH = "ta_share_with_teacher"
 c4ba_GET_FROM_TEACHER_PATH = "ta_get_from_teacher"
 c4ba_ADD_PUBLIC_BOARD_PATH = "add_public_board"
@@ -210,8 +212,7 @@ def c4ba_share_feedback(self, edit, points):
 	response = c4baRequest(url, data)
 	if response is not None:
 		sublime.message_dialog(response)
-		if points != -1:
-			self.view.window().run_command('close')
+		self.view.window().run_command('close')
 
 # ------------------------------------------------------------------
 # TA shares feedback on the current file
@@ -300,38 +301,106 @@ class c4baInsertFeedbackCommand(sublime_plugin.TextCommand):
 		items = self.read_feedback_def()
 		self.view.show_popup_menu(items, on_done)
 
+# ------------------------------------------------------------------
+# how_many = -1 means gets all submissions.
+# ------------------------------------------------------------------
+def c4ba_get_submissions(self, edit, how_many):
+	info = c4ba_get_attr()
+	if info is None:
+		return
+	url = urllib.parse.urljoin(info['Server'], c4ba_REQUEST_ENTRIES_PATH)
+	data = urllib.parse.urlencode({
+		'how_many': 	how_many,
+		'passcode':		info['Passcode'],
+		'name':			info['Name'],
+	}).encode('utf-8')
+	response = c4baRequest(url,data)
+	if response is not None:
+		entries = json.loads(response)
+		if entries:
+			for entry in reversed(entries):
+				ext = '' if entry['Ext']=='' else '.'+entry['Ext']
+				if not os.path.isdir(POSTS_DIR):
+					os.mkdir(POSTS_DIR)
+				# Prefix c4b_ to file name
+				userFile_name = 'c4b_' + entry['Sid'] + ext
+				userFile = os.path.join(POSTS_DIR, userFile_name)
+				with open(userFile, 'w', encoding='utf-8') as fp:
+					fp.write(entry['Body'])
+				new_view = self.view.window().open_file(userFile)
+		else:
+			sublime.status_message("Queue is empty.")
 
 # ------------------------------------------------------------------
-# TA retrieves all posts.
+# Instructor retrieves submissions
 # ------------------------------------------------------------------
-class c4baGetAllCommand(sublime_plugin.TextCommand):
+class c4baGetOneSubmissionCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		c4ba_get_submissions(self, edit, 1)
+
+# ------------------------------------------------------------------
+class c4baGetThreeSubmissionsCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		c4ba_get_submissions(self, edit, 3)
+
+# ------------------------------------------------------------------
+class c4baGetAllSubmissionsCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		c4ba_get_submissions(self, edit, -1)
+
+
+# ------------------------------------------------------------------
+# Preview submissions and select by index
+# ------------------------------------------------------------------
+class c4baPeekCommand(sublime_plugin.TextCommand):
+	def request_entry(self, users, edit):
+		def foo(selected):
+			info = c4ba_get_attr()
+			if info is None:
+				return
+			if selected < 0:
+				return
+			url = urllib.parse.urljoin(info['Server'], c4ba_REQUEST_ENTRY_PATH)
+			data = urllib.parse.urlencode({
+				'post':		selected,
+				'passcode':		info['Passcode'],
+				'name':			info['Name'],
+			}).encode('utf-8')
+			response = c4baRequest(url,data)
+			if response is not None:
+				json_obj = json.loads(response)
+				# print(json_obj)
+				ext = '' if json_obj['Ext']=='' else '.'+json_obj['Ext']
+				if not os.path.isdir(POSTS_DIR):
+					os.mkdir(POSTS_DIR)
+				# Prefix c4b_ to file name
+				userFile_name = 'c4b_' + json_obj['Sid'] + ext
+				userFile = os.path.join(POSTS_DIR, userFile_name)
+				with open(userFile, 'w', encoding='utf-8') as fp:
+					fp.write(json_obj['Body'])
+				new_view = self.view.window().open_file(userFile)
+		return foo
+
 	def run(self, edit):
 		info = c4ba_get_attr()
 		if info is None:
 			return
-		url = urllib.parse.urljoin(info['Server'], c4ba_REQUEST_ENTRIES_PATH)
+		url = urllib.parse.urljoin(info['Server'], c4ba_PEEK_PATH)
 		data = urllib.parse.urlencode({
-			'passcode':	info['Passcode'],
-			'name':		info['Name'],
+			'passcode':		info['Passcode'],
+			'name':			info['Name'],
 		}).encode('utf-8')
 		response = c4baRequest(url,data)
 		if response is not None:
-			entries = json.loads(response)
-			# print(entries)
-			if entries:
-				for entry in reversed(entries):
-					# print(entry)
-					ext = '' if entry['Ext']=='' else '.'+entry['Ext']
-					if not os.path.isdir(POSTS_DIR):
-						os.mkdir(POSTS_DIR)
-					# Prefix c4b_ to file name
-					userFile_name = 'c4b_' + entry['Sid'] + ext
-					userFile = os.path.join(POSTS_DIR, userFile_name)
-					with open(userFile, 'w', encoding='utf-8') as fp:
-						fp.write(entry['Body'])
-					new_view = self.view.window().open_file(userFile)
+			json_obj = json.loads(response)
+			if json_obj is None:
+				sublime.status_message("Queue is empty.")
 			else:
-				sublime.message_dialog("Queue is empty.")
+				users = [ '%s: %s' % (entry['Uid'], entry['Sid']) for entry in json_obj ]
+				if users:
+					self.view.show_popup_menu(users, self.request_entry(users, edit))
+				else:
+					sublime.status_message("Queue is empty.")
 
 # ------------------------------------------------------------------
 class c4baTrackSubmissionsCommand(sublime_plugin.ApplicationCommand):
