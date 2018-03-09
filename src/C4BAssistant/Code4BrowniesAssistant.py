@@ -163,13 +163,60 @@ class c4baGetFromTeacherCommand(sublime_plugin.TextCommand):
 				sublime.message_dialog("Queue is empty.")
 
 # ------------------------------------------------------------------
+def c4ba_share_feedback(self, edit, points):
+	# Get info
+	info = c4ba_get_attr()
+	if info is None:
+		return
+
+	# Detect empty buffer
+	this_file_name = self.view.file_name()
+	if this_file_name is None:
+		sublime.message_dialog('Empty file is not a student submission.')
+		return
+
+	# Determine sid
+	basename = os.path.basename(this_file_name)
+	if not basename.startswith('c4b_'):
+		sublime.message_dialog('This does not look like a student submission.')
+		return
+
+	# Get content and ext
+	ext = this_file_name.rsplit('.',1)[-1]
+	content = self.view.substr(sublime.Region(0, self.view.size()))
+	header = content.split('\n',1)[0]
+	if not header.startswith('#') or not header.startswith('//'):
+		header = ''
+
+	# Determine sid
+	basename = os.path.basename(this_file_name)
+	if not basename.startswith('c4b_'):
+		sublime.message_dialog('This does not look like a student submission.')
+		return
+	sid = basename.split('.')[0]
+	sid = sid.split('c4b_')[1]
+
+	# Prepare and send feedback
+	data = urllib.parse.urlencode({
+		'content': 		content,
+		'sid':			sid,
+		'ext': 			ext,
+		'points':		points,
+		'passcode':		info['Passcode'],
+		'name':			info['Name'],
+		'has_feedback': _has_feedback(this_file_name, content)
+	}).encode('utf-8')
+	url = urllib.parse.urljoin(info['Server'], c4ba_FEEDBACK_PATH)
+	response = c4baRequest(url, data)
+	if response is not None:
+		sublime.message_dialog(response)
+		if points != -1:
+			self.view.window().run_command('close')
+
+# ------------------------------------------------------------------
 # TA shares feedback on the current file
 # ------------------------------------------------------------------
 class c4baShareFeedbackUngradedCommand(sublime_plugin.TextCommand):
-	def run(self, edit):
-		c4ba_share_feedback(self, edit)
-
-class c4baShareFeedbackZeroCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		c4ba_share_feedback(self, edit, 0)
 
@@ -254,87 +301,6 @@ class c4baInsertFeedbackCommand(sublime_plugin.TextCommand):
 		self.view.show_popup_menu(items, on_done)
 
 
-# class c4baInsertFeedbackCommand(sublime_plugin.TextCommand):
-# 	#--------------------------------------------------------
-# 	def on_cancel(self):
-# 		self.view.hide_popup()
-
-# 	#--------------------------------------------------------
-# 	def process_feedback(self, line):
-# 		self.view.hide_popup()
-
-# 		# Retrieve feedback: <line no>,<feedback no> separated by a spaces
-# 		items = line.strip().split()
-# 		items = [ i.strip().split(',') for i in items ]
-# 		feedback = [ (int(i[0]), self.feedback_def[int(i[1])]) for i in items ]
-
-# 		# Insert feedback and build content
-# 		this_file_name = self.view.file_name()
-# 		content = ''
-# 		with open(this_file_name, 'r', encoding='utf-8') as fp:
-# 			lines = fp.readlines()
-# 			for fb in feedback:
-# 				line_no = fb[0]-1
-# 				if line_no < len(lines):
-# 					cur_line = lines[line_no].rstrip()
-# 					if cur_line == '':
-# 						cur_line = _build_feedback_line(this_file_name, fb[1])
-# 					else:
-# 						cur_line +=  '\t' + _build_feedback_line(this_file_name, fb[1])
-# 					lines[line_no] = cur_line
-# 				else:
-# 					lines.append('\n' + _build_feedback_line(this_file_name, fb[1]))
-# 			content = ''.join(lines)
-
-# 		# Write back to file
-# 		with open(this_file_name, 'w', encoding='utf-8') as fp:
-# 			fp.write(content)
-
-# 	#--------------------------------------------------------
-# 	def read_feedback_def(self):
-# 		if not os.path.exists(c4ba_FEEDBACK_CODE):
-# 			feedback_code = [
-# 				'GOOD JOB!!!',
-# 				'Syntax',
-# 				'Incorrect logic',
-# 				'Base case',
-# 				'Will not stop',
-# 				'Return value',
-# 				'Incorrect parameters',
-# 				'Unreachable',
-# 			]
-# 			with open(c4ba_FEEDBACK_CODE, 'w') as f:
-# 				f.write('\n'.join(feedback_code))
-
-# 		self.feedback_def, instr = {}, []
-# 		with open(c4ba_FEEDBACK_CODE, 'r') as f:
-# 			i = 1
-# 			for line in f:
-# 				if line.strip():
-# 					# print('{}. {}'.format(i, line.strip()))
-# 					instr.append('{}. {}'.format(i,line))
-# 					self.feedback_def[i] = line.strip()
-# 					i += 1
-# 		# sublime.status_message('Feedback code printed in console.')
-# 		return '<br>'.join(instr)
-
-# 	#--------------------------------------------------------
-# 	def run(self, edit):
-# 		# cursor = self.view.sel()[0].begin()
-# 		# self.view.insert(edit, cursor, 'HELLO WORLD')
-
-# 		sublime.active_window().show_input_panel("<line no>,<feedback no> (separate multiple items by a space)",
-# 			"",
-# 			self.process_feedback,
-# 			None,
-# 			self.on_cancel)
-
-# 		# Show feedback code
-# 		instr = self.read_feedback_def()
-# 		if self.feedback_def:
-# 			self.view.show_popup(instr)
-
-
 # ------------------------------------------------------------------
 # TA retrieves all posts.
 # ------------------------------------------------------------------
@@ -366,60 +332,6 @@ class c4baGetAllCommand(sublime_plugin.TextCommand):
 					new_view = self.view.window().open_file(userFile)
 			else:
 				sublime.message_dialog("Queue is empty.")
-
-
-# ------------------------------------------------------------------
-# TA rewards brownies.
-# ------------------------------------------------------------------
-# class c4baAwardPoint0Command(sublime_plugin.TextCommand):
-# 	def run(self, edit):
-# 		award_points(self, edit, 0)
-
-# class c4baAwardPoint1Command(sublime_plugin.TextCommand):
-# 	def run(self, edit):
-# 		award_points(self, edit, 1)
-
-# class c4baAwardPoint2Command(sublime_plugin.TextCommand):
-# 	def run(self, edit):
-# 		award_points(self, edit, 2)
-
-# class c4baAwardPoint3Command(sublime_plugin.TextCommand):
-# 	def run(self, edit):
-# 		award_points(self, edit, 3)
-
-# class c4baAwardPoint4Command(sublime_plugin.TextCommand):
-# 	def run(self, edit):
-# 		award_points(self, edit, 4)
-
-# class c4baAwardPoint5Command(sublime_plugin.TextCommand):
-# 	def run(self, edit):
-# 		award_points(self, edit, 5)
-
-# def award_points(self, edit, points):
-# 	this_file_name = self.view.file_name()
-# 	if this_file_name:
-# 		info = c4ba_get_attr()
-# 		if info is None:
-# 			return
-# 		basename = os.path.basename(this_file_name)
-# 		if not basename.startswith('c4b_'):
-# 			sublime.status_message("This is not a student submission.")
-# 			return
-# 		sid = basename.rsplit('.',-1)[0]
-# 		sid = sid.split('c4b_')[-1]
-# 		url = urllib.parse.urljoin(info['Server'], c4ba_BROWNIE_PATH)
-# 		data = urllib.parse.urlencode({
-# 			'sid':		sid,
-# 			'points':	points,
-# 			'passcode':	info['Passcode'],
-# 			'name':		info['Name'],
-# 		}).encode('utf-8')
-# 		response = c4baRequest(url,data)
-# 		if response == 'Failed':
-# 			sublime.message_dialog("Failed to give brownies.")
-# 		else:
-# 			sublime.message_dialog(response)
-# 			self.view.window().run_command('close')
 
 # ------------------------------------------------------------------
 class c4baTrackSubmissionsCommand(sublime_plugin.ApplicationCommand):

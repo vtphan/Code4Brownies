@@ -34,32 +34,54 @@ func checkinHandler(w http.ResponseWriter, r *http.Request) {
 //-----------------------------------------------------------------
 func my_pointsHandler(w http.ResponseWriter, r *http.Request) {
 	user := r.FormValue("uid")
-	all_points, today_points := 0, 0
 	var date time.Time
-	today := time.Now().Day()
-	rows, _ := database.Query("select points, date from submission where uid=?", user)
+	var description string
+	var p int
+	report := make([]*StudentReport, 0)
+
+	rows, _ := database.Query("select points, date, description from submission where uid=?", user)
 	defer rows.Close()
 	for rows.Next() {
-		p := 0
-		rows.Scan(&p, &date)
-		if date.Day() == today {
-			today_points += p
-		}
-		all_points += p
+		rows.Scan(&p, &date, &description)
+		report = append(report, &StudentReport{
+			Description: description,
+			Points:      p,
+			Date:        date.Unix(),
+			Type:        "exercise",
+		})
 	}
+
 	rows2, _ := database.Query("select points, date from poll where uid=?", user)
 	defer rows2.Close()
+	i := 1
 	for rows2.Next() {
-		p := 0
 		rows2.Scan(&p, &date)
-		if date.Day() == today {
-			today_points += p
-		}
-		all_points += p
+		report = append(report, &StudentReport{
+			Description: fmt.Sprintf("poll %d", i),
+			Points:      p,
+			Date:        date.Unix(),
+			Type:        "poll",
+		})
+		i++
 	}
-	str := "%s\nToday: %d brownie points.\nAll-time: %d brownie points.\n"
-	mesg := fmt.Sprintf(str, user, today_points, all_points)
-	fmt.Fprintf(w, mesg)
+
+	rows3, _ := database.Query("select point, date, answer from quiz_answer where uid=?", user)
+	defer rows3.Close()
+	for rows3.Next() {
+		rows3.Scan(&p, &date, &description)
+		report = append(report, &StudentReport{
+			Description: description,
+			Points:      p,
+			Date:        date.Unix(),
+			Type:        "quiz",
+		})
+	}
+
+	js, err := json.Marshal(report)
+	if err == nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
 }
 
 //-----------------------------------------------------------------

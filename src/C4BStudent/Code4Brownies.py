@@ -356,11 +356,29 @@ class c4bShowPoints(sublime_plugin.WindowCommand):
 			return
 		url = urllib.parse.urljoin(info['Server'], c4b_MY_POINTS_PATH)
 		values = {'uid':info['Name']}
-		# data = urllib.parse.urlencode(values).encode('ascii')
 		data = urllib.parse.urlencode(values).encode('utf-8')
 		response = c4bRequest(url,data)
-		if response is not None:
-			sublime.message_dialog(response)
+		if response != None:
+			json_obj = json.loads(response)
+			report = {}
+			for i in json_obj:
+				Date, Desc, Type, Points = i['Date'], i['Description'], i['Type'], i['Points']
+				if Date not in report:
+					report[Date] = []
+				report[Date].append( (Type,Points,Desc) )
+			total = 0
+			for k,v in report.items():
+				total += sum(i[1] for i in v)
+
+			report_file = os.path.join(info['Folder'], 'report.txt')
+			with open(report_file, 'w', encoding='utf-8') as f:
+				f.write('Total points: {}\n'.format(total))
+				for d,v in reversed(sorted(report.items())):
+					date = datetime.datetime.fromtimestamp(d).strftime('%Y-%m-%d')
+					for items in v:
+						f.write('{}\t{:<10}\t{}\t{}\n'.format(date,items[0],items[1],items[2]))
+			new_view = sublime.active_window().open_file(report_file)
+
 
 # ------------------------------------------------------------------
 class c4bSetInfo(sublime_plugin.WindowCommand):

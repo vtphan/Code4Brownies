@@ -4,28 +4,23 @@
         "id": "C4Ba",
         "children": [
             {
-                "caption": "Get student code",
+                "caption": "Get submissions",
                 "id": "c4baGetAll",
                 "command": "c4ba_get_all"
             },
             {
-                "caption": "Insert feedback",
+                "caption": "Insert comment",
                 "id": "c4baInsertFeedback",
                 "command": "c4ba_insert_feedback"
             },
             {
-                "caption": "Share feedback",
+                "caption": "Return to student",
                 "id": "c4baShareFeedback",
                 "children": [
                     {
                         "caption": "not graded",
                         "id": "c4baShareFeedbackUngraded",
                         "command": "c4ba_share_feedback_ungraded"
-                    },
-                    {
-                        "caption": "0 point",
-                        "id": "c4baShareFeedbackZero",
-                        "command": "c4ba_share_feedback_zero"
                     },
                     {
                         "caption": "1 point",

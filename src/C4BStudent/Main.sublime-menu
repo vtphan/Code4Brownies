@@ -9,11 +9,6 @@
                 "command": "c4b_my_board"
             },
             {
-                "caption": "Track White Board",
-                "id": "c4bTrackBoard",
-                "command": "c4b_track_board"
-            },
-            {
                 "caption": "Share",
                 "id": "c4bShare",
                 "command": "c4b_share"
@@ -38,6 +33,11 @@
                 "caption": "Brownie Points",
                 "id": "c4bShowPoints",
                 "command": "c4b_show_points"
+            },
+            {
+                "caption": "Track White Board",
+                "id": "c4bTrackBoard",
+                "command": "c4b_track_board"
             },
             {"caption":"-", "id":"side-bar-separator"},
             {

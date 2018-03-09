@@ -73,7 +73,7 @@ func feedbackHandler(w http.ResponseWriter, r *http.Request, author string) {
 		}
 
 		// Give points
-		if points >= 0 {
+		if points > 0 {
 			success := RemoveSubmissionBySID(sid)
 			// fmt.Println(success, author)
 			if author == "instructor" || success == true {

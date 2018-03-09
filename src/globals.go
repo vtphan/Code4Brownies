@@ -53,6 +53,13 @@ type BroadcastData struct {
 
 var Questions []string
 
+type StudentReport struct {
+	Description string
+	Points      int
+	Date        int64
+	Type        string
+}
+
 type Submission struct {
 	Sid       string // submission id
 	Bid       string // broadcast id

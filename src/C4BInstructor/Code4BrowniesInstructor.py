@@ -269,12 +269,6 @@ def c4bi_share_feedback(self, edit, points=-1):
 	if not header.startswith('#') or not header.startswith('//'):
 		header = ''
 
-	# header = ''
-	# lines = open(this_file_name, 'r', encoding='utf-8').readlines()
-	# if len(lines)>0 and (lines[0].startswith('#') or lines[0].startswith('//')):
-	# 	header = lines[0]
-	# content = ''.join(lines)
-
 	# Determine sid
 	basename = os.path.basename(this_file_name)
 	if not basename.startswith('c4b_'):

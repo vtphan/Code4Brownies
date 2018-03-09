@@ -4,12 +4,7 @@
         "id": "C4Bi",
         "children": [
             {
-                "caption": "Get all",
-                "id": "c4biGetAll",
-                "command": "c4bi_get_all"
-            },
-            {
-                "caption": "Share with",
+                "caption": "Share file with",
                 "id": "c4biBroadcastContent",
                 "children": [
                     {
@@ -35,23 +30,23 @@
                 ]
             },
             {
-                "caption": "Insert feedback",
+                "caption": "Get submissions",
+                "id": "c4biGetAll",
+                "command": "c4bi_get_all"
+            },
+            {
+                "caption": "Insert comment",
                 "id": "c4biInsertFeedback",
                 "command": "c4bi_insert_feedback"
             },
             {
-                "caption": "Share feedback",
+                "caption": "Return to student",
                 "id": "c4biShareFeedback",
                 "children": [
                     {
                         "caption": "not graded",
                         "id": "c4biShareFeedbackUngraded",
                         "command": "c4bi_share_feedback_ungraded"
-                    },
-                    {
-                        "caption": "0 point",
-                        "id": "c4biShareFeedbackZero",
-                        "command": "c4bi_share_feedback_zero"
                     },
                     {
                         "caption": "1 point",
@@ -80,37 +75,32 @@
                     }
                 ]
             },
+            {"caption":"-", "id":"side-bar-separator"},
             {
-                "caption": "Test",
-                "id": "c4biTest",
+                "caption": "Poll",
+                "id": "c4biPoll",
                 "children": [
                     {
-                        "caption": "Poll",
-                        "id": "c4biPoll",
-                        "children": [
-                            {
-                                "caption": "Start",
-                                "id": "c4biStartPoll",
-                                "command": "c4bi_start_poll"
-                            },
-                            {
-                                "caption": "Results",
-                                "id": "c4biViewPoll",
-                                "command": "c4bi_view_poll"
-                            },
-                            {
-                                "caption": "Answer",
-                                "id": "c4biAnswerPoll",
-                                "command": "c4bi_answer_poll"
-                            }
-                        ]
+                        "caption": "Start",
+                        "id": "c4biStartPoll",
+                        "command": "c4bi_start_poll"
                     },
                     {
-                        "caption": "Quiz",
-                        "id": "c4biQuiz",
-                        "command": "c4bi_quiz"
+                        "caption": "View Results",
+                        "id": "c4biViewPoll",
+                        "command": "c4bi_view_poll"
+                    },
+                    {
+                        "caption": "Answer/Close",
+                        "id": "c4biAnswerPoll",
+                        "command": "c4bi_answer_poll"
                     }
                 ]
+            },
+            {
+                "caption": "Send quiz",
+                "id": "c4biQuiz",
+                "command": "c4bi_quiz"
             },
             {"caption":"-", "id":"side-bar-separator"},
             {
