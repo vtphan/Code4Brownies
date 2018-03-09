@@ -108,6 +108,17 @@
             },
             {"caption":"-", "id":"side-bar-separator"},
             {
+                "caption": "Copy to public board",
+                "id": "c4baAddPublicBoard",
+                "command": "c4ba_add_public_board"
+            },
+            {
+                "caption": "View public board",
+                "id": "c4baViewPublicBoard",
+                "command": "c4ba_view_public_board"
+            },
+            {"caption":"-", "id":"side-bar-separator"},
+            {
                 "caption": "Set server address",
                 "id": "c4baSetServer",
                 "command": "c4ba_set_server"

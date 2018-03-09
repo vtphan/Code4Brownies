@@ -26,7 +26,12 @@
                         "caption": "Group",
                         "id": "c4biBroadcastGroup",
                         "command": "c4bi_broadcast_group"
-                    }
+                    },
+                    {
+                        "caption": "Public",
+                        "id": "c4biAddPublicBoard",
+                        "command": "c4bi_add_public_board"
+                    },
                 ]
             },
             {
@@ -75,42 +80,6 @@
                     }
                 ]
             },
-            // {
-            //     "caption": "Give brownies",
-            //     "id": "c4biAwardPoint",
-            //     "children": [
-            //         {
-            //             "caption": "0 brownie",
-            //             "id": "c4biAwardPoint0",
-            //             "command": "c4bi_award_point0"
-            //         },
-            //         {
-            //             "caption": "1 brownie",
-            //             "id": "c4biAwardPoint1",
-            //             "command": "c4bi_award_point1"
-            //         },
-            //         {
-            //             "caption": "2 brownies",
-            //             "id": "c4biAwardPoint2",
-            //             "command": "c4bi_award_point2"
-            //         },
-            //         {
-            //             "caption": "3 brownies",
-            //             "id": "c4biAwardPoint3",
-            //             "command": "c4bi_award_point3"
-            //         },
-            //         {
-            //             "caption": "4 brownies",
-            //             "id": "c4biAwardPoint4",
-            //             "command": "c4bi_award_point4"
-            //         },
-            //         {
-            //             "caption": "5 brownies",
-            //             "id": "c4biAwardPoint5",
-            //             "command": "c4bi_award_point5"
-            //         }
-            //     ]
-            // },
             {
                 "caption": "Test",
                 "id": "c4biTest",
@@ -145,9 +114,20 @@
             },
             {"caption":"-", "id":"side-bar-separator"},
             {
-                "caption": "Track submissions",
-                "id": "c4biTrackSubmissions",
-                "command": "c4bi_track_submissions"
+                "caption": "Tracking",
+                "id": "c4biTrack",
+                "children": [
+                    {
+                        "caption": "Submissions",
+                        "id": "c4biTrackSubmissions",
+                        "command": "c4bi_track_submissions"
+                    },
+                    {
+                        "caption": "Public board",
+                        "id": "c4biViewPublicBoard",
+                        "command": "c4bi_view_public_board"
+                    },
+                ]
             },
             {
                 "caption": "Peek",

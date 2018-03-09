@@ -116,6 +116,8 @@ func main() {
 	http.HandleFunc("/ta_feedback", AuthorizeShared(feedbackHandler))
 	http.HandleFunc("/get_posts", AuthorizeShared(get_postsHandler))
 	http.HandleFunc("/feedback", AuthorizeShared(feedbackHandler))
+	http.HandleFunc("/add_public_board", AuthorizeShared(add_public_boardHandler))
+	http.HandleFunc("/remove_public_board", AuthorizeShared(remove_public_boardHandler))
 
 	// TA handlers
 	http.HandleFunc("/ta_give_points", AuthorizeTA(ta_give_pointsHandler))
@@ -138,6 +140,7 @@ func main() {
 	http.HandleFunc("/send_quiz_question", Authorize(send_quiz_questionHandler))
 
 	// public handlers
+	http.HandleFunc("/view_public_board", view_public_boardHandler)
 	http.HandleFunc("/track_board", track_boardHandler)
 	http.HandleFunc("/track_submissions", track_submissionsHandler)
 	http.HandleFunc("/view_questions", view_questionsHandler)

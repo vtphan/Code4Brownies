@@ -41,7 +41,7 @@ func share_with_taHandler(w http.ResponseWriter, r *http.Request) {
 	TABoard_SEM.Lock()
 	defer TABoard_SEM.Unlock()
 	content, ext := r.FormValue("content"), r.FormValue("ext")
-	TABoardIn = append(TABoardIn, &TAData{Content: content, Ext: ext})
+	TABoardIn = append(TABoardIn, &Code{Content: content, Ext: ext})
 	fmt.Fprintf(w, "Content shared with TA.")
 }
 

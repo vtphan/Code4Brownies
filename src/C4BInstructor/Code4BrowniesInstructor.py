@@ -24,6 +24,7 @@ c4bi_QUIZ_QUESTION_PATH = "send_quiz_question"
 c4bi_FEEDBACK_PATH = "feedback"
 c4bi_SHARE_WITH_TA_PATH = "share_with_ta"
 c4bi_GET_FROM_TA_PATH = "get_from_ta"
+c4bi_ADD_PUBLIC_BOARD_PATH = "add_public_board"
 
 c4bi_FEEDBACK_CODE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "feedback_code.txt")
 
@@ -42,6 +43,34 @@ def c4biRequest(url, data, headers={}):
 	except urllib.error.URLError as err:
 		sublime.message_dialog("{0}\nCannot connect to server.".format(err))
 	return None
+
+
+# ------------------------------------------------------------------
+class c4biViewPublicBoardCommand(sublime_plugin.ApplicationCommand):
+	def run(self):
+		webbrowser.open(SERVER_ADDR + "/view_public_board?i=0")
+
+# ------------------------------------------------------------------
+class c4biAddPublicBoardCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		this_file_name = self.view.file_name()
+		if this_file_name is None:
+			sublime.message_dialog('Do not share an empty file.')
+			return
+		ext = this_file_name.rsplit('.',1)[-1]
+		beg, end = self.view.sel()[0].begin(), self.view.sel()[0].end()
+		content = self.view.substr(sublime.Region(beg,end))
+		if len(content) <= 20:
+			sublime.message_dialog('Select a larger region to share.')
+			return
+		data = urllib.parse.urlencode({
+			'content': 		content,
+			'ext': 			ext,
+		}).encode('utf-8')
+		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_ADD_PUBLIC_BOARD_PATH)
+		response = c4biRequest(url, data)
+		if response is not None:
+			sublime.message_dialog(response)
 
 # ------------------------------------------------------------------
 class c4biShareWithTaCommand(sublime_plugin.TextCommand):

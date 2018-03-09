@@ -17,7 +17,7 @@ func ta_share_with_teacherHandler(w http.ResponseWriter, r *http.Request) {
 	TABoard_SEM.Lock()
 	defer TABoard_SEM.Unlock()
 	content, ext := r.FormValue("content"), r.FormValue("ext")
-	TABoardOut = append(TABoardOut, &TAData{Content: content, Ext: ext})
+	TABoardOut = append(TABoardOut, &Code{Content: content, Ext: ext})
 	fmt.Fprintf(w, "Content shared with instructor.")
 }
 

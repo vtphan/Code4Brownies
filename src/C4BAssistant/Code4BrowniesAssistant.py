@@ -17,6 +17,7 @@ c4ba_BROWNIE_PATH = "ta_give_points"
 c4ba_REQUEST_ENTRIES_PATH = "ta_get_posts"
 c4ba_SHARE_WITH_TEACHER_PATH = "ta_share_with_teacher"
 c4ba_GET_FROM_TEACHER_PATH = "ta_get_from_teacher"
+c4ba_ADD_PUBLIC_BOARD_PATH = "add_public_board"
 TIMEOUT = 7
 
 POSTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Posts")
@@ -57,6 +58,41 @@ def c4baRequest(url, data, headers={}, verbose=True):
 		if verbose:
 			sublime.message_dialog("{0}\nCannot connect to server.".format(err))
 	return None
+
+# ------------------------------------------------------------------
+class c4baAddPublicBoardCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		info = c4ba_get_attr()
+		if info is None:
+			return
+		this_file_name = self.view.file_name()
+		if this_file_name is None:
+			sublime.message_dialog('Do not share an empty file.')
+			return
+		ext = this_file_name.rsplit('.',1)[-1]
+		beg, end = self.view.sel()[0].begin(), self.view.sel()[0].end()
+		content = self.view.substr(sublime.Region(beg,end))
+		if len(content) <= 20:
+			sublime.message_dialog('Select a larger region to share.')
+			return
+		data = urllib.parse.urlencode({
+			'content': 		content,
+			'ext': 			ext,
+			'passcode':	info['Passcode'],
+			'name':		info['Name'],
+		}).encode('utf-8')
+		url = urllib.parse.urljoin(info['Server'], c4ba_ADD_PUBLIC_BOARD_PATH)
+		response = c4baRequest(url, data)
+		if response is not None:
+			sublime.message_dialog(response)
+
+# ------------------------------------------------------------------
+class c4baViewPublicBoardCommand(sublime_plugin.ApplicationCommand):
+	def run(self):
+		info = c4ba_get_attr()
+		if info is None:
+			return
+		webbrowser.open(info['Server'] + "/view_public_board?i=0")
 
 # ------------------------------------------------------------------
 class c4baCleanCommand(sublime_plugin.ApplicationCommand):

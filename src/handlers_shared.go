@@ -16,6 +16,26 @@ import (
 )
 
 //-----------------------------------------------------------------
+func add_public_boardHandler(w http.ResponseWriter, r *http.Request, author string) {
+	PublicBoard_SEM.Lock()
+	defer PublicBoard_SEM.Unlock()
+	content, ext := r.FormValue("content"), r.FormValue("ext")
+	PublicBoard = append(PublicBoard, &Code{Content: content, Ext: ext})
+	fmt.Fprintf(w, "Content added to public board")
+}
+
+//-----------------------------------------------------------------
+func remove_public_boardHandler(w http.ResponseWriter, r *http.Request, author string) {
+	PublicBoard_SEM.Lock()
+	defer PublicBoard_SEM.Unlock()
+	i, _ := strconv.Atoi(r.FormValue("i"))
+	if i >= 0 && i < len(PublicBoard) {
+		PublicBoard = append(PublicBoard[:i], PublicBoard[i+1:]...)
+	}
+	http.Redirect(w, r, "view_public_board?i=0", http.StatusSeeOther)
+}
+
+//-----------------------------------------------------------------
 // Instructor/TAs give feedback and points to a student
 //-----------------------------------------------------------------
 func feedbackHandler(w http.ResponseWriter, r *http.Request, author string) {

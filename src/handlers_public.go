@@ -8,7 +8,57 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strconv"
 )
+
+//-----------------------------------------------------------------
+func view_public_boardHandler(w http.ResponseWriter, r *http.Request) {
+	i, err := strconv.Atoi(r.FormValue("i"))
+	if err != nil {
+		i = 0
+	}
+	if i >= len(PublicBoard) {
+		i = 0
+	}
+	funcMap := template.FuncMap{
+		"inc": func(i int) int {
+			return i + 1
+		},
+	}
+	temp := template.New("public board template")
+	t, _ := temp.Funcs(funcMap).Parse(PUBLIC_BOARD_TEMPLATE)
+	if i >= 0 && i < len(PublicBoard) {
+		idx := make([]string, 0)
+		for j := 0; j < len(PublicBoard); j++ {
+			if i == j {
+				idx = append(idx, "active")
+			} else {
+				idx = append(idx, "")
+			}
+		}
+		x := ""
+		if r.Host == "localhost:4030" {
+			x = "x"
+		}
+		data := struct {
+			Content string
+			Idx     []string
+			X       string
+			AltText string
+		}{Content: PublicBoard[i].Content, Idx: idx, X: x, AltText: ""}
+		w.Header().Set("Content-Type", "text/html")
+		t.Execute(w, &data)
+	} else {
+		data := struct {
+			Content string
+			Idx     []string
+			X       string
+			AltText string
+		}{Content: "", Idx: []string{}, X: "", AltText: "Reload"}
+		w.Header().Set("Content-Type", "text/html")
+		t.Execute(w, &data)
+	}
+}
 
 //-----------------------------------------------------------------
 func track_boardHandler(w http.ResponseWriter, r *http.Request) {
@@ -50,8 +100,8 @@ func track_submissionsHandler(w http.ResponseWriter, r *http.Request) {
 
 //-----------------------------------------------------------------
 func view_questionsHandler(w http.ResponseWriter, r *http.Request) {
-	t := template.New("questions template")
-	t, err := t.Parse(QUESTIONS_TEMPLATE)
+	temp := template.New("questions template")
+	t, err := temp.Parse(QUESTIONS_TEMPLATE)
 	if err == nil {
 		w.Header().Set("Content-Type", "text/html")
 		t.Execute(w, &QuestionsData{Questions: Questions})

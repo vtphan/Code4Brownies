@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-const VERSION = "0.43"
+const VERSION = "0.44"
 
 var ADDR = ""
 var PORT = "4030"
@@ -18,13 +18,16 @@ var SERVER = ""
 var TA_DB string
 var TA_INFO = make(map[string]string)
 
-type TAData struct {
+type Code struct {
 	Content string
 	Ext     string
 }
 
-var TABoardOut = make([]*TAData, 0)
-var TABoardIn = make([]*TAData, 0)
+var PublicBoard = make([]*Code, 0)
+var PublicBoard_SEM sync.Mutex
+
+var TABoardOut = make([]*Code, 0)
+var TABoardIn = make([]*Code, 0)
 var TABoard_SEM sync.Mutex
 
 type Board struct {
@@ -231,4 +234,64 @@ C
 O
 D
 E
+`
+
+var PUBLIC_BOARD_TEMPLATE = `
+<html>
+	<head>
+  		<title>Public Board</title>
+		<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&skin=desert"></script>
+	 <style type="text/css">
+	pre {
+		font-family: monospace;
+		font-size:110%;
+		padding:1em;
+		overflow-x:scroll;
+		overflow-y:scroll;
+		tab-size: 4;
+		-moz-tab-size: 4;
+	}
+	.center {
+	    text-align: center;
+	}
+	.pagination {
+	    display: inline-block;
+	    padding-bottom: 20px;
+	}
+	.pagination a {
+	    color: black;
+	    float: left;
+	    padding: 8px 16px;
+	    text-decoration: none;
+	    transition: background-color .3s;
+	    border: 1px solid #ddd;
+	    margin: 0 4px;
+	    border-radius: 5px;
+	}
+	.pagination a.active {
+	    background-color: #4CAF50;
+	    color: white;
+	    border: 1px solid #4CAF50;
+	    border-radius: 5px;
+	}
+	.pagination a:hover:not(.active) {background-color: #ddd;}
+	.remove { text-align:right; padding-right:10px; margin-bottom:-15px; }
+	.remove a { text-decoration: none; }
+	</style>
+	</head>
+	<body>
+<div class="center">
+<div class="pagination">
+{{range $i, $a := .Idx}}
+    <a href="view_public_board?i={{$i}}" class="{{$a}}">{{inc $i}}</a>
+{{end}}
+</div>
+<a href="view_public_board?i=0">{{.AltText}}</a>
+</div>
+<div class="remove"><a href="remove_public_board?i=0">{{.X}}</a></div>
+<pre class="prettyprint">
+{{.Content}}
+</pre>
+	</body>
+</html>
 `
