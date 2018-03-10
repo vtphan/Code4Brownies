@@ -61,6 +61,8 @@ func view_public_boardHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //-----------------------------------------------------------------
+// Students tracking their white boards
+//-----------------------------------------------------------------
 func track_boardHandler(w http.ResponseWriter, r *http.Request) {
 	uid := r.FormValue("uid")
 	board, ok := Boards[uid]
@@ -83,14 +85,23 @@ func track_boardHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //-----------------------------------------------------------------
+// Instructor and TAs tracking student submissions
+//-----------------------------------------------------------------
 func track_submissionsHandler(w http.ResponseWriter, r *http.Request) {
 	t := template.New("track submission template")
 	t, err := t.Parse(TRACK_SUBMISSIONS_TEMPLATE)
 	if err == nil {
-		data := struct{ Message string }{""}
-		if len(NewSubs) > 0 {
-			data = struct{ Message string }{fmt.Sprintf("%d", len(NewSubs))}
+		var count1, count2 string
+		count1 = fmt.Sprintf("%d", len(NewSubs))
+		if r.FormValue("view") == "ta" {
+			count2 = fmt.Sprintf("%d", len(TABoardIn))
+		} else {
+			count2 = fmt.Sprintf("%d", len(TABoardOut))
 		}
+		data := struct {
+			Count1 string
+			Count2 string
+		}{count1, count2}
 		w.Header().Set("Content-Type", "text/html")
 		t.Execute(w, data)
 	} else {

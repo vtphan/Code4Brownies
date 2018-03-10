@@ -185,35 +185,11 @@ var POLL_TEMPLATE = `
 </html>
 `
 
-var TRACK_SUBMISSIONS_TEMPLATE = `
-<html>
-	<head>
-  		<title>Track Submissions</title>
-		<meta http-equiv="refresh" content="10" />
-	<style>
-		div {
-		    font-family: monospace;
-		    font-size: 150%;
-		    color: red;
-		    padding-top:0.5em;
-		    padding-left:0.5em;
-		}
-	</style>
-	</head>
-	<body>
-	<div>
-	{{.Message}}
-	</div>
-	</body>
-</html>
-`
-
 var TRACK_BOARD_TEMPLATE = `
 <html>
 	<head>
-  		<title>Track Virtual Board</title>
+  		<title>Tracking virtual white board</title>
 		<meta http-equiv="refresh" content="10" />
-	</head>
 	<style>
 		pre {
 		    font-family: monospace;
@@ -230,18 +206,49 @@ var TRACK_BOARD_TEMPLATE = `
 `
 
 const YOU_GOT_CODE = `
-Y
-O
-U
-
-G
-O
-T
-
 C
-O
-D
+H
 E
+C
+K
+
+W
+H
+I
+T
+E
+
+B
+O
+A
+R
+D
+`
+
+var TRACK_SUBMISSIONS_TEMPLATE = `
+<html>
+	<head>
+  		<title>Tracking submissions</title>
+		<meta http-equiv="refresh" content="10" />
+	</head>
+	<style>
+		.counter {
+		    padding:0.5em;
+		    margin: 0.1em;
+		    border: 2px solid lightgrey;
+   			background-color: lightgrey;
+   			color: green;
+   			width: 20px;
+   			height: 20px;
+		    border-radius: 15px;
+		    text-align: center;
+		}
+	</style>
+	<body>
+	<div class="counter">{{.Count1}}</div>
+	<div class="counter">{{.Count2}}</div>
+	</body>
+</html>
 `
 
 var PUBLIC_BOARD_TEMPLATE = `

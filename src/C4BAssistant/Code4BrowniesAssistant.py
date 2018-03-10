@@ -329,7 +329,7 @@ def c4ba_get_submissions(self, edit, how_many):
 					fp.write(entry['Body'])
 				new_view = self.view.window().open_file(userFile)
 		else:
-			sublime.status_message("Queue is empty.")
+			sublime.message_dialog("There is no new submission.  Some might be pending.")
 
 # ------------------------------------------------------------------
 # Instructor retrieves submissions
@@ -408,7 +408,7 @@ class c4baTrackSubmissionsCommand(sublime_plugin.ApplicationCommand):
 		info = c4ba_get_attr()
 		if info is None:
 			return
-		webbrowser.open(info['Server'] + "/track_submissions")
+		webbrowser.open(info['Server'] + "/track_submissions?view=ta")
 
 # ------------------------------------------------------------------
 class c4baSetServer(sublime_plugin.WindowCommand):
