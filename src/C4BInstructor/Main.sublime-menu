@@ -30,21 +30,21 @@
                 ]
             },
             {
-                "caption": "Get submissions",
+                "caption": "Student submissions",
                 "id": "c4biGetSubmissions",
                 "children": [
                     {
-                        "caption": "1",
+                        "caption": "Get 1",
                         "id": "c4biGetOneSubmission",
                         "command": "c4bi_get_one_submission"
                     },
                     {
-                        "caption": "3",
+                        "caption": "Get 3",
                         "id": "c4biGetThreeSubmissions",
                         "command": "c4bi_get_three_submissions"
                     },
                     {
-                        "caption": "All",
+                        "caption": "Get All",
                         "id": "c4biGetAllSubmissions",
                         "command": "c4bi_get_all_submissions"
                     },
@@ -52,6 +52,11 @@
                         "caption": "Preview",
                         "id": "c4biPeek",
                         "command": "c4bi_peek"
+                    },
+                    {
+                        "caption": "Track",
+                        "id": "c4biTrackSubmissions",
+                        "command": "c4bi_track_submissions"
                     },
                 ]
             },
@@ -125,7 +130,7 @@
             },
             {"caption":"-", "id":"side-bar-separator"},
             {
-                "caption": "Tracking",
+                "caption": "View",
                 "id": "c4biTrack",
                 "children": [
                     {
@@ -138,17 +143,17 @@
                         "id": "c4biViewPublicBoard",
                         "command": "c4bi_view_public_board"
                     },
+                    {
+                        "caption": "Poll answers",
+                        "id": "c4biViewPoll",
+                        "command": "c4bi_view_poll"
+                    },
                 ]
             },
             {
                 "caption": "Clear whiteboards",
                 "id": "c4biClearWhiteboards",
                 "command": "c4bi_clear_whiteboards"
-            },
-            {
-                "caption": "Set new comments",
-                "id": "c4biModifyFeedbackDef",
-                "command": "c4bi_modify_feedback_def"
             },
             {"caption":"-", "id":"side-bar-separator"},
             {
@@ -162,6 +167,11 @@
                 "command": "c4bi_share_with_ta"
             },
             {"caption":"-", "id":"side-bar-separator"},
+            {
+                "caption": "Set new comments",
+                "id": "c4biModifyFeedbackDef",
+                "command": "c4bi_modify_feedback_def"
+            },
             {
                 "caption": "Clear local directory",
                 "id": "c4biClean",

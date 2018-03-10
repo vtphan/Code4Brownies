@@ -162,7 +162,7 @@ class c4baGetFromTeacherCommand(sublime_plugin.TextCommand):
 						fp.write(entry['Content'])
 					new_view = self.view.window().open_file(outfile)
 			else:
-				sublime.message_dialog("Queue is empty.")
+				sublime.message_dialog("Teacher has not shared anything yet.")
 
 # ------------------------------------------------------------------
 def c4ba_share_feedback(self, edit, points):

@@ -9,7 +9,7 @@
                 "command": "c4b_my_board"
             },
             {
-                "caption": "Share",
+                "caption": "Share this file",
                 "id": "c4bShare",
                 "command": "c4b_share"
             },

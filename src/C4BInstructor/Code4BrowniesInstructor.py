@@ -110,7 +110,7 @@ class c4biGetFromTa(sublime_plugin.TextCommand):
 						fp.write(entry['Content'])
 					new_view = self.view.window().open_file(outfile)
 			else:
-				sublime.message_dialog("Queue is empty.")
+				sublime.message_dialog("TA has not shared anything yet.")
 
 # ------------------------------------------------------------------
 class c4biCleanCommand(sublime_plugin.ApplicationCommand):
