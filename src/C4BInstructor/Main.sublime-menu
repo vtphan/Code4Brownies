@@ -146,7 +146,7 @@
                 "command": "c4bi_clear_whiteboards"
             },
             {
-                "caption": "Modify feedback definitions",
+                "caption": "Set new comments",
                 "id": "c4biModifyFeedbackDef",
                 "command": "c4bi_modify_feedback_def"
             },

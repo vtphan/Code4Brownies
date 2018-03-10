@@ -150,7 +150,7 @@
                 "command": "c4ba_set_passcode"
             },
             {
-                "caption": "Modify feedback def",
+                "caption": "Set new comments",
                 "id": "c4baModifyFeedbackDef",
                 "command": "c4ba_modify_feedback_def"
             },
