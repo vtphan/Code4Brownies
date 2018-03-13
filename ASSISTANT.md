@@ -25,7 +25,7 @@ import os; import shutil; package_path = os.path.join(sublime.packages_path(), "
 The main task of a TA is to help the teacher provide individualized feedback to students and give brownie points to student work.  The main workflow of a TA is as follows:
 
 + Get student submissions.  One at a time; a few at a time; or all at once.
-+ Optionally, comment on it to give feedback to a student.
++ Optionally, give feedback to a student.
 + Give brownie points to each submission.  Or dequeue or requeue it.
 
 Additionally, a TA can do other tasks, such as.
