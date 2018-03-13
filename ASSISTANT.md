@@ -18,4 +18,17 @@ Open Sublime Text, go to View, click Show Console, copy this code, paste to cons
 
 ```
 import os; import shutil; package_path = os.path.join(sublime.packages_path(), "C4BAssistant"); shutil.rmtree(package_path)
+
+## Using Code4Brownies as a teaching assistant
+
+(1) The main workflow of a TA is as follows:
+
++ Get student submissions.  One at a time; a few at a time; or all at once.
++ Optionally, comment on it to give feedback to a student.
++ Give brownie points to each submission.  Or dequeue or requeue or ungrade it.
+
+(2) Get and share notes with the teacher.
+
+(3) Track how many submissions are on the queue.
+
 ```
