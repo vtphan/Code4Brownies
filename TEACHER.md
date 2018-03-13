@@ -56,13 +56,13 @@ To begin a class, run the server.  Once this is done, the instructor can enable 
 
 4. Teacher gives brownie points to students.
 
-A [teaching assistant](../ASSISTANT.md) can help with steps 2, 3 and 4.
+A [teaching assistant](ASSISTANT.md) can help with steps 2, 3 and 4.
 
 (B) Administer quizzes and polls
 
 (C) Have students take attendance by themselves
 
-(D) Share notes with [teaching assistants](../ASSISTANT.md)
+(D) Share notes with [teaching assistants](ASSISTANT.md)
 
 (E) Monitor submissions and polls
 
