@@ -42,7 +42,7 @@ If you want to run the server with the source code, you need to install Go.  To 
     ./go run *.go
 ````
 
-### Teaching with Code4Brownies
+## Teach with Code4Brownies
 
 To begin a class, run the server.  Once this is done, the instructor can enable a few activities.
 
