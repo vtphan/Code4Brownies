@@ -12,9 +12,9 @@ import os; package_path = os.path.join(sublime.packages_path(), "C4BInstructor")
 ```
 + Paste copied code to Console and hit enter.
 
-### Code sharing during class
+### Get the latest server
 
-First, download the server and run it on the instructor's machine.
+To use Code4Brownies as a teacher, first, download the server and run it on the instructor's machine.
 
 - [OSX amd64](https://umdrive.memphis.edu/vphan/public/C4B/c4b_osx_0.45).
 - [Win amd64](https://umdrive.memphis.edu/vphan/public/C4B/c4b_win_0.45.exe).
