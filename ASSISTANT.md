@@ -18,6 +18,7 @@ Open Sublime Text, go to View, click Show Console, copy this code, paste to cons
 
 ```
 import os; import shutil; package_path = os.path.join(sublime.packages_path(), "C4BAssistant"); shutil.rmtree(package_path)
+```
 
 ## Using Code4Brownies as a teaching assistant
 
@@ -31,4 +32,8 @@ import os; import shutil; package_path = os.path.join(sublime.packages_path(), "
 
 (3) Track how many submissions are on the queue.
 
-```
+### Useful shortcuts
+
+Save the content of [sublime-key-bindings-user.txt](src/C4BAssistant/sublime-key-bindings-user.txt) to Packages/User/Default (Windows).sublime-keymap or Packages/User/Default (OS X).sublime-keymap.
+
+
