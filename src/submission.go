@@ -43,6 +43,22 @@ func AddSubmission(uid, bid, body, ext string, hints_used int) {
 }
 
 // ------------------------------------------------------------------
+// Dequeue a submission from NewSubs
+// ------------------------------------------------------------------
+func DequeueSubmissionBySID(sid string) bool {
+	SUBS_SEM.Lock()
+	defer SUBS_SEM.Unlock()
+	for i := 0; i < len(NewSubs); i++ {
+		if NewSubs[i].Sid == sid {
+			NewSubs[i].Status = "dequeued"
+			NewSubs = append(NewSubs[:i], NewSubs[i+1:]...)
+			return true
+		}
+	}
+	return false
+}
+
+// ------------------------------------------------------------------
 // Remove a submission from NewSubs
 // ------------------------------------------------------------------
 func RemoveSubmissionBySID(sid string) bool {

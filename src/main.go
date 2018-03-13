@@ -119,6 +119,7 @@ func main() {
 	// http.HandleFunc("/give_points", AuthorizeShared(give_pointsHandler))
 	http.HandleFunc("/peek", AuthorizeShared(peekHandler))
 	http.HandleFunc("/get_post_by_index", AuthorizeShared(get_post_by_indexHandler))
+	http.HandleFunc("/dequeue", AuthorizeShared(dequeueHandler))
 
 	// TA handlers
 	http.HandleFunc("/ta_share_with_teacher", AuthorizeTA(ta_share_with_teacherHandler))

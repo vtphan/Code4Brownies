@@ -25,6 +25,7 @@ c4bi_FEEDBACK_PATH = "feedback"
 c4bi_SHARE_WITH_TA_PATH = "share_with_ta"
 c4bi_GET_FROM_TA_PATH = "get_from_ta"
 c4bi_ADD_PUBLIC_BOARD_PATH = "add_public_board"
+c4bi_DEQUEUE_PATH = "dequeue"
 
 c4bi_FEEDBACK_CODE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "feedback_code.txt")
 
@@ -249,6 +250,38 @@ class c4biTestCommand(sublime_plugin.TextCommand):
 			sublime.status_message(response)
 
 # ------------------------------------------------------------------
+# Remove this submission from queue.
+# ------------------------------------------------------------------
+class c4biDequeueCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		this_file_name = self.view.file_name()
+		basename = os.path.basename(this_file_name)
+		if not basename.startswith('c4b_'):
+			sublime.message_dialog('This does not look like a student submission.')
+			return
+
+		# Determine sid
+		basename = os.path.basename(this_file_name)
+		if not basename.startswith('c4b_'):
+			sublime.message_dialog('This does not look like a student submission.')
+			return
+		sid = basename.split('.')[0]
+		sid = sid.split('c4b_')[1]
+
+		# Prepare and send feedback
+		data = urllib.parse.urlencode({
+			'sid':			sid,
+			'passcode':		'',
+			'name':			'instructor',
+		}).encode('utf-8')
+
+		url = urllib.parse.urljoin(SERVER_ADDR, c4bi_DEQUEUE_PATH)
+		response = c4biRequest(url, data)
+		if response is not None:
+			sublime.message_dialog(response)
+			self.view.window().run_command('close')
+
+# ------------------------------------------------------------------
 def c4bi_share_feedback(self, edit, points=-1):
 	# Detect empty buffer
 	this_file_name = self.view.file_name()
@@ -301,9 +334,9 @@ class c4biShareFeedbackUngradedCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		c4bi_share_feedback(self, edit)
 
-class c4biShareFeedbackZeroCommand(sublime_plugin.TextCommand):
-	def run(self, edit):
-		c4bi_share_feedback(self, edit, 0)
+# class c4biShareFeedbackZeroCommand(sublime_plugin.TextCommand):
+# 	def run(self, edit):
+# 		c4bi_share_feedback(self, edit, 0)
 
 class c4biShareFeedbackOneCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
@@ -332,6 +365,7 @@ def _build_feedback_line(file_name, fb):
 		prefix = '##> '
 	else:
 		prefix = '///> '
+	fb = fb.split('.')[-1].strip()
 	return prefix + fb
 
 # ------------------------------------------------------------------
@@ -365,14 +399,14 @@ class c4biInsertFeedbackCommand(sublime_plugin.TextCommand):
 				f.write('\n'.join(feedback_code))
 
 		with open(c4bi_FEEDBACK_CODE, 'r') as f:
-			fb = f.readlines()
-			fb = [ l.strip() for l in fb if l.strip() ]
+			fb = [ l.strip() for l in f.readlines() ]
+			fb = [ '{}. {}'.format(i,fb[i]) for i in range(len(fb)) ]
 		return fb
 
 	#--------------------------------------------------------
 	def run(self, edit):
 		def on_done(i):
-			if i < len(items):
+			if i>=0 and i<len(items):
 				this_file_name = self.view.file_name()
 				fb = _build_feedback_line(this_file_name, items[i])
 				selection = self.view.sel()[0]

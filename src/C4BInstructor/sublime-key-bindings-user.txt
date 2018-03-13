@@ -1,9 +1,9 @@
 [
-    { "keys": ["ctrl+0"], "command": "c4bi_award_point0" },
-    { "keys": ["ctrl+1"], "command": "c4bi_award_point1" },
-    { "keys": ["ctrl+2"], "command": "c4bi_award_point2" },
-    { "keys": ["ctrl+3"], "command": "c4bi_award_point3" },
-    { "keys": ["ctrl+4"], "command": "c4bi_award_point4" },
-    { "keys": ["ctrl+5"], "command": "c4bi_award_point5" },
-    { "keys": ["super+shift+0"], "command": "c4bi_get_all" }
+    { "keys": ["ctrl+1"], "command": "c4bi_share_feedback_one" },
+    { "keys": ["ctrl+2"], "command": "c4bi_share_feedback_two" },
+    { "keys": ["ctrl+3"], "command": "c4bi_share_feedback_three" },
+    { "keys": ["ctrl+4"], "command": "c4bi_share_feedback_four" },
+    { "keys": ["ctrl+5"], "command": "c4bi_share_feedback_five" },
+    { "keys": ["ctrl+i"], "command": "c4bi_insert_feedback" },
+    { "keys": ["ctrl+d"], "command": "c4bi_dequeue" },
 ]

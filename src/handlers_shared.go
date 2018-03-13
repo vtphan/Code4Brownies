@@ -38,6 +38,19 @@ func remove_public_boardHandler(w http.ResponseWriter, r *http.Request, author s
 //-----------------------------------------------------------------
 // Instructor/TAs give feedback and points to a student
 //-----------------------------------------------------------------
+func dequeueHandler(w http.ResponseWriter, r *http.Request, author string) {
+	sid := r.FormValue("sid")
+	success := DequeueSubmissionBySID(sid)
+	if success {
+		fmt.Fprintf(w, "Ok")
+	} else {
+		fmt.Fprintf(w, "Failed")
+	}
+}
+
+//-----------------------------------------------------------------
+// Instructor/TAs give feedback and points to a student
+//-----------------------------------------------------------------
 func feedbackHandler(w http.ResponseWriter, r *http.Request, author string) {
 	BOARDS_SEM.Lock()
 	defer BOARDS_SEM.Unlock()

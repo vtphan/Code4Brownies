@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-const VERSION = "0.44"
+const VERSION = "0.45"
 
 var ADDR = ""
 var PORT = "4030"

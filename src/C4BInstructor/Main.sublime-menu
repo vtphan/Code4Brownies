@@ -66,39 +66,44 @@
                 "command": "c4bi_insert_feedback"
             },
             {
-                "caption": "Return to student",
+                "caption": "Action of this submission",
                 "id": "c4biShareFeedback",
                 "children": [
                     {
-                        "caption": "not graded",
-                        "id": "c4biShareFeedbackUngraded",
-                        "command": "c4bi_share_feedback_ungraded"
-                    },
-                    {
-                        "caption": "1 point",
+                        "caption": "Give 1 point",
                         "id": "c4biShareFeedbackOne",
                         "command": "c4bi_share_feedback_one"
                     },
                     {
-                        "caption": "2 points",
+                        "caption": "Give 2 points",
                         "id": "c4biShareFeedbackTwo",
                         "command": "c4bi_share_feedback_two"
                     },
                     {
-                        "caption": "3 points",
+                        "caption": "Give 3 points",
                         "id": "c4biShareFeedbackThree",
                         "command": "c4bi_share_feedback_three"
                     },
                     {
-                        "caption": "4 points",
+                        "caption": "Give 4 points",
                         "id": "c4biShareFeedbackFour",
                         "command": "c4bi_share_feedback_four"
                     },
                     {
-                        "caption": "5 points",
+                        "caption": "Give 5 points",
                         "id": "c4biShareFeedbackFive",
                         "command": "c4bi_share_feedback_five"
-                    }
+                    },
+                    {
+                        "caption": "Dequeue",
+                        "id": "c4biDequeue",
+                        "command": "c4bi_dequeue"
+                    },
+                    {
+                        "caption": "Requeue",
+                        "id": "c4biShareFeedbackUngraded",
+                        "command": "c4bi_share_feedback_ungraded"
+                    },
                 ]
             },
             {"caption":"-", "id":"side-bar-separator"},

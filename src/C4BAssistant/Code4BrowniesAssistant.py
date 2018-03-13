@@ -20,6 +20,8 @@ c4ba_REQUEST_ENTRIES_PATH = "get_posts"
 c4ba_SHARE_WITH_TEACHER_PATH = "ta_share_with_teacher"
 c4ba_GET_FROM_TEACHER_PATH = "ta_get_from_teacher"
 c4ba_ADD_PUBLIC_BOARD_PATH = "add_public_board"
+c4ba_DEQUEUE_PATH = "dequeue"
+
 TIMEOUT = 7
 
 POSTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Posts")
@@ -164,6 +166,42 @@ class c4baGetFromTeacherCommand(sublime_plugin.TextCommand):
 			else:
 				sublime.message_dialog("Teacher has not shared anything yet.")
 
+
+# ------------------------------------------------------------------
+# Remove this submission from queue.
+# ------------------------------------------------------------------
+class c4baDequeueCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		# Get info
+		info = c4ba_get_attr()
+		if info is None:
+			return
+
+		this_file_name = self.view.file_name()
+		basename = os.path.basename(this_file_name)
+		if not basename.startswith('c4b_'):
+			sublime.message_dialog('This does not look like a student submission.')
+			return
+
+		basename = os.path.basename(this_file_name)
+		if not basename.startswith('c4b_'):
+			sublime.message_dialog('This does not look like a student submission.')
+			return
+		sid = basename.split('.')[0]
+		sid = sid.split('c4b_')[1]
+
+		data = urllib.parse.urlencode({
+			'sid':			sid,
+			'passcode':		info['Passcode'],
+			'name':			info['Name'],
+		}).encode('utf-8')
+
+		url = urllib.parse.urljoin(info['Server'], c4ba_DEQUEUE_PATH)
+		response = c4baRequest(url, data)
+		if response is not None:
+			sublime.message_dialog(response)
+			self.view.window().run_command('close')
+
 # ------------------------------------------------------------------
 def c4ba_share_feedback(self, edit, points):
 	# Get info
@@ -248,6 +286,7 @@ def _build_feedback_line(file_name, fb):
 		prefix = '##> '
 	else:
 		prefix = '///> '
+	fb = fb.split('.')[-1].strip()
 	return prefix + fb
 
 # ------------------------------------------------------------------
@@ -281,14 +320,14 @@ class c4baInsertFeedbackCommand(sublime_plugin.TextCommand):
 				f.write('\n'.join(feedback_code))
 
 		with open(c4ba_FEEDBACK_CODE, 'r') as f:
-			fb = f.readlines()
-			fb = [ l.strip() for l in fb if l.strip() ]
+			fb = [ l.strip() for l in f.readlines() ]
+			fb = [ '{}. {}'.format(i,fb[i]) for i in range(len(fb)) ]
 		return fb
 
 	#--------------------------------------------------------
 	def run(self, edit):
 		def on_done(i):
-			if i < len(items):
+			if i>=0 and i<len(items):
 				this_file_name = self.view.file_name()
 				fb = _build_feedback_line(this_file_name, items[i])
 				selection = self.view.sel()[0]

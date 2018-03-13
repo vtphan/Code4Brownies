@@ -40,14 +40,9 @@
                 "command": "c4ba_insert_feedback"
             },
             {
-                "caption": "Return to student",
+                "caption": "Action on this submission",
                 "id": "c4baShareFeedback",
                 "children": [
-                    {
-                        "caption": "not graded",
-                        "id": "c4baShareFeedbackUngraded",
-                        "command": "c4ba_share_feedback_ungraded"
-                    },
                     {
                         "caption": "1 point",
                         "id": "c4baShareFeedbackOne",
@@ -72,7 +67,17 @@
                         "caption": "5 points",
                         "id": "c4baShareFeedbackFive",
                         "command": "c4ba_share_feedback_five"
-                    }
+                    },
+                    {
+                        "caption": "Dequeue",
+                        "id": "c4baDequeue",
+                        "command": "c4ba_dequeue"
+                    },
+                    {
+                        "caption": "Requeue",
+                        "id": "c4baShareFeedbackUngraded",
+                        "command": "c4ba_share_feedback_ungraded"
+                    },
                 ]
             },
             {"caption":"-", "id":"side-bar-separator"},
