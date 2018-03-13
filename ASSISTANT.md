@@ -22,15 +22,17 @@ import os; import shutil; package_path = os.path.join(sublime.packages_path(), "
 
 ## Using Code4Brownies as a teaching assistant
 
-(1) The main workflow of a TA is as follows:
+The main task of a TA is to help the teacher provide individualized feedback to students and give brownie points to student work.  The main workflow of a TA is as follows:
 
 + Get student submissions.  One at a time; a few at a time; or all at once.
 + Optionally, comment on it to give feedback to a student.
 + Give brownie points to each submission.  Or dequeue or requeue or ungrade it.
 
-(2) Get and share notes with the teacher.
+Additionally, a TA can do other tasks, such as.
 
-(3) Track how many submissions are on the queue.
+(1) Get and share notes with the teacher.
+
+(2) Track how many submissions are on the queue.
 
 ### Useful shortcuts
 
