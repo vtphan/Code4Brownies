@@ -26,7 +26,7 @@ The main task of a TA is to help the teacher provide individualized feedback to 
 
 + Get student submissions.  One at a time; a few at a time; or all at once.
 + Optionally, comment on it to give feedback to a student.
-+ Give brownie points to each submission.  Or dequeue or requeue or ungrade it.
++ Give brownie points to each submission.  Or dequeue or requeue it.
 
 Additionally, a TA can do other tasks, such as.
 
