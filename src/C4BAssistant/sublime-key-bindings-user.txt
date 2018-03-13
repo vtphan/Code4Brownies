@@ -1,0 +1,9 @@
+[
+    { "keys": ["ctrl+1"], "command": "c4ba_share_feedback_one" },
+    { "keys": ["ctrl+2"], "command": "c4ba_share_feedback_two" },
+    { "keys": ["ctrl+3"], "command": "c4ba_share_feedback_three" },
+    { "keys": ["ctrl+4"], "command": "c4ba_share_feedback_four" },
+    { "keys": ["ctrl+5"], "command": "c4ba_share_feedback_five" },
+    { "keys": ["ctrl+i"], "command": "c4ba_insert_feedback" },
+    { "keys": ["ctrl+d"], "command": "c4ba_dequeue" },
+]
