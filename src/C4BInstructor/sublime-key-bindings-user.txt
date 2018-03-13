@@ -6,4 +6,6 @@
     { "keys": ["ctrl+5"], "command": "c4bi_share_feedback_five" },
     { "keys": ["ctrl+i"], "command": "c4bi_insert_feedback" },
     { "keys": ["ctrl+d"], "command": "c4bi_dequeue" },
+    { "keys": ["ctrl+shift+1"], "command": "c4bi_get_one_submission" },
+    { "keys": ["ctrl+shift+3"], "command": "c4bi_get_three_submissions" },
 ]
