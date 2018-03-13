@@ -42,6 +42,29 @@ If you want to run the server with the source code, you need to install Go.  To 
     ./go run *.go
 ````
 
+### Teaching with Code4Brownies
+
+To begin a class, run the server.  Once this is done, the instructor can enable a few activities.
+
+(A) Scaffold and share work with students
+
+1. Teacher shares a previously prepared note.  For example, a partially complete piece of code for student to work on as an in-class exercise.
+
+2. Teacher looks at student submissions.
+
+3. Teacher provides feedback to a student, if he or she desires.
+
+4. Teacher gives brownie points to students.
+
+A [teaching assistant](../ASSISTANT.md) can help with steps 2, 3 and 4.
+
+(B) Administer quizzes and polls
+
+(C) Have students take attendance by themselves
+
+(D) Share notes with [teaching assistants](../ASSISTANT.md)
+
+(E) Monitor submissions and polls
 
 ## Uninstallation of Sublime Text plugin
 
