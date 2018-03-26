@@ -189,30 +189,3 @@ func get_post_by_indexHandler(w http.ResponseWriter, r *http.Request, author str
 }
 
 //-----------------------------------------------------------------
-// (deprecated) Instructor gives brownie points to a user
-//-----------------------------------------------------------------
-// func give_pointsHandler(w http.ResponseWriter, r *http.Request, author string) {
-// 	if sub, ok := AllSubs[r.FormValue("sid")]; ok {
-// 		points, err := strconv.Atoi(r.FormValue("points"))
-// 		if err != nil {
-// 			fmt.Fprint(w, "Failed")
-// 		} else {
-// 			success := RemoveSubmissionBySID(r.FormValue("sid"))
-// 			if author != "instructor" && success == false {
-// 				// Instructor graded this submission, TA can't change.
-// 				fmt.Fprintf(w, "This submission is already graded.")
-// 			} else {
-// 				sub.Points = points
-// 				_, err = UpdatePointsSQL.Exec(sub.Points, r.FormValue("sid"))
-// 				if err != nil {
-// 					fmt.Fprint(w, "Failed")
-// 				} else {
-// 					mesg := fmt.Sprintf("%s: %d points.\n", sub.Uid, sub.Points)
-// 					fmt.Fprintf(w, mesg)
-// 				}
-// 			}
-// 		}
-// 	}
-// }
-
-//-----------------------------------------------------------------

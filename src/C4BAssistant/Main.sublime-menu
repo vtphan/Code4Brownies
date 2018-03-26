@@ -40,31 +40,31 @@
                 "command": "c4ba_insert_feedback"
             },
             {
-                "caption": "Action on this submission",
+                "caption": "Give points",
                 "id": "c4baShareFeedback",
                 "children": [
                     {
-                        "caption": "1 point",
+                        "caption": "1",
                         "id": "c4baShareFeedbackOne",
                         "command": "c4ba_share_feedback_one"
                     },
                     {
-                        "caption": "2 points",
+                        "caption": "2",
                         "id": "c4baShareFeedbackTwo",
                         "command": "c4ba_share_feedback_two"
                     },
                     {
-                        "caption": "3 points",
+                        "caption": "3",
                         "id": "c4baShareFeedbackThree",
                         "command": "c4ba_share_feedback_three"
                     },
                     {
-                        "caption": "4 points",
+                        "caption": "4",
                         "id": "c4baShareFeedbackFour",
                         "command": "c4ba_share_feedback_four"
                     },
                     {
-                        "caption": "5 points",
+                        "caption": "5",
                         "id": "c4baShareFeedbackFive",
                         "command": "c4ba_share_feedback_five"
                     },
