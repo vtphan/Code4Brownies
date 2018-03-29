@@ -40,41 +40,41 @@
                 "command": "c4ba_insert_feedback"
             },
             {
-                "caption": "Give points",
+                "caption": "Action on this submission",
                 "id": "c4baShareFeedback",
                 "children": [
                     {
-                        "caption": "1",
+                        "caption": "1 point",
                         "id": "c4baShareFeedbackOne",
                         "command": "c4ba_share_feedback_one"
                     },
                     {
-                        "caption": "2",
+                        "caption": "2 points",
                         "id": "c4baShareFeedbackTwo",
                         "command": "c4ba_share_feedback_two"
                     },
                     {
-                        "caption": "3",
+                        "caption": "3 points",
                         "id": "c4baShareFeedbackThree",
                         "command": "c4ba_share_feedback_three"
                     },
                     {
-                        "caption": "4",
+                        "caption": "4 points",
                         "id": "c4baShareFeedbackFour",
                         "command": "c4ba_share_feedback_four"
                     },
                     {
-                        "caption": "5",
+                        "caption": "5 points",
                         "id": "c4baShareFeedbackFive",
                         "command": "c4ba_share_feedback_five"
                     },
                     {
-                        "caption": "Dequeue",
+                        "caption": "Dismiss",
                         "id": "c4baDequeue",
                         "command": "c4ba_dequeue"
                     },
                     {
-                        "caption": "Requeue",
+                        "caption": "Put back",
                         "id": "c4baShareFeedbackUngraded",
                         "command": "c4ba_share_feedback_ungraded"
                     },
