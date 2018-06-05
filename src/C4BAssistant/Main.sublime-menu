@@ -12,11 +12,11 @@
                         "id": "c4baGetOneSubmission",
                         "command": "c4ba_get_one_submission"
                     },
-                    {
-                        "caption": "Get 3",
-                        "id": "c4baGetThreeSubmissions",
-                        "command": "c4ba_get_three_submissions"
-                    },
+                    // {
+                    //     "caption": "Get 3",
+                    //     "id": "c4baGetThreeSubmissions",
+                    //     "command": "c4ba_get_three_submissions"
+                    // },
                     {
                         "caption": "Get All",
                         "id": "c4baGetAllSubmissions",
@@ -34,11 +34,11 @@
                     },
                 ]
             },
-            {
-                "caption": "Insert comment",
-                "id": "c4baInsertFeedback",
-                "command": "c4ba_insert_feedback"
-            },
+            // {
+            //     "caption": "Insert comment",
+            //     "id": "c4baInsertFeedback",
+            //     "command": "c4ba_insert_feedback"
+            // },
             {
                 "caption": "Action on this submission",
                 "id": "c4baShareFeedback",
@@ -118,11 +118,11 @@
                 "id": "c4baSetPasscode",
                 "command": "c4ba_set_passcode"
             },
-            {
-                "caption": "Set new comments",
-                "id": "c4baModifyFeedbackDef",
-                "command": "c4ba_modify_feedback_def"
-            },
+            // {
+            //     "caption": "Set new comments",
+            //     "id": "c4baModifyFeedbackDef",
+            //     "command": "c4ba_modify_feedback_def"
+            // },
             {"caption":"-", "id":"side-bar-separator"},
             {
                 "caption": "Update",
